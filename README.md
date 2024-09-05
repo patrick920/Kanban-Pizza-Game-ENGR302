@@ -1,93 +1,228 @@
-# Kanbanaria
+# Phaser Next.js Template
 
+This is a Phaser 3 project template that uses the Next.js framework. It includes a bridge for React to Phaser game communication, hot-reloading for quick development workflow and scripts to generate production-ready builds.
 
+### Versions
 
-## Getting started
+This template has been updated for:
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- [Phaser 3.85.0](https://github.com/phaserjs/phaser)
+- [Next.js 14.2.3](https://github.com/vercel/next.js)
+- [TypeScript 5](https://github.com/microsoft/TypeScript)
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+![screenshot](screenshot.png)
 
-## Add your files
+## Requirements
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+[Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
 
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm install` | Install project dependencies |
+| `npm run dev` | Launch a development web server |
+| `npm run build` | Create a production build in the `dist` folder |
+| `npm run dev-nolog` | Launch a development web server without sending anonymous data (see "About log.js" below) |
+| `npm run build-nolog` | Create a production build in the `dist` folder without sending anonymous data (see "About log.js" below) |
+
+## Writing Code
+
+After cloning the repo, run `npm install` from your project directory. Then, you can start the local development server by running `npm run dev`.
+
+The local development server runs on `http://localhost:8080` by default. Please see the Next.js documentation if you wish to change this, or add SSL support.
+
+Once the server is running you can edit any of the files in the `src` folder. Next.js will automatically recompile your code and then reload the browser.
+
+## Template Project Structure
+
+We have provided a default project structure to get you started. This is as follows:
+
+- `src/pages/_document.tsx` - A basic Next.js component entry point. It is used to define the `<html>` and `<body>` tags and other globally shared UI.
+- `src` - Contains the Next.js client source code.
+- `src/styles/globals.css` - Some simple global CSS rules to help with page layout. You can enable Tailwind CSS here.
+- `src/page/_app.tsx` - The main Next.js component.
+- `src/App.tsx` - Midleware component used to run Phaser in client mode.
+- `src/game/PhaserGame.tsx` - The React component that initializes the Phaser Game and serve like a bridge between React and Phaser.
+- `src/game/EventBus.ts` - A simple event bus to communicate between React and Phaser.
+- `src/game` - Contains the game source code.
+- `src/game/main.tsx` - The main **game** entry point. This contains the game configuration and start the game.
+- `src/game/scenes/` - The Phaser Scenes are in this folder.
+- `public/favicon.png` - The default favicon for the project.
+- `public/assets` - Contains the static assets used by the game.
+## React Bridge
+
+The `PhaserGame.tsx` component is the bridge between React and Phaser. It initializes the Phaser game and passes events between the two.
+
+To communicate between React and Phaser, you can use the **EventBus.js** file. This is a simple event bus that allows you to emit and listen for events from both React and Phaser.
+
+```js
+// In React
+import { EventBus } from './EventBus';
+
+// Emit an event
+EventBus.emit('event-name', data);
+
+// In Phaser
+// Listen for an event
+EventBus.on('event-name', (data) => {
+    // Do something with the data
+});
 ```
-cd existing_repo
-git remote add origin https://gitlab.ecs.vuw.ac.nz/agilekanbanria/kanbanaria.git
-git branch -M main
-git push -uf origin main
+
+In addition to this, the `PhaserGame` component exposes the Phaser game instance along with the most recently active Phaser Scene using React forwardRef.
+
+Once exposed, you can access them like any regular react reference.
+
+## Phaser Scene Handling
+
+In Phaser, the Scene is the lifeblood of your game. It is where you sprites, game logic and all of the Phaser systems live. You can also have multiple scenes running at the same time. This template provides a way to obtain the current active scene from React.
+
+You can get the current Phaser Scene from the component event `"current-active-scene"`. In order to do this, you need to emit the event `"current-scene-ready"` from the Phaser Scene class. This event should be emitted when the scene is ready to be used. You can see this done in all of the Scenes in our template.
+
+**Important**: When you add a new Scene to your game, make sure you expose to React by emitting the `"current-scene-ready"` event via the `EventBus`, like this:
+
+
+```ts
+class MyScene extends Phaser.Scene
+{
+    constructor ()
+    {
+        super('MyScene');
+    }
+
+    create ()
+    {
+        // Your Game Objects and logic here
+
+        // At the end of create method:
+        EventBus.emit('current-scene-ready', this);
+    }
+}
 ```
 
-## Integrate with your tools
+You don't have to emit this event if you don't need to access the specific scene from React. Also, you don't have to emit it at the end of `create`, you can emit it at any point. For example, should your Scene be waiting for a network request or API call to complete, it could emit the event once that data is ready.
 
-- [ ] [Set up project integrations](https://gitlab.ecs.vuw.ac.nz/agilekanbanria/kanbanaria/-/settings/integrations)
+### React Component Example
 
-## Collaborate with your team
+Here's an example of how to access Phaser data for use in a React Component:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+```ts
+import { useRef } from 'react';
+import { IRefPhaserGame } from "./game/PhaserGame";
 
-## Test and Deploy
+// In a parent component
+const ReactComponent = () => {
 
-Use the built-in continuous integration in GitLab.
+    const phaserRef = useRef<IRefPhaserGame>(); // you can access to this ref from phaserRef.current
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+    const onCurrentActiveScene = (scene: Phaser.Scene) => {
+    
+        // This is invoked
 
-***
+    }
 
-# Editing this README
+    return (
+        ...
+        <PhaserGame ref={phaserRef} currentActiveScene={onCurrentActiveScene} />
+        ...
+    );
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+}
+```
 
-## Suggestions for a good README
+In the code above, you can get a reference to the current Phaser Game instance and the current Scene by creating a reference with `useRef()` and assign to PhaserGame component.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+From this state reference, the game instance is available via `phaserRef.current.game` and the most recently active Scene via `phaserRef.current.scene`.
 
-## Name
-Choose a self-explaining name for your project.
+The `onCurrentActiveScene` callback will also be invoked whenever the the Phaser Scene changes, as long as you emit the event via the EventBus, as outlined above.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## Handling Assets
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+To load your static games files such as audio files, images, videos, etc place them into the `public/assets` folder. Then you can use this path in the Loader calls within Phaser:
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+```js
+preload ()
+{
+    //  This is an example of loading a static image
+    //  from the public/assets folder:
+    this.load.image('background', 'assets/bg.png');
+}
+```
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+When you issue the `npm run build` command, all static assets are automatically copied to the `dist/assets` folder.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## Deploying to Production
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+After you run the `npm run build` command, your code will be built into a single bundle and saved to the `dist` folder, along with any other assets your project imported, or stored in the public assets folder.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+In order to deploy your game, you will need to upload *all* of the contents of the `dist` folder to a public facing web server.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Customizing the Template
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Next.js
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+If you want to customize your build, such as adding plugin (i.e. for loading CSS or fonts), you can modify the `next.config.mjs` file for cross-project changes, or you can modify and/or create new configuration files and target them in specific npm tasks inside of `package.json`. Please see the [Next.js documentation](https://nextjs.org/docs) for more information.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## About log.js
 
-## License
-For open source projects, say how it is licensed.
+If you inspect our node scripts you will see there is a file called `log.js`. This file makes a single silent API call to a domain called `gryzor.co`. This domain is owned by Phaser Studio Inc. The domain name is a homage to one of our favorite retro games.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+We send the following 3 pieces of data to this API: The name of the template being used (vue, react, etc). If the build was 'dev' or 'prod' and finally the version of Phaser being used.
+
+At no point is any personal data collected or sent. We don't know about your project files, device, browser or anything else. Feel free to inspect the `log.js` file to confirm this.
+
+Why do we do this? Because being open source means we have no visible metrics about which of our templates are being used. We work hard to maintain a large and diverse set of templates for Phaser developers and this is our small anonymous way to determine if that work is actually paying off, or not. In short, it helps us ensure we're building the tools for you.
+
+However, if you don't want to send any data, you can use these commands instead:
+
+Dev:
+
+```bash
+npm run dev-nolog
+```
+
+Build:
+
+```bash
+npm run build-nolog
+```
+
+Or, to disable the log entirely, simply delete the file `log.js` and remove the call to it in the `scripts` section of `package.json`:
+
+Before:
+
+```json
+"scripts": {
+    "dev": "node log.js dev & dev-template-script",
+    "build": "node log.js build & build-template-script"
+},
+```
+
+After:
+
+```json
+"scripts": {
+    "dev": "dev-template-script",
+    "build": "build-template-script"
+},
+```
+
+Either of these will stop `log.js` from running. If you do decide to do this, please could you at least join our Discord and tell us which template you're using! Or send us a quick email. Either will be super-helpful, thank you.
+
+## Join the Phaser Community!
+
+We love to see what developers like you create with Phaser! It really motivates us to keep improving. So please join our community and show-off your work 😄
+
+**Visit:** The [Phaser website](https://phaser.io) and follow on [Phaser Twitter](https://twitter.com/phaser_)<br />
+**Play:** Some of the amazing games [#madewithphaser](https://twitter.com/search?q=%23madewithphaser&src=typed_query&f=live)<br />
+**Learn:** [API Docs](https://newdocs.phaser.io), [Support Forum](https://phaser.discourse.group/) and [StackOverflow](https://stackoverflow.com/questions/tagged/phaser-framework)<br />
+**Discord:** Join us on [Discord](https://discord.gg/phaser)<br />
+**Code:** 2000+ [Examples](https://labs.phaser.io)<br />
+**Read:** The [Phaser World](https://phaser.io/community/newsletter) Newsletter<br />
+
+Created by [Phaser Studio](mailto:support@phaser.io). Powered by coffee, anime, pixels and love.
+
+The Phaser logo and characters are &copy; 2011 - 2024 Phaser Studio Inc.
+
+All rights reserved.

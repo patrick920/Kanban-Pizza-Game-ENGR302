@@ -1,3 +1,5 @@
+import { io } from 'socket.io-client';
+
 //Don't have to import io I think.
 const socket = io('ws://localhost:3500')
 

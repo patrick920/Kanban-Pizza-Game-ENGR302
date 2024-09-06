@@ -1,24 +1,30 @@
 {
   "name": "lesson03",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "start": "node .",
-    "dev": "nodemon ."
+    "build": "parcel build public/app.ts",
+    "start": "parcel public/index.html",
+    "dev": "parcel public/index.html --open"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/socket.io-client": "^3.0.0",
     "express": "^4.19.2",
     "lesson02": "file:",
     "lesson03": "file:",
     "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "ws-1": "file:"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "@types/node": "^22.5.4",
+    "nodemon": "^3.1.4",
+    "parcel": "^2.12.0",
+    "typescript": "^5.5.4"
   }
 }

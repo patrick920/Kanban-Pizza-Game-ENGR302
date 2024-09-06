@@ -23,6 +23,10 @@ socket.on("message", (data) => {
     li.textContent = data //data is essentially the message from the server.
     //I think this should add a list item containing the server's message.
     document.querySelector('ul').appendChild(li)
+
+    //Add the pizza image to the Phaser game.
+    //Line below from ChatGPT:
+    addImageDynamically();
 })
 
 /*

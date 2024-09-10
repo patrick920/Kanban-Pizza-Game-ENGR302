@@ -16,15 +16,22 @@
 </head>
 
 <body>
-    <form>
-        <input type="text" placeholder="Your message">
-        <button>Send</button>
-    </form>
-    <!--Unordered list to display messages sent back from the server?-->
-    <ul></ul>
+    <div class="kanban-board"></div>
+        <div class="column" id="todo">
+            <h2>To Do</h2>
+            <div class="task" draggable="true">Task 1</div>
+            <div class="task" draggable="true">Task 2</div>
+        </div>
 
+        <div class="column" id="in-progress">
+            <h2>In Progress</h2>
+            <div class="task" draggable="true">Task 3</div>
+        </div>
 
-    <script defer src="phaser_game.js"></script>
+        <div class="column" id="done">
+            <h2>Done</h2>
+        </div>
+    </div>
 
 </body>
 

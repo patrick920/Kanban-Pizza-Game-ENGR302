@@ -1,3 +1,4 @@
+//Code copied from ChatGPT:
 // Phaser Game Configuration
 const config = {
     type: Phaser.AUTO,

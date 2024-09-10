@@ -1,39 +1,34 @@
 const tasks = document.querySelectorAll('.task');
 const columns = document.querySelectorAll('.column');
 
-// Add event listeners for drag and drop
-tasks.forEach(task => {
-    task.addEventListener('dragstart', dragStart);
-    task.addEventListener('dragend', dragEnd);
-});
-
-columns.forEach(column => {
-    column.addEventListener('dragover', dragOver);
-    column.addEventListener('drop', dragDrop);
-});
-
 let draggedTask = null;
 
-function dragStart(event) {
-    draggedTask = event.target;
-    setTimeout(() => {
-        event.target.style.display = 'none';
-    }, 0);
-}
+// Add drag start event listeners to all tasks
+tasks.forEach(task => {
+    task.addEventListener('dragstart', (e) => {
+        draggedTask = e.target;
+        setTimeout(() => {
+            e.target.style.display = 'none'; // Hide the dragged task temporarily
+        }, 0);
+    });
 
-function dragEnd(event) {
-    setTimeout(() => {
-        draggedTask.style.display = 'block';
-        draggedTask = null;
-    }, 0);
-}
+    task.addEventListener('dragend', (e) => {
+        setTimeout(() => {
+            e.target.style.display = 'block'; // Show the dragged task again
+            draggedTask = null;
+        }, 0);
+    });
+});
 
-function dragOver(event) {
-    event.preventDefault(); // Necessary to allow dropping
-}
+// Allow the columns to accept dropping
+columns.forEach(column => {
+    column.addEventListener('dragover', (e) => {
+        e.preventDefault(); // Prevent default to allow drop
+    });
 
-function dragDrop(event) {
-    if (draggedTask) {
-        event.target.appendChild(draggedTask);
-    }
-}
+    column.addEventListener('drop', (e) => {
+        if (draggedTask) {
+            column.appendChild(draggedTask); // Move the task to the new column
+        }
+    });
+});

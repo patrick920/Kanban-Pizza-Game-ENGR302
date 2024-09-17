@@ -46,11 +46,11 @@ function createKanbanColumns() {
     // Draw the columns as rectangles
     columns.forEach(column => {
         const graphics = this.add.graphics();
-        graphics.fillStyle(0xe6e6e6);
-        graphics.fillRect(column.x, column.y, 200, 400);
+        graphics.fillStyle(0xe6e6e6); // colour of collumn
+        graphics.fillRect(column.x, column.y, 200, 400); // fill the collumn
 
         // Add column title
-        this.add.text(column.x + 70, column.y - 20, column.name, { fontSize: '16px', fill: '#fff' });
+        this.add.text(column.x + 60, column.y - 20, column.name, { fontSize: '19px', fontFamily:'Calibri', fill: '#fff' });
     });
 
     // Draw dividers between columns
@@ -70,9 +70,19 @@ function createLabels(columns) {
     // Create example labels inside the first column
     const tasks = ['Task 1', 'Task 2', 'Task 3'];
     tasks.forEach((task, index) => {
-        const label = this.add.text(columns[0].x + 20, columns[0].y + 40 + (index * 40), task, { fill: '#000', backgroundColor: '#ffffff' });
+        const label = this.add.text(
+            columns[0].x + 20, 
+            columns[0].y + 40 + (index * 40), 
+            task, 
+            { 
+                fill: '#000', 
+                backgroundColor: '#ffffff', 
+                fontFamily: 'Calibri', 
+                fontSize: '18px',      
+                padding: { left: 10, right: 10, top: 5, bottom: 5 }
+            }
+        );
         label.setInteractive();
-        label.setPadding(10);
         labels.push({ label, column: columns[0] }); // Track label and its column
     });
 }

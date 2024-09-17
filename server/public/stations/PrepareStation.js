@@ -1,17 +1,22 @@
-// PrepareStation.js
-export default class PrepareStation extends Phaser.Scene {
+// // PrepareStation.js
+// import Phaser from 'phaser';
+import Station from './Station.js';
+//import { createNavigationTabs } from './Station.js';
+
+export default class PrepareStation extends Station {
     constructor() {
         super({ key: 'PrepareStation' });
     }
 
     create() {
         this.add.text(100, 100, 'Prepare your pizza!', { fontSize: '32px', fill: '#fff' });
-
+        //const circle = new Pizza(this, "small");
         // Navigation buttons
-        this.createTabs();
+        this.createNavigationTabs();
     }
 
-    createTabs() {
+    // create tabs at the bottom of the screen to switch to other scenes
+    createBaseButton() {
         const buttonY = this.game.config.height - 50;
 
         // Navigation button to go back to OrderStation

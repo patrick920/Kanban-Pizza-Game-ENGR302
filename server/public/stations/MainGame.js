@@ -2,6 +2,8 @@
 import OrderStation from './OrderStation.js';
 import CookStation from './CookStation.js';
 import PrepareStation from './PrepareStation.js';
+import Pizza from './Pizza.js';
+import Station from './Station.js';
 
 const config = {
     type: Phaser.AUTO,

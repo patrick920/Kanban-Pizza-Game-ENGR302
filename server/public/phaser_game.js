@@ -46,12 +46,22 @@ function createKanbanColumns() {
     // Draw the columns as rectangles
     columns.forEach(column => {
         const graphics = this.add.graphics();
-        graphics.fillStyle(0x808080);
+        graphics.fillStyle(0xe6e6e6);
         graphics.fillRect(column.x, column.y, 200, 400);
 
         // Add column title
-        this.add.text(column.x + 70, column.y - 20, column.name, { fontSize: '16px', fill: '#000' });
+        this.add.text(column.x + 70, column.y - 20, column.name, { fontSize: '16px', fill: '#fff' });
     });
+
+    // Draw dividers between columns
+    for (let i = 1; i < columns.length; i++) {
+        const dividerGraphics = this.add.graphics();
+        dividerGraphics.lineStyle(4, 0x000000, 1); // Black line with 4px width
+        dividerGraphics.beginPath();
+        dividerGraphics.moveTo(columns[i].x - 10, 100); // Start point of the line (adjust the x position slightly to place between columns)
+        dividerGraphics.lineTo(columns[i].x - 10, 500); // End point of the line
+        dividerGraphics.strokePath();
+    }
 
     return columns;
 }
@@ -98,38 +108,56 @@ function pointerUpHandler(pointer) {
         });
 
         if (droppedColumn) {
-            // Snap the label to the new column position
-            this.tweens.add({
-                targets: selectedLabel,
-                x: droppedColumn.x + 20,
-                y: droppedColumn.y + 40 + (labels.filter(l => l.column === droppedColumn).length * 40),
-                duration: 300,
-                ease: 'Power2',
-                onComplete: () => {
-                    // Update label's column reference
-                    const labelObj = labels.find(l => l.label === selectedLabel);
-                    labelObj.column = droppedColumn;
-                    selectedLabel.setDepth(0);
-                    selectedLabel = null;
-                }
-            });
+            // Check for overlap with other labels in the same column
+            const isOverlapping = labels.some(l => 
+                l.column === droppedColumn && 
+                l.label !== selectedLabel && 
+                Phaser.Geom.Intersects.RectangleToRectangle(selectedLabel.getBounds(), l.label.getBounds())
+            );
+
+            if (!isOverlapping) {
+                // Snap the label to the new column position
+                this.tweens.add({
+                    targets: selectedLabel,
+                    x: droppedColumn.x + 20,
+                    y: droppedColumn.y + 40 + (labels.filter(l => l.column === droppedColumn).length * 40),
+                    duration: 300,
+                    ease: 'Power2',
+                    onComplete: () => {
+                        // Update label's column reference
+                        const labelObj = labels.find(l => l.label === selectedLabel);
+                        labelObj.column = droppedColumn;
+                        selectedLabel.setDepth(0);
+                        selectedLabel = null;
+                    }
+                });
+            } else {
+                // If it overlaps, snap back to the original position
+                const originalColumn = labels.find(l => l.label === selectedLabel).column;
+                snapBackToOriginalPosition.call(this, selectedLabel, originalColumn);
+            }
         } else {
-            // If dropped outside, snap it back to its original position
+            // If dropped outside, snap back to its original position
             const originalColumn = labels.find(l => l.label === selectedLabel).column;
-            this.tweens.add({
-                targets: selectedLabel,
-                x: originalColumn.x + 20,
-                y: originalColumn.y + 40 + (labels.filter(l => l.column === originalColumn).length * 40),
-                duration: 300,
-                ease: 'Power2',
-                onComplete: () => {
-                    selectedLabel.setDepth(0);
-                    selectedLabel = null;
-                }
-            });
+            snapBackToOriginalPosition.call(this, selectedLabel, originalColumn);
         }
     }
 }
+
+function snapBackToOriginalPosition(label, column) {
+    this.tweens.add({
+        targets: label,
+        x: column.x + 20,
+        y: column.y + 40 + (labels.filter(l => l.column === column).length * 40),
+        duration: 300,
+        ease: 'Power2',
+        onComplete: () => {
+            label.setDepth(0);
+            selectedLabel = null;
+        }
+    });
+}
+
 
 function update() {
     // Optional update logic if needed

@@ -9,12 +9,20 @@ export default class OrderStation extends Station {
     }
 
     create() {
-        this.add.text(100, 100, 'Order your pizza!', { fontSize: '32px', fill: '#000d1a' });
+        this.createBackground();
 
+        // Add your game logic here
+        this.add.text(100, 100, 'Order your pizza!', { fontSize: '32px', fontFamily: 'Calibri', fill: '#000' });
+
+        // Navigation buttons (from Station.js)
+        this.createNavigationTabs();
+    }
+
+    createBackground(){
         // Set a specific background color for the OrderStation scene
-        this.cameras.main.setBackgroundColor('#cce6ff'); // Example color: light pink
+        this.cameras.main.setBackgroundColor('#cce6ff');
 
-        // Add a rectangle along the bottom
+        // Add a rectangle along the bottom, this is the counter to order at
         const graphics = this.add.graphics();
         const rectWidth = this.game.config.width;
         const rectHeight = 200;
@@ -23,11 +31,5 @@ export default class OrderStation extends Station {
 
         graphics.fillStyle(0x996600, 1); // Black color
         graphics.fillRect(rectX, rectY, rectWidth, rectHeight);
-
-        // Add your game logic here
-        this.add.text(100, 100, 'Order your pizza!', { fontSize: '32px', fill: '#fff' });
-
-        // Navigation buttons
-        this.createNavigationTabs();
     }
 }

@@ -11,7 +11,7 @@ export default class CookStation extends Station {
     create() {
         this.add.text(100, 100, 'Cooka da pizza!', { fontSize: '32px', fill: '#fff' });
 
-        // Navigation buttons
+        // Navigation buttons (from Station.js)
         this.createNavigationTabs();
     }
 }

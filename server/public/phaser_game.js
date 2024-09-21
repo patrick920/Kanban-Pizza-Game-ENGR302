@@ -1,14 +1,25 @@
 //Code copied from ChatGPT:
+//Import files using ES6, which is what our project is using:
+// import { OrderStation } from './stations/OrderStation.js';
+// import { CookStation } from './stations/CookStation.js';
+// import { PrepareStation } from './stations/PrepareStation.js';
+//Not using default export so no curly braces:
+import OrderStation from './stations/OrderStation.js';
+import CookStation from './stations/CookStation.js';
+import PrepareStation from './stations/PrepareStation.js';
+
+//Code copied from ChatGPT:
 // Phaser Game Configuration
 const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    scene: {
-        preload,
-        create,
-        update
-    }
+    // scene: {
+    //     preload,
+    //     create,
+    //     update
+    // },
+    scene: [OrderStation, CookStation, PrepareStation]
 };
 
 const game = new Phaser.Game(config);

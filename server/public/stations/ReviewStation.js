@@ -46,16 +46,16 @@ export default class ReviewStation extends Station {
         //Add a text box on right side of screen people can type in
 
         //Add button to restart order - needs functionality
-        this.add.text(200, this.game.config.height - 100, 'Reject', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#f44336' });
+        this.add.text(500, this.game.config.height - 100, 'Reject', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#f44336' });
 
         //Add button to allow order through - needs functionality
-        this.add.text(250, this.game.config.height - 100, 'Serve', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#8fce00' });
+        this.add.text(700, this.game.config.height - 100, 'Serve', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#8fce00' });
 
     }
 
     createBackground() {
         // Set a specific background color for the ReviewStation
-        this.cameras.main.setBackgroundColor('#00e699');
+        this.cameras.main.setBackgroundColor('#a7288a');
 
         // Add functionality here to display the pizza image 
     }

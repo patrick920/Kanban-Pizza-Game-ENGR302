@@ -41,14 +41,54 @@ const io = new Server(expressServer, {
     }
 })
 
+// Game state
+const gameState = {
+    orders: [],
+    preparedPizzas: [],
+    cookedPizzas: [],
+    kanbanTasks: []
+}
+
 //Connection then listen.
 //Will echo message that was sent.
 io.on('connection', socket => {
     console.log(`User ${socket.id} connected`)
 
+        
+    // Send initial game state to the new user
+    socket.emit('initialGameState', gameState)
+
     socket.on('message', data => { //Listen for a message?
         console.log(data)
         //emit sends the message to EVERYONE who is connected to the server.
         io.emit('message', `${socket.id.substring(0, 5)}: ${data}`) //Send that message back.
+    })
+     // Order Station events
+     socket.on('newOrder', order => {
+        gameState.orders.push(order)
+        io.emit('orderUpdate', gameState.orders)
+    })
+
+    // Prepare Station events
+    socket.on('pizzaPrepared', pizza => {
+        gameState.preparedPizzas.push(pizza)
+        io.emit('preparedPizzasUpdate', gameState.preparedPizzas)
+    })
+
+    // Cook Station events
+    socket.on('pizzaCooked', pizza => {
+        gameState.cookedPizzas.push(pizza)
+        io.emit('cookedPizzasUpdate', gameState.cookedPizzas)
+    })
+
+    // Kanban Station events
+    socket.on('kanbanUpdate', tasks => {
+        gameState.kanbanTasks = tasks
+        io.emit('kanbanTasksUpdate', gameState.kanbanTasks)
+    })
+
+    // Disconnect event
+    socket.on('disconnect', () => {
+        console.log(`User ${socket.id} disconnected`)
     })
 })

@@ -24,7 +24,21 @@ const config = {
     scene: [OrderStation, CookStation, PrepareStation, KanbanStation, ReviewStation]
 };
 
-const game = new Phaser.Game(config);
+class Game extends Phaser.Game {
+    constructor(config) {
+        super(config);
+        
+        // Initialize Socket.IO
+        this.socket = io('http://localhost:3500');
+        
+        // Listen for connection
+        this.socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+    }
+}
+
+const game = new Game(config);
 
 let labels = []; // Array to hold label objects with references to their positions and columns
 let selectedLabel = null; // The label that is being dragged

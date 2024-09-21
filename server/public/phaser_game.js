@@ -12,8 +12,8 @@ import PrepareStation from './stations/PrepareStation.js';
 // Phaser Game Configuration
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1300,
+    height: 650,
     // scene: {
     //     preload,
     //     create,

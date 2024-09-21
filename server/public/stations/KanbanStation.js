@@ -1,6 +1,9 @@
 /*
 * Kanban Board Station.
 * Patrick started working on this code. It was copied and pasted from Gabbie's "PrepareStation.js" code and then modified.
+* 
+* TODO: Need a custom amount of columns, and the ability to add or remove them as the game progresses, with a scrollbar.
+* TODO: Each column should be able to have an arbitrary number of rectangles.
 */
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class

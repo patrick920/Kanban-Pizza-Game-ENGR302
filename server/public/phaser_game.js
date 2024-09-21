@@ -33,6 +33,9 @@ function create() {
     this.input.on('pointerdown', pointerDownHandler, this);
     this.input.on('pointermove', pointerMoveHandler, this);
     this.input.on('pointerup', pointerUpHandler, this);
+
+    // Start scheduling tasks for the first column
+    scheduleTask.call(this);  // Make sure to call the scheduling function here
 }
 
 function createKanbanColumns() {
@@ -85,6 +88,55 @@ function createLabels(columns) {
         label.setInteractive();
         labels.push({ label, column: columns[0] }); // Track label and its column
     });
+}
+
+// Function to schedule a new task at random intervals
+function scheduleTask() {
+    // Change these to set max and min time to add random new task
+    const secondsMin = 3000; // 3 seconds
+    const secondsMax = 10000; // 10 seconds
+    
+    const randomTime = Phaser.Math.Between(secondsMin, secondsMax); // Random time between
+    this.time.addEvent({
+        delay: randomTime,
+        callback: () => {
+            addTaskToFirstColumn.call(this);
+            scheduleTask.call(this); // Schedule the next task after this one
+        },
+        loop: false // This event should run once per call
+    });
+}
+
+// Function to add a new task to the first column
+function addTaskToFirstColumn() {
+    // Change this to limit number of tasks
+    const taskLimit = 9;
+
+    const firstColumn = this.columns[0];
+    const existingTasks = labels.filter(l => l.column === firstColumn).length; // Count existing tasks
+
+    // Check if the task limit is reached
+    if (existingTasks >= taskLimit) {
+        return; // Stop adding new tasks if the task limit is reached
+    }
+
+    const taskName = 'Task ' + (existingTasks + 1); // Create task name
+
+    const newLabel = this.add.text(
+        firstColumn.x + 20,
+        firstColumn.y + 40 + (existingTasks * 40), // Place new task below existing ones
+        taskName,
+        {
+            fill: '#000',
+            backgroundColor: '#ffffff',
+            fontFamily: 'Calibri',
+            fontSize: '18px',
+            padding: { left: 10, right: 10, top: 5, bottom: 5 }
+        }
+    );
+
+    newLabel.setInteractive();
+    labels.push({ label: newLabel, column: firstColumn }); // Add a new label to the labels array
 }
 
 function pointerDownHandler(pointer, targets) {

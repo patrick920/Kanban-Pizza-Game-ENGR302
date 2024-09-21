@@ -14,5 +14,9 @@ export default class Station extends Phaser.Scene {
         const cookButton = this.add.text(500, buttonY, 'Cook', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#28a745' })
             .setInteractive()
             .on('pointerdown', () => this.scene.start('CookStation'));
+        
+        const kanbanButton = this.add.text(700, buttonY, 'Kanban Board', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#28a745' })
+            .setInteractive()
+            .on('pointerdown', () => this.scene.start('KanbanStation'));
     }
 }

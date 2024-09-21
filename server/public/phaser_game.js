@@ -7,6 +7,7 @@
 import OrderStation from './stations/OrderStation.js';
 import CookStation from './stations/CookStation.js';
 import PrepareStation from './stations/PrepareStation.js';
+import KanbanStation from './stations/KanbanStation.js';
 
 //Code copied from ChatGPT:
 // Phaser Game Configuration
@@ -19,7 +20,7 @@ const config = {
     //     create,
     //     update
     // },
-    scene: [OrderStation, CookStation, PrepareStation]
+    scene: [OrderStation, CookStation, PrepareStation, KanbanStation]
 };
 
 const game = new Phaser.Game(config);

@@ -17,6 +17,7 @@ let labels = []; // Array to hold label objects with references to their positio
 let selectedLabel = null; // The label that is being dragged
 let offsetX = 0;
 let offsetY = 0;
+let orderNum = 1;
 
 function preload() {
     // Preload assets if needed
@@ -41,9 +42,9 @@ function create() {
 function createKanbanColumns() {
     // Example: Define and render columns
     const columns = [
-        { name: 'To Do', x: 100, y: 100 },
-        { name: 'In Progress', x: 300, y: 100 },
-        { name: 'Done', x: 500, y: 100 }
+        { name: 'Take Orders Station', x: 100, y: 100 },
+        { name: 'Toppings Station', x: 300, y: 100 },
+        { name: 'Cooking Station', x: 500, y: 100 }
     ];
 
     // Draw the columns as rectangles
@@ -53,7 +54,7 @@ function createKanbanColumns() {
         graphics.fillRect(column.x, column.y, 200, 400); // fill the collumn
 
         // Add column title
-        this.add.text(column.x + 60, column.y - 20, column.name, { fontSize: '19px', fontFamily:'Calibri', fill: '#fff' });
+        this.add.text(column.x + 20, column.y - 20, column.name, { fontSize: '19px', fontFamily:'Calibri', fill: '#fff' });
     });
 
     // Draw dividers between columns
@@ -71,7 +72,9 @@ function createKanbanColumns() {
 
 function createLabels(columns) {
     // Create example labels inside the first column
-    const tasks = ['Task 1', 'Task 2', 'Task 3'];
+    const tasks = ['Order 1', 'Order 2', 'Order 3'];
+    //Remove this if you remove the set 3 tasks above
+    orderNum = 3;
     tasks.forEach((task, index) => {
         const label = this.add.text(
             columns[0].x + 20, 
@@ -119,8 +122,10 @@ function addTaskToFirstColumn() {
     if (existingTasks >= taskLimit) {
         return; // Stop adding new tasks if the task limit is reached
     }
-
-    const taskName = 'Task ' + (existingTasks + 1); // Create task name
+    
+    orderNum++;
+    //const taskName = 'Order ' + (existingTasks + 1); // Create task name
+    const taskName = 'Order ' + (orderNum); // Create task name
 
     const newLabel = this.add.text(
         firstColumn.x + 20,

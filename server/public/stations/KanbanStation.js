@@ -8,6 +8,7 @@
 */
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
+import { makeDraggable } from './kanban/draggable.js';
 
 export default class KanbanStation extends Station {
     constructor() {
@@ -48,6 +49,24 @@ export default class KanbanStation extends Station {
             this.tasks = gameState.kanbanTasks;
             this.updateKanbanDisplay();
         });
+
+        //Add rectangle to the screen. This rectangle can be dragged around if you hold click and move your mouse.
+        //The code to update the rectangle's position when it is dragged is in "draggable.js".
+        const rectangle = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 100, 100, 0xffff00);
+        rectangle.name = 'test' //Can see the name "test" being logged in the log statement in the "destroy" function in draggable.js.
+        makeDraggable(rectangle, true); //true to log.
+        this.add
+            .text(this.scale.width / 2, 550, 'try dragging the rectangle around the scene', {
+                align: 'center',
+                fontSize: '22px',
+                wordWrap: {
+                    width: this.scale.width - 50,
+                },
+            })
+            .setOrigin(0.5);
+            // setTimeout(() => {
+            //   this.scene.restart();
+            // }, 3000)
     }
 
     createBackground() {

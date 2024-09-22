@@ -52,7 +52,8 @@ export default class KanbanStation extends Station {
 
         //Add rectangle to the screen. This rectangle can be dragged around if you hold click and move your mouse.
         //The code to update the rectangle's position when it is dragged is in "draggable.js".
-        const rectangle = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 100, 100, 0xffff00);
+        //Code below from: https://www.youtube.com/watch?v=jWglIBp4usY&ab_channel=ScottWestover
+        const rectangle = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 250, 50, 0xffff00);
         rectangle.name = 'test' //Can see the name "test" being logged in the log statement in the "destroy" function in draggable.js.
         makeDraggable(rectangle, true); //true to log.
         this.add

@@ -4,6 +4,7 @@
 * 
 * TODO: Need a custom amount of columns, and the ability to add or remove them as the game progresses, with a scrollbar.
 * TODO: Each column should be able to have an arbitrary number of rectangles.
+* TODO: Go on Trello to see inspiration for how they've done it.
 */
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class

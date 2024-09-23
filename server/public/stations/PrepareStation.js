@@ -8,11 +8,11 @@ export default class PrepareStation extends Station {
 
     preload() {
         // load tomato paste image
-        this.load.image('tomatoPaste', 'assets/tomato_paste.png');
+        this.load.image('tomatoPaste', 'assets/sauce_bucket.png');
         // load pepperoni image
-        this.load.image('pepperoni', 'assets/pepperoni.png');
+        this.load.image('pepperoni', 'assets/pepperoni_tray.png');
         // load cheese image
-        this.load.image('cheese', 'assets/cheese.png');
+        this.load.image('cheese', 'assets/cheese_block.png');
     }
 
     create() {

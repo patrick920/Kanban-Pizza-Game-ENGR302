@@ -4,17 +4,12 @@
 */
 
 /*
-* Plans for implementing review station functionality:
-* Need to call pizza's info from somewhere to display the image of the finished pizza
-* Add section for notes to be taken on pizza which will be saved somewhere.
-* Could add a ticket class which stores the pizza object, 
-* notes about it, and the stage the pizza is at.
-* Tickets would show up on the kanban board in the section their stage indicates? 
 * Review class will display the pizza, the instructions given to make the pizza 
 * and have two buttons to either remake the pizza or allow it to be served. 
 * Review can't be completed without some notes being taken in the review section. 
 * At the end of the day could display review notes to help demonstrate 
 * what sections went well or didn't.
+* Station should be called from ticket on kanban board. 
 */
 
 import Station from './Station.js';
@@ -23,8 +18,9 @@ import Pizza from './Pizza.js'; // Import the Pizza class
 export default class ReviewStation extends Station {
     
     
-    constructor() {
+    constructor(ticket) {
         super({ key: 'ReviewStation' });
+        this.ticket = ticket; 
     }
 
     preload() {
@@ -50,7 +46,8 @@ export default class ReviewStation extends Station {
 
         //Add button to allow order through - needs functionality
         this.add.text(700, this.game.config.height - 100, 'Serve', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#8fce00' });
-
+            //.setInteractive()
+            //.on('pointerdown', () => ticket.completeTicket());
     }
 
     createBackground() {

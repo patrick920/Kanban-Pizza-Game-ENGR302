@@ -14,6 +14,8 @@ export default class KanbanStation extends Station {
     constructor() {
         super({ key: 'KanbanStation' });
         this.tasks = [];
+        this.tickets = [];
+        this.completedTickets = []; 
     }
 
     preload() {
@@ -98,6 +100,32 @@ export default class KanbanStation extends Station {
             const text = this.add.text(400, 100 + index * 30, `Task ${task.id}: ${task.description} - ${task.status}`, { fontSize: '18px', fill: '#fff' });
             this.taskTexts.push(text);
         });
+    }
+
+    // Adding functionality for tickets 
+    // Add ticket to kanban board
+    addTicket(ticket) {
+        if (ticket instanceof Ticket) {
+            this.tickets.push(ticket);
+        } else {
+            throw new Error('Only Ticket objects can be added.');
+        }
+    }
+
+    // Complete tickets
+    completeTicket(ticket) {
+        const index = this.tickets.indexOf(ticket);
+        if (index > -1) {
+            this.tickets.splice(index, 1); // Remove the ticket if found
+            this.completedTickets.push(ticket);
+        } else {
+            throw new Error('Ticket not found.');
+        }
+    }
+
+    // Get all tickets
+    getTickets() {
+        return this.tickets;
     }
 
     /*

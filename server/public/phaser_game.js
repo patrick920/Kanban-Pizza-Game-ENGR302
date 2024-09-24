@@ -1,17 +1,44 @@
 //Code copied from ChatGPT:
+//Import files using ES6, which is what our project is using:
+// import { OrderStation } from './stations/OrderStation.js';
+// import { CookStation } from './stations/CookStation.js';
+// import { PrepareStation } from './stations/PrepareStation.js';
+//Not using default export so no curly braces:
+import OrderStation from './stations/OrderStation.js';
+import CookStation from './stations/CookStation.js';
+import PrepareStation from './stations/PrepareStation.js';
+import KanbanStation from './stations/KanbanStation.js';
+import ReviewStation from './stations/ReviewStation.js';
+
+//Code copied from ChatGPT:
 // Phaser Game Configuration
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    scene: {
-        preload,
-        create,
-        update
-    }
+    width: 1300,
+    height: 650,
+    // scene: {
+    //     preload,
+    //     create,
+    //     update
+    // },
+    scene: [OrderStation, CookStation, PrepareStation, KanbanStation, ReviewStation]
 };
 
-const game = new Phaser.Game(config);
+class Game extends Phaser.Game {
+    constructor(config) {
+        super(config);
+        
+        // Initialize Socket.IO
+        this.socket = io('http://localhost:3500');
+        
+        // Listen for connection
+        this.socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+    }
+}
+
+const game = new Game(config);
 
 let labels = []; // Array to hold label objects with references to their positions and columns
 let selectedLabel = null; // The label that is being dragged

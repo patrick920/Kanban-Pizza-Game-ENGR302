@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Websockets</title>
+    <title>Phaser Pizza Game</title>
     <link href="style.css" rel="stylesheet">
     <!--I added the Phaser script from the Getting Started page on their website.-->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
@@ -24,7 +24,15 @@
     <ul></ul>
 
 
-    <script defer src="phaser_game.js"></script>
+    <script defer src="phaser_game.js" type="module"></script>
+    <!-- Link game files -->
+    <script defer src="stations/OrderStation.js" type="module"></script>
+    <script defer src="stations/CookStation.js" type="module"></script>
+    <script defer src="stations/PrepareStation.js" type="module"></script>
+    <!--Gabbie's MainGame.js won't be required, and the code there will be combined into phaser_game.js.-->
+    <!--<script src="MainGame.js" type="module"></script>-->
+    <script defer src="stations/Pizza.js" type="module"></script>
+    <script defer src="stations/Station.js" type="module"></script>
 
 </body>
 

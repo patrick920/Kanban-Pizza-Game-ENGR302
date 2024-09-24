@@ -4,15 +4,16 @@ import Pizza from './Pizza.js'; // Import the Pizza class
 export default class PrepareStation extends Station {
     constructor() {
         super({ key: 'PrepareStation' });
+        this.preparedPizzas = [];
     }
 
     preload() {
         // load tomato paste image
-        this.load.image('tomatoPaste', 'assets/tomato_paste.png');
+        this.load.image('tomatoPaste', 'stations/assets/tomato_paste.png');
         // load pepperoni image
-        this.load.image('pepperoni', 'assets/pepperoni.png');
+        this.load.image('pepperoni', 'stations/assets/pepperoni.png');
         // load cheese image
-        this.load.image('cheese', 'assets/cheese.png');
+        this.load.image('cheese', 'stations/assets/cheese.png');
     }
 
     create() {
@@ -32,6 +33,23 @@ export default class PrepareStation extends Station {
 
         // Create the cheese
         this.createCheese();
+
+        // Create prepare button
+        const prepareButton = this.add.text(100, 500, 'Prepare Pizza', { fontSize: '24px', fill: '#fff', backgroundColor: '#28a745' })
+            .setInteractive()
+            .on('pointerdown', () => this.preparePizza());
+
+        // Listen for prepared pizzas updates
+        this.game.socket.on('preparedPizzasUpdate', (preparedPizzas) => {
+            this.preparedPizzas = preparedPizzas;
+            this.updatePreparedPizzasDisplay();
+        });
+
+        // Get initial game state
+        this.game.socket.on('initialGameState', (gameState) => {
+            this.preparedPizzas = gameState.preparedPizzas;
+            this.updatePreparedPizzasDisplay();
+        });
     }
 
     createBackground() {
@@ -185,6 +203,31 @@ export default class PrepareStation extends Station {
         
         // // Set the display size (width, height)
         cheeseImage.setDisplaySize(200, 200);  // Width and height in pixels
+    }
+
+    preparePizza() {
+        const pizza = new Pizza(this, this.game.config.width / 2, this.game.config.height / 2, 'small');
+        // Add toppings based on user interactions
+        const preparedPizza = {
+            id: Date.now(),
+            size: 'small',
+            toppings: ['cheese', 'pepperoni'] // Example toppings
+        };
+        this.game.socket.emit('pizzaPrepared', preparedPizza);
+    }
+
+    updatePreparedPizzasDisplay() {
+        // Clear previous display
+        if (this.preparedTexts) {
+            this.preparedTexts.forEach(text => text.destroy());
+        }
+        this.preparedTexts = [];
+
+        // Display prepared pizzas
+        this.preparedPizzas.forEach((pizza, index) => {
+            const text = this.add.text(600, 100 + index * 30, `Pizza ${pizza.id}: ${pizza.size} with ${pizza.toppings.join(', ')}`, { fontSize: '18px', fill: '#fff' });
+            this.preparedTexts.push(text);
+        });
     }
     
 }

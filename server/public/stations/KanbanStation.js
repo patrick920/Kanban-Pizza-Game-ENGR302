@@ -113,11 +113,13 @@ export default class KanbanStation extends Station {
         console.log("Y_TOP_COLUMN_RECTANGLES = " + Y_TOP_COLUMN_RECTANGLES);
         
         //Some stuff from ChatGPT.
-        const Y_BOTTOM_COLUMN_RECTANGLES = this.scale.height - COLUMN_RECTANGLES_TO_MENU_GAP + Y_MENU_START;
+        const Y_BOTTOM_COLUMN_RECTANGLES = this.scale.height - (COLUMN_RECTANGLES_TO_MENU_GAP + Y_MENU_START);
+        console.log("Y_BOTTOM_COLUMN_RECTANGLES = " + Y_BOTTOM_COLUMN_RECTANGLES);
         //The height of the column rectangles for the Kanban board.
         const COLUMN_RECTANGLE_HEIGHT = Y_BOTTOM_COLUMN_RECTANGLES - Y_TOP_COLUMN_RECTANGLES;
+        console.log("COLUMN_RECTANGLE_HEIGHT = " + COLUMN_RECTANGLE_HEIGHT);
 
-        let current_X_start_pos = 0; //TODO: FIISH THIS!!! //Will increment as you move over.
+        let current_X_start_pos = 0; //TODO: FINISH THIS!!! //Will increment as you move over.
 
         const orderColumnRectangle = this.add.rectangle(20, Y_TOP_COLUMN_RECTANGLES, COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         orderColumnRectangle.setOrigin(0, 0);

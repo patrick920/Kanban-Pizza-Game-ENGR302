@@ -14,7 +14,11 @@ export default class KanbanStation extends Station {
     constructor() {
         super({ key: 'KanbanStation' });
         this.tasks = [];
-        this.tickets = [];
+        this.orderTickets = [];
+        this.prepTickets = [];
+        this.cookTickets = [];
+        this.reviewTickets = [];
+        this.serviceTickets = []; 
         this.completedTickets = []; 
     }
 
@@ -106,15 +110,51 @@ export default class KanbanStation extends Station {
     // Add ticket to kanban board
     addTicket(ticket) {
         if (ticket instanceof Ticket) {
-            this.tickets.push(ticket);
+            this.orderTickets.push(ticket);
         } else {
             throw new Error('Only Ticket objects can be added.');
         }
+   }
+   
+   // Moves ticket to the next stations array
+   nextStation(ticket) {
+    if (this.orderTickets.includes(ticket)) {
+        // Move from Order to Prep
+        this.orderTickets.splice(this.orderTickets.indexOf(ticket), 1);
+        this.prepTickets.push(ticket);
+        // ticket.getPizza().nextStation(); 
+    } else if (this.prepTickets.includes(ticket)) {
+        // Move from Prep to Cook
+        this.prepTickets.splice(this.prepTickets.indexOf(ticket), 1);
+        this.cookTickets.push(ticket);
+        // ticket.getPizza().nextStation();  
+    } else if (this.cookTickets.includes(ticket)) {
+        // Move from Cook to Review
+        this.cookTickets.splice(this.cookTickets.indexOf(ticket), 1);
+        this.reviewTickets.push(ticket);
+        // ticket.getPizza().nextStation(); 
+    } else if (this.reviewTickets.includes(ticket)) {
+        // Move from Review to Service
+        this.reviewTickets.splice(this.reviewTickets.indexOf(ticket), 1);
+        this.serviceTickets.push(ticket);
+        // ticket.getPizza().nextStation(); 
+    } else if (this.serviceTickets.includes(ticket)) {
+        // Move from Service to Completed
+        this.serviceTickets.splice(this.serviceTickets.indexOf(ticket), 1);
+        this.completedTickets.push(ticket);
+        // ticket.getPizza().nextStation(); 
+    } else {
+        // Ticket not found in any array
+        throw new Error('Ticket not found in any station.');
     }
 
-    // Complete tickets
+    // Update the display after moving the ticket
+    this.updateKanbanDisplay();
+}
+
+    // Complete ticket
     completeTicket(ticket) {
-        const index = this.tickets.indexOf(ticket);
+        const index = this.serviceTickets.indexOf(ticket);
         if (index > -1) {
             this.tickets.splice(index, 1); // Remove the ticket if found
             this.completedTickets.push(ticket);
@@ -123,23 +163,4 @@ export default class KanbanStation extends Station {
         }
     }
 
-    // Get all tickets
-    getTickets() {
-        return this.tickets;
-    }
-
-    /*
-    createPizzaBaseButton() {
-        const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.createPizza('small');
-            });
-        const baseLargeButton = this.add.text(50, 250, 'Large Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.createPizza('large');
-            });
-    }
-    */
 }

@@ -22,10 +22,10 @@ const COLUMN_RECTANGLES_TO_MENU_GAP = 10;
 //Y position for the start of the buttons for the menu at the bottom of the screen.
 const Y_MENU_START = 100;
 //The gap between each of the Kanban board columns.
-const GAP_BETWEEN_COLUMN_RECTANGLES = 15;
-//The additional gap at the left and right sides of the screen. This is because 1300 / 6 makes 216.66,
-//which is not an even number, so need an additional gap on each side.
-const ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN = 5;
+const GAP_BETWEEN_COLUMN_RECTANGLES = 14;
+//The additional gap at the left and right sides of the screen, as when you divide an odd number is produced so must
+//balance things out.
+const ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN = 1;
 
 export default class KanbanStation extends Station {
     constructor() {
@@ -82,25 +82,6 @@ export default class KanbanStation extends Station {
             this.tasks = gameState.kanbanTasks;
             this.updateKanbanDisplay();
         });
-
-        //Add rectangle to the screen. This rectangle can be dragged around if you hold click and move your mouse.
-        //The code to update the rectangle's position when it is dragged is in "draggable.js".
-        //Code below from: https://www.youtube.com/watch?v=jWglIBp4usY&ab_channel=ScottWestover
-        const rectangle = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 250, 50, 0xffff00);
-        rectangle.name = 'test' //Can see the name "test" being logged in the log statement in the "destroy" function in draggable.js.
-        makeDraggable(rectangle, true); //true to log.
-        this.add
-            .text(this.scale.width / 2, 550, 'try dragging the rectangle around the scene', {
-                align: 'center',
-                fontSize: '22px',
-                wordWrap: {
-                    width: this.scale.width - 50,
-                },
-            })
-            .setOrigin(0.5);
-            // setTimeout(() => {
-            //   this.scene.restart();
-            // }, 3000)
         
         //Add the 6 rectangles or other objects to represent the columns on the Kanban board.
         //Source: https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.GameObjects.GameObjectFactory-rectangle
@@ -129,36 +110,42 @@ export default class KanbanStation extends Station {
             currentXColumnRectangleStartPos += GAP_BETWEEN_COLUMN_RECTANGLES + COLUMN_RECTANGLE_WIDTH;
         }
 
+        console.log("Before drawing 1st column, currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const orderColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         orderColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
+        console.log("Before drawing 2nd column (prep), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const prepColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         prepColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
+        console.log("Before drawing 3rd column (cook), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const cookColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         cookColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
+        console.log("Before drawing 4th column (review), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const reviewColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         reviewColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
+        console.log("Before drawing 5th column (service), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const serviceColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         serviceColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
+        console.log("Before drawing last (6th) column (completed), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const completedColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
@@ -176,6 +163,28 @@ export default class KanbanStation extends Station {
 
         //From ChatGPT:
         //To create labels, use the "Container" object.
+
+        //-----------------------------------------------------------
+        //Test object only.
+        //-----------------------------------------------------------
+        //Add rectangle to the screen. This rectangle can be dragged around if you hold click and move your mouse.
+        //The code to update the rectangle's position when it is dragged is in "draggable.js".
+        //Code below from: https://www.youtube.com/watch?v=jWglIBp4usY&ab_channel=ScottWestover
+        const rectangle = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 250, 50, 0xffff00);
+        rectangle.name = 'test' //Can see the name "test" being logged in the log statement in the "destroy" function in draggable.js.
+        makeDraggable(rectangle, true); //true to log.
+        this.add
+            .text(this.scale.width / 2, 550, 'try dragging the rectangle around the scene', {
+                align: 'center',
+                fontSize: '22px',
+                wordWrap: {
+                    width: this.scale.width - 50,
+                },
+            })
+            .setOrigin(0.5);
+            // setTimeout(() => {
+            //   this.scene.restart();
+            // }, 3000)
     }
 
     createBackground() {

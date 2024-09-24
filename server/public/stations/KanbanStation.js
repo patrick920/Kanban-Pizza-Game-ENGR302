@@ -10,6 +10,18 @@ import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
 import { makeDraggable } from './kanban/draggable.js';
 
+//Source: https://www.w3schools.com/js/js_const.asp
+const TOP_TO_TITLE_GAP = 10;
+const TITLE_TEXT_HEIGHT = 40;
+const TITLE_TO_COLUMN_TITLES_HEIGHT = 10;
+const COLUMN_TITLES_TEXT_HEIGHT = 15;
+//The width of the Kanban board column.
+const COLUMN_RECTANGLE_WIDTH = 200;
+//The gap between the Kanban board column and the menu at the bottom of the screen.
+const COLUMN_RECTANGLES_TO_MENU_GAP = 10;
+//Y position for the start of the buttons for the menu at the bottom of the screen.
+const Y_MENU_START = 100;
+
 export default class KanbanStation extends Station {
     constructor() {
         super({ key: 'KanbanStation' });
@@ -22,6 +34,8 @@ export default class KanbanStation extends Station {
         this.completedTickets = []; 
     }
 
+    //const TOP_TO_TITLE_GAP = 10;
+
     preload() {
         // // load tomato paste image
         // this.load.image('tomatoPaste', 'stations/assets/tomato_paste.png');
@@ -31,7 +45,15 @@ export default class KanbanStation extends Station {
         this.createBackground();
 
         // Game logic here
-        this.add.text(100, 100, 'Kanban Board', { fontSize: '32px', fontFamily: 'Calibri', fill: '#fff' });
+        //Changed from 100, 100 to 800, 100
+        //Source: https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.GameObjects.GameObjectFactory-text
+        //Source: https://newdocs.phaser.io/docs/3.80.0/Phaser.Types.GameObjects.Text.TextStyle
+        //Some code from ChatGPT:
+        //650 as this is the middle.
+        const titleText = this.add.text(650, TOP_TO_TITLE_GAP, 'Kanban Board', { fontSize: '40px', fontFamily: 'Calibri', fill: '#fff' });
+
+         //Set the X origin to the center of the text. This makes it easier to centre it. Keep the Y origin to the top.
+        titleText.setOrigin(0.5, 0);
 
         // Navigation buttons (from Station.js)
         this.createNavigationTabs();
@@ -74,6 +96,36 @@ export default class KanbanStation extends Station {
             // setTimeout(() => {
             //   this.scene.restart();
             // }, 3000)
+        
+        //Add the 6 rectangles or other objects to represent the columns on the Kanban board.
+        //Source: https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.GameObjects.GameObjectFactory-rectangle
+        // this.orderTickets = [];
+        // this.prepTickets = [];
+        // this.cookTickets = [];
+        // this.reviewTickets = [];
+        // this.serviceTickets = []; 
+        // this.completedTickets = []; 
+        //rectangle([x], [y], [width], [height], [fillColor], [fillAlpha])
+        //TODO: Height should be x top minus x bottom.
+
+        //The Y position for the TOP of the Kanban board column rectangle.
+        const Y_TOP_COLUMN_RECTANGLES = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT + COLUMN_TITLES_TEXT_HEIGHT;
+        console.log("Y_TOP_COLUMN_RECTANGLES = " + Y_TOP_COLUMN_RECTANGLES);
+        
+        //Some stuff from ChatGPT.
+        const Y_BOTTOM_COLUMN_RECTANGLES = this.scale.height - COLUMN_RECTANGLES_TO_MENU_GAP + Y_MENU_START;
+        //The height of the column rectangles for the Kanban board.
+        const COLUMN_RECTANGLE_HEIGHT = Y_BOTTOM_COLUMN_RECTANGLES - Y_TOP_COLUMN_RECTANGLES;
+
+        let current_X_start_pos = 0; //TODO: FIISH THIS!!! //Will increment as you move over.
+
+        const orderColumnRectangle = this.add.rectangle(20, Y_TOP_COLUMN_RECTANGLES, COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+        orderColumnRectangle.setOrigin(0, 0);
+
+        //cureentXStartPos += ___ + ___;
+
+        //From ChatGPT:
+        //To create labels, use the "Container" object.
     }
 
     createBackground() {

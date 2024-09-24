@@ -21,6 +21,11 @@ const COLUMN_RECTANGLE_WIDTH = 200;
 const COLUMN_RECTANGLES_TO_MENU_GAP = 10;
 //Y position for the start of the buttons for the menu at the bottom of the screen.
 const Y_MENU_START = 100;
+//The gap between each of the Kanban board columns.
+const GAP_BETWEEN_COLUMN_RECTANGLES = 15;
+//The additional gap at the left and right sides of the screen. This is because 1300 / 6 makes 216.66,
+//which is not an even number, so need an additional gap on each side.
+const ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN = 5;
 
 export default class KanbanStation extends Station {
     constructor() {
@@ -99,12 +104,6 @@ export default class KanbanStation extends Station {
         
         //Add the 6 rectangles or other objects to represent the columns on the Kanban board.
         //Source: https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.GameObjects.GameObjectFactory-rectangle
-        // this.orderTickets = [];
-        // this.prepTickets = [];
-        // this.cookTickets = [];
-        // this.reviewTickets = [];
-        // this.serviceTickets = []; 
-        // this.completedTickets = []; 
         //rectangle([x], [y], [width], [height], [fillColor], [fillAlpha])
         //TODO: Height should be x top minus x bottom.
 
@@ -119,10 +118,59 @@ export default class KanbanStation extends Station {
         const COLUMN_RECTANGLE_HEIGHT = Y_BOTTOM_COLUMN_RECTANGLES - Y_TOP_COLUMN_RECTANGLES;
         console.log("COLUMN_RECTANGLE_HEIGHT = " + COLUMN_RECTANGLE_HEIGHT);
 
-        let current_X_start_pos = 0; //TODO: FINISH THIS!!! //Will increment as you move over.
+        //This variable will be incremented as I draw each of the rectangles for the columns on the Kanban board.
+        //Set it at the initial position for the first rectangle.
+        let currentXColumnRectangleStartPos = GAP_BETWEEN_COLUMN_RECTANGLES + ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN;
 
-        const orderColumnRectangle = this.add.rectangle(20, Y_TOP_COLUMN_RECTANGLES, COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+        /**
+         * Increment the position to start drawing each new column rectangle in the Kanban board.
+         */
+        function increaseCurrentXColumnRectangleStartPos(){
+            currentXColumnRectangleStartPos += GAP_BETWEEN_COLUMN_RECTANGLES + COLUMN_RECTANGLE_WIDTH;
+        }
+
+        const orderColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+        //Set the origin point which is used to set the X and Y positions to the top left of the object.
         orderColumnRectangle.setOrigin(0, 0);
+        increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
+
+        const prepColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+        //Set the origin point which is used to set the X and Y positions to the top left of the object.
+        prepColumnRectangle.setOrigin(0, 0);
+        increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
+
+        const cookColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+        //Set the origin point which is used to set the X and Y positions to the top left of the object.
+        cookColumnRectangle.setOrigin(0, 0);
+        increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
+
+        const reviewColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+        //Set the origin point which is used to set the X and Y positions to the top left of the object.
+        reviewColumnRectangle.setOrigin(0, 0);
+        increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
+
+        const serviceColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+        //Set the origin point which is used to set the X and Y positions to the top left of the object.
+        serviceColumnRectangle.setOrigin(0, 0);
+        increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
+
+        const completedColumnRectangle = this.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+        //Set the origin point which is used to set the X and Y positions to the top left of the object.
+        completedColumnRectangle.setOrigin(0, 0);
+        increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
+
+        // this.orderTickets = [];
+        // this.prepTickets = [];
+        // this.cookTickets = [];
+        // this.reviewTickets = [];
+        // this.serviceTickets = []; 
+        // this.completedTickets = []; 
 
         //cureentXStartPos += ___ + ___;
 

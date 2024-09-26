@@ -1,56 +1,75 @@
 export default class Pizza {
     toppings = []; // Array to store toppings
-    x;
-    y;
-    radius;
-    circle;
+    base;
+    sauce;
+    filledSauceGraphics;
     scene;
 
     constructor(scene, x, y, size) {
         this.scene = scene;
         this.x = x;
         this.y = y;
-        
-        // Define the radius based on size
+
+        // Define the size of the pizza base based on the size parameter
+        let scale;
         if (size === 'small') {
-            this.radius = 150;
+            scale = 0.5;  // Small size scale
         } else if (size === 'large') {
-            this.radius = 200;
+            scale = 0.75;  // Large size scale
         } else {
             throw new Error('Invalid pizza size');
         }
 
-        // Create the pizza base
-        this.circle = this.scene.add.graphics();
-        this.circle.fillStyle(0xffff00, 1); // Yellow color for pizza base
-        this.circle.fillCircle(this.x, this.y, this.radius);
+        // Add the pizza base image
+        this.base = this.scene.add.image(this.x, this.y, 'pizzaBase').setScale(scale);
 
-        // Create a graphics object for the tomato paste (if needed later)
-        this.tomatoPaste = this.scene.add.graphics();
+        // Add the sauce image
+        this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce').setScale(scale*3);
+
+        // Enable input for the sauce image
+        this.sauce.setInteractive();
+
+        // Create a graphics object to act as the mask
+        this.filledSauceGraphics = this.scene.add.graphics();
+
+        // Listen for mouse movements to fill in the sauce
+        this.scene.input.on('pointermove', (pointer) => {
+            // Check if the pointer is over the sauce
+            if (this.sauce.getBounds().contains(pointer.x, pointer.y)) {
+                this.fillSauce(pointer.x - this.x, pointer.y - this.y); // Fill the sauce at the relative mouse position
+            }
+        });
     }
 
-    // Add the tomato paste to the pizza
-    addTomatoPaste() {
-        // Clear any existing tomato paste
-        this.tomatoPaste.clear();
-        
-        // Draw the tomato paste on top of the pizza
-        this.tomatoPaste.fillStyle(0xff0000, 1); // Red color for tomato paste
-        this.tomatoPaste.fillCircle(this.x, this.y, this.radius * 0.8); // Slightly smaller than the pizza base
+    fillSauce(mouseX, mouseY) {
+        // Clear previous graphics
+        this.filledSauceGraphics.clear();
+
+        // Define the radius of the reveal area
+        const radius = 20;
+
+        // Draw a filled circle at the mouse position
+        this.filledSauceGraphics.fillStyle(0xffffff); // White color for the reveal (or use any color if needed)
+        this.filledSauceGraphics.fillCircle(mouseX, mouseY, radius); // Fill circle at mouse position
+
+        // Create a mask to reveal the sauce
+        const maskTexture = this.filledSauceGraphics.generateTexture('maskTexture', radius * 2, radius * 2);
+        const mask = this.scene.make.graphics({ x: 0, y: 0 });
+        mask.fillStyle(0xffffff);
+        mask.fillCircle(mouseX, mouseY, radius);
+
+        // Set the mask to the pizzaSauce sprite
+        this.sauce.setMask(mask.createGeometryMask());
+
+        // Clean up the graphics object after creating the mask
+        this.filledSauceGraphics.clear();
     }
 
-    // Add a topping to the pizza
-    addTopping(topping, xOffset, yOffset) {
-        // Position the topping relative to the pizza's x and y coordinates
-        const toppingX = this.x + xOffset;
-        const toppingY = this.y + yOffset;
-
-        // Create the topping graphic (this is an example, you can change the appearance)
-        const toppingGraphic = this.scene.add.graphics();
-        toppingGraphic.fillStyle(0x530000); // Red for pepperoni or other toppings
-        toppingGraphic.fillCircle(toppingX, toppingY, 20); // Topping size
-
-        // Add the topping to the array to keep track of it
-        this.toppings.push(toppingGraphic);
+    addTopping(toppingKey) {
+        // Add a topping at a random position within the pizza
+        const randomX = Phaser.Math.Between(this.x - this.base.displayWidth / 2, this.x + this.base.displayWidth / 2);
+        const randomY = Phaser.Math.Between(this.y - this.base.displayHeight / 2, this.y + this.base.displayHeight / 2);
+        const topping = this.scene.add.image(randomX, randomY, toppingKey).setScale(0.3);
+        this.toppings.push(topping);
     }
 }

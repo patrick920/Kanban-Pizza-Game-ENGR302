@@ -14,6 +14,10 @@ export default class PrepareStation extends Station {
         this.load.image('pepperoni', 'stations/assets/pepperoni_tray.png');
         // load cheese image
         this.load.image('cheese', 'stations/assets/cheese_block.png');
+        // Load the pizza base image and toppings images
+        this.load.image('pizzaBase', 'stations/assets/pizza_base_raw.png');
+        this.load.image('pizzaSauce', 'stations/assets/sauce.png');
+        this.load.image('pepperoni', 'stations/assets/pepperoni.png');
     }
 
     create() {
@@ -121,7 +125,7 @@ export default class PrepareStation extends Station {
         // Add event listener for mouse dragging to draw red as long as the red circle is active
         this.input.on('pointermove', (pointer) => {
             if (this.isDrawing && this.isRedCircleActive) {
-                this.drawRedCircle(pointer.x, pointer.y);
+                this.pizza.sauce.setAlpha(1); // Make the sauce visible as you draw
             }
         });
     
@@ -130,7 +134,7 @@ export default class PrepareStation extends Station {
             this.isDrawing = false;
         });
     }
-    
+
     createRedCircle(x, y) {
         // If a red circle already exists, don't create another one
         if (this.redCircle) return;
@@ -142,14 +146,6 @@ export default class PrepareStation extends Station {
         this.redCircle.setPosition(x, y); // Set the initial position
     }
     
-    drawRedCircle(x, y) {
-        // Create a new red circle where the mouse is dragged
-        const redCircle = this.add.graphics();
-        redCircle.fillStyle(0xff0000); // Red color
-        redCircle.fillCircle(x, y, 40); // circle for drawing
-    }
-    
-    // Function to remove the red circle when another object is clicked
     removeRedCircle() {
         if (this.redCircle) {
             this.redCircle.destroy(); // Destroy the red circle graphic
@@ -157,10 +153,7 @@ export default class PrepareStation extends Station {
         }
         this.isRedCircleActive = false;  // Deactivate the red circle
     }
-    
 
-    // when clicked single pepperoni will appear when dragged, pepperoni will
-    // follow the mouse when droped, the pepperoni will remain where it is
     createPepperoni() {
         const pepperoniImage = this.add.image(1100, 400, 'pepperoni')
             .setOrigin(0.5, 0.5)

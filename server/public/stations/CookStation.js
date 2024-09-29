@@ -32,6 +32,7 @@ export default class CookStation extends Station {
             this.updateCookedPizzasDisplay();
         });
     }
+    
     cookPizza() {
         const cookedPizza = {
             id: Date.now(),

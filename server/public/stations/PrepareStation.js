@@ -2,6 +2,9 @@ import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
 
 export default class PrepareStation extends Station {
+
+    tomatoPasteOn = false;
+
     constructor() {
         super({ key: 'PrepareStation' });
         this.preparedPizzas = [];
@@ -100,7 +103,9 @@ export default class PrepareStation extends Station {
     
         // Add event listener for click to toggle the red circle
         tomatoPasteImage.on('pointerdown', (pointer) => {
+            this.toggleTomatoPaste();
             if (this.isRedCircleActive) {
+                //console.log(this.tomatoPasteOn);
                 this.removeRedCircle();  // Remove the red circle if active
             } else {
                 this.isRedCircleActive = true;  // Activate red circle following
@@ -121,18 +126,10 @@ export default class PrepareStation extends Station {
                 this.isDrawing = true;
             }
         });
-    
-        // Add event listener for mouse dragging to draw red as long as the red circle is active
-        this.input.on('pointermove', (pointer) => {
-            if (this.isDrawing && this.isRedCircleActive) {
-                this.pizza.sauce.setAlpha(1); // Make the sauce visible as you draw
-            }
-        });
-    
-        // Add event listener to stop drawing when the mouse is released
-        this.input.on('pointerup', () => {
-            this.isDrawing = false;
-        });
+    }
+
+    toggleTomatoPaste() {
+        this.tomatoPasteOn = !this.tomatoPasteOn; // Toggle the value of tomatoPasteOn
     }
 
     createRedCircle(x, y) {

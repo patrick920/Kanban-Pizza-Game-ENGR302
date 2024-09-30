@@ -9,6 +9,7 @@ export default class PrepareStation extends Station {
 
     tomatoPasteOn = false; // determines whether or not pizza sauce can be applied
     pizza = null;
+    currentPepperoniSlice;
 
     /**
      * Construct the PrepareStation
@@ -129,7 +130,6 @@ export default class PrepareStation extends Station {
         tomatoPasteImage.on('pointerdown', (pointer) => {
             this.toggleTomatoPaste();
             if (this.isRedCircleActive) {
-                //console.log(this.tomatoPasteOn);
                 this.removeRedCircle();  // Remove the red circle if active
             } else {
                 this.isRedCircleActive = true;  // Activate red circle following
@@ -227,48 +227,49 @@ export default class PrepareStation extends Station {
         //     this.isDragging = false;
         //     currentPepperoniSlice = null; // Release the reference to the current slice
         // });
-        // Add event listener for clicking to create a new pepperoni slice
         
         // Add event listener for clicking to create a new pepperoni slice
         pepperoniImage.on('pointerdown', (pointer) => {
-            this.isDragging = true;
-            // Create a new pepperoni slice image at the current mouse position
-            const currentPepperoniSlice = this.add.image(pointer.x, pointer.y, 'pepperoniSlice')
-                .setDisplaySize(100, 100) // Set the size of the pepperoni slice
-                .setInteractive(); // Make it interactive
+            if (!this.tomatoPasteOn) {
+                this.isDragging = true;
 
-            // Immediately make the pepperoni slice draggable
-            this.input.setDraggable(currentPepperoniSlice);
-
-            // Add drag event listeners
-            currentPepperoniSlice.on('drag', (pointer, dragX, dragY) => {
-            //currentPepperoniSlice.on('pointermove', (pointer) => {
-                currentPepperoniSlice.x = dragX; // Update position based on dragging
-                currentPepperoniSlice.y = dragY;
-            });
-
-            // Add event listener to stop moving the pepperoni slice on mouse release
-            this.input.on('dragend', (pointer) => {
-                // Check if the pepperoni slice is on the pizza
-                if (this.pizza.isOnPizza(currentPepperoniSlice) && this.pizza != null) {
-                    // Make the pepperoni slice undraggable
-                    this.input.setDraggable(currentPepperoniSlice, false);
-                    currentPepperoniSlice.setInteractive(false); // Optionally, make it non-interactive
-                } else {
-                    // If not on pizza, destroy or reset the pepperoni slice
-                    currentPepperoniSlice.destroy(); // Or handle as needed
+                // Check if there's an existing pepperoni slice that hasn't been placed on the pizza
+                if (this.currentPepperoniSlice) {
+                    this.currentPepperoniSlice.destroy(); // Destroy the old slice if it exists
+                    this.currentPepperoniSlice = null; // Reset reference to ensure cleanup
                 }
-            });
 
-            // currentPepperoniSlice.on('dragend', (pointer) => {
-            //     // Log the position where the pepperoni slice is dropped
-            //     console.log('Pepperoni slice placed at:', currentPepperoniSlice.x, currentPepperoniSlice.y);
+                // Create a new pepperoni slice image at the current mouse position
+                this.currentPepperoniSlice = this.add.image(pointer.x, pointer.y, 'pepperoniSlice')
+                    .setDisplaySize(100, 100) // Set the size of the pepperoni slice
+                    .setInteractive(); // Make it interactive
 
-            //     // Optional: Disable dragging if you want the slice to be fixed after placing
-            //     currentPepperoniSlice.setInteractive(false); // Disable further interaction
-            //     this.input.setDraggable(currentPepperoniSlice, false); // Disable dragging
-            // });
-        });   
+                // Immediately make the pepperoni slice draggable
+                this.input.setDraggable(this.currentPepperoniSlice);
+
+                // Add drag event listeners specific to this pepperoni slice
+                this.currentPepperoniSlice.on('drag', (pointer, dragX, dragY) => {
+                    this.currentPepperoniSlice.x = dragX; // Update position based on dragging
+                    this.currentPepperoniSlice.y = dragY;
+                });
+
+                // Add event listener to stop moving the pepperoni slice on mouse release (for this specific slice)
+                this.currentPepperoniSlice.on('dragend', (pointer) => {
+                    if (this.pizza != null && this.pizza.isOnPizza(this.currentPepperoniSlice)) {
+                        // If a pizza exists and the slice is on it, add the topping and make it undraggable
+                        this.pizza.addTopping(this.currentPepperoniSlice); // Add topping to pizza
+                        this.input.setDraggable(this.currentPepperoniSlice, false); // Make it undraggable
+                        this.currentPepperoniSlice.setInteractive(false); // Optionally, make it non-interactive
+                    } else {
+                        // If there's no pizza or the slice is not on it, destroy the pepperoni slice
+                        this.currentPepperoniSlice.destroy(); // Remove the slice
+                    }
+
+                    // Reset the reference to the current pepperoni slice
+                    this.currentPepperoniSlice = null;
+                });
+            }
+        });
     }
 
     // // Function to add topping to the pizza (implement your logic here)

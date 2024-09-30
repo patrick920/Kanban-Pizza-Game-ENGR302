@@ -53,12 +53,11 @@ export default class Pizza {
      */
     fillSauce(mouseX, mouseY) {
         // Check if sauce should be added (e.g., check condition from a station class)
-        if (this.scene.tomatoPasteOn) {
-            if (this.sauce === null) {
-                // Add the sauce image if it doesn't exist yet
-                this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce').setScale(this.scale * 3);
-                this.scene.removeRedCircle();
-            }
+        if (this.scene.tomatoPasteOn && this.sauce === null) {
+            // Add the sauce image if it doesn't exist yet
+            this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce').setScale(this.scale * 3);
+            this.scene.removeRedCircle();
+            this.scene.toggleTomatoPaste();
             // Optionally, you can reveal only a portion of the sauce based on mouse position
             // Here, you can use a masking technique to reveal sauce in areas near mouseX and mouseY
             // More sophisticated methods could follow here
@@ -84,13 +83,13 @@ export default class Pizza {
      * Add a topping to the pizza
      * @param {*} toppingKey 
      */
-    addTopping(toppingKey) {
+    addTopping(topping) {
         // Add a topping at a random position within the pizza
-        const randomX = Phaser.Math.Between(this.x - this.base.displayWidth / 2, this.x + this.base.displayWidth / 2);
-        const randomY = Phaser.Math.Between(this.y - this.base.displayHeight / 2, this.y + this.base.displayHeight / 2);
-        const topping = this.scene.add.image(randomX, randomY, toppingKey).setScale(0.3);
+        // const randomX = Phaser.Math.Between(this.x - this.base.displayWidth / 2, this.x + this.base.displayWidth / 2);
+        // const randomY = Phaser.Math.Between(this.y - this.base.displayHeight / 2, this.y + this.base.displayHeight / 2);
+        // const topping = this.scene.add.image(randomX, randomY, toppingKey).setScale(0.3);
         this.toppings.push(topping);
-        console.log(toppings);
+        console.log(this.toppings);
     }
 }
 

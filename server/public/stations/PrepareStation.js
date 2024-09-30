@@ -8,8 +8,9 @@ import Pizza from './Pizza.js'; // Import the Pizza class
 export default class PrepareStation extends Station {
 
     tomatoPasteOn = false; // determines whether or not pizza sauce can be applied
+    cheeseOn = false;
     pizza = null;
-    currentPepperoniSlice;
+    isCircleActive = false;
 
     /**
      * Construct the PrepareStation
@@ -17,6 +18,7 @@ export default class PrepareStation extends Station {
     constructor() {
         super({ key: 'PrepareStation' });
         this.preparedPizzas = [];
+        this.pizzaBaseButtons = []; // Array to hold button references
     }
 
     /**
@@ -33,6 +35,8 @@ export default class PrepareStation extends Station {
         this.load.image('pizzaBase', 'stations/assets/pizza_base_raw.png');
         this.load.image('pizzaSauce', 'stations/assets/sauce.png');
         this.load.image('pepperoniSlice', 'stations/assets/pepperoni_slice.png');
+        this.load.image('mushroomSlice', 'stations/assets/mushroom_slice.png');
+        this.load.image('cheese', 'stations/assets/cheese.png'); // needs to be changed to other sprite
     }
 
     /**
@@ -42,7 +46,7 @@ export default class PrepareStation extends Station {
         this.createBackground();
 
         // Game logic here
-        this.add.text(100, 100, 'Prepare your pizza!', { fontSize: '32px', fontFamily: 'Calibri', fill: '#fff' });
+        this.add.text((this.game.config.width/2)-50, 50, 'Make Your Pizza!', { fontSize: '32px', fontFamily: 'Calibri', fill: '#fff' });
 
         // Navigation buttons (from Station.js)
         this.createNavigationTabs();
@@ -50,16 +54,22 @@ export default class PrepareStation extends Station {
         // Create tomato paste image
         this.createTomatoPasteBottle();
 
+        // Create the cheese
+        this.createCheese();
+
         // Create the pepperoni
         this.createPepperoni();
 
-        // Create the cheese
-        this.createCheese();
+        // Create the mushroom
+        this.createMushroom();
+
+        // Display the current ticket
+        this.currentTicket();
 
         // Create prepare button
         const prepareButton = this.add.text(100, 500, 'Prepare Pizza', { fontSize: '24px', fill: '#fff', backgroundColor: '#28a745' })
             .setInteractive()
-            .on('pointerdown', () => this.preparePizza());
+            .on('pointerdown', () => this.createPizza());
 
         // Listen for prepared pizzas updates
         this.game.socket.on('preparedPizzasUpdate', (preparedPizzas) => {
@@ -80,23 +90,90 @@ export default class PrepareStation extends Station {
     createBackground() {
         // Set a specific background color for the PrepareStation
         this.cameras.main.setBackgroundColor('#996600');
-        this.createPizzaBaseButton(); // Setup pizza base buttons
+        this.createPizzaBaseButtons(); // Setup pizza base buttons
+    }
+
+    /**
+     * Create a button with a specified label and position
+     * @param {string} label - The text label for the button
+     * @param {number} x - The x position for the button
+     * @param {number} y - The y position for the button
+     * @param {function} onClick - The callback function to execute on click
+     */
+    createButton(label, x, y, onClick) {
+        // Create a rounded rectangle shape for the button background
+        const buttonBackground = this.add.graphics()
+            .fillStyle(0xffd11a, 1) // Set color to a light yellow
+            .fillRoundedRect(x, y, 200, 50, 10); // Width: 200, Height: 50, Radius: 10
+
+        // Create the button label
+        const buttonText = this.add.text(x + 100, y + 15, label, {
+            fontSize: '20px',
+            fill: '#000',
+            fontFamily: 'Calibri',
+            align: 'center'
+        })
+        .setOrigin(0.5); // Center the text within the button
+
+        // Set the button background and text as interactive
+        buttonBackground.setInteractive({ useHandCursor: true })
+            .on('pointerdown', onClick)
+            .on('pointerover', () => buttonBackground.setFillStyle(0xffbb33)) // Darker color on hover
+            .on('pointerout', () => buttonBackground.setFillStyle(0xffd11a)); // Reset color on hover out
+
+        // Store button references
+        this.pizzaBaseButtons.push(buttonBackground, buttonText);
     }
 
     /**
      * Create buttons for pizza base size options
      */
-    createPizzaBaseButton() {
-        const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.createPizza('small');
-            });
-        const baseLargeButton = this.add.text(50, 250, 'Large Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.createPizza('large');
-            });
+    createPizzaBaseButtons() {
+        const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { 
+            fontSize: '20px', 
+            fill: '#000', 
+            fontFamily: 'Calibri', 
+            backgroundColor: '#ffd11a',
+            align: 'center'
+        }).setInteractive().on('pointerdown', () => this.createPizza('small'))
+        
+        
+        const baseLargeButton = this.add.text(50, 250, 'Large Pizza Base', { 
+            fontSize: '20px', 
+            fill: '#000', 
+            fontFamily: 'Calibri', 
+            backgroundColor: '#ffd11a',
+            align: 'center'
+        }).setInteractive().on('pointerdown', () => { this.createPizza('large');
+
+        });
+        // const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
+        //     .setInteractive()
+        //     .on('pointerdown', () => {
+        //         this.createPizza('small');
+        //     });
+        
+        // const baseLargeButton = this.add.text(50, 250, 'Large Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
+        //     .setInteractive()
+        //     .on('pointerdown', () => {
+        //         this.createPizza('large');
+        //     });
+
+        // Store button references in the array
+        this.pizzaBaseButtons.push(baseSmallButton, baseLargeButton);
+    }
+
+
+
+    /**
+     * Remove pizza base buttons
+     */
+    removePizzaBaseButtons() {
+        // Iterate over the button references and destroy each one
+        this.pizzaBaseButtons.forEach(button => {
+            button.destroy(); // Destroy the button
+        });
+        this.pizzaBaseButtons = []; // Clear the references
     }
 
     /**
@@ -104,201 +181,28 @@ export default class PrepareStation extends Station {
      * @param {*} size 
      */
     createPizza(size) {
-        const pizzaX = this.game.config.width / 2;
+        this.removePizzaBaseButtons(); // remove pizza base after after choosing a size
+
+        const pizzaX = this.game.config.width / 4;
         const pizzaY = this.game.config.height / 2;
 
         // Create and display pizza
         this.pizza = new Pizza(this, pizzaX, pizzaY, size);
-        // Optionally, you can add additional actions on the pizza object
+        
+        // // something to hold information about the pizza object
+        // // ASK HANNING ABOUT THIS TOMORROW, HOW DOES HE WANT IT TO BE USED?
+        // const preparedPizza = {
+        //     id: Date.now(),
+        //     size: 'small',
+        //     toppings: ['cheese', 'pepperoni'] // Example toppings
+        // };
+        // this.game.socket.emit('pizzaPrepared', preparedPizza);
+        // if i use this suddenly toppings stop working
     }
 
     /**
-     * Create the tomato paste bottle and set to interactive
-     * When the bottle is clicked, a red circle will appear and
-     * follow the player's mouse. If the pizza base if clicked during this
-     * state the pizza sauce will appear on to[]
+     * ASK HANNING ABOUT THIS TOMORROW
      */
-    createTomatoPasteBottle() {
-        const tomatoPasteImage = this.add.image(1100, 100, 'tomatoPaste')
-            .setOrigin(0.5, 0.5)
-            .setInteractive();
-        
-        // Set the display size (width, height)
-        tomatoPasteImage.setDisplaySize(300, 300);  // Width and height in pixels
-    
-        // Add event listener for click to toggle the red circle
-        tomatoPasteImage.on('pointerdown', (pointer) => {
-            this.toggleTomatoPaste();
-            if (this.isRedCircleActive) {
-                this.removeRedCircle();  // Remove the red circle if active
-            } else {
-                this.isRedCircleActive = true;  // Activate red circle following
-                this.createRedCircle(pointer.x, pointer.y);
-            }
-        });
-        
-        // Listen for mouse movements to move the red circle while active
-        this.input.on('pointermove', (pointer) => {
-            if (this.isRedCircleActive && this.redCircle) {
-                this.redCircle.setPosition(pointer.x, pointer.y);
-            }
-        });
-    
-        // Add event listener to allow drawing on mouse drag
-        this.input.on('pointerdown', (pointer) => {
-            if (this.isRedCircleActive) {
-                this.isDrawing = true;
-            }
-        });
-    }
-
-    /**
-     * Change status of tomato paste
-     */
-    toggleTomatoPaste() {
-        this.tomatoPasteOn = !this.tomatoPasteOn; // Toggle the value of tomatoPasteOn
-    }
-
-    /**
-     * Create the red circle which follows the mouse
-     * @param {*} x 
-     * @param {*} y 
-     * @returns 
-     */
-    createRedCircle(x, y) {
-        // If a red circle already exists, don't create another one
-        if (this.redCircle) return;
-    
-        // Create a red circle that follows the mouse
-        this.redCircle = this.add.graphics();
-        this.redCircle.fillStyle(0xff0000); // Red color
-        this.redCircle.fillCircle(0, 0, 40); // Draw a circle with radius 40
-        this.redCircle.setPosition(x, y); // Set the initial position
-    }
-    
-    /**
-     * When the sauce bottle is clicked, the red circle will be
-     * removed from the player's mouse
-     */
-    removeRedCircle() {
-        if (this.redCircle) {
-            this.redCircle.destroy(); // Destroy the red circle graphic
-            this.redCircle = null;    // Set reference to null
-        }
-        this.isRedCircleActive = false;  // Deactivate the red circle
-    }
-
-    /**
-     * Create the pepperoni tub and setup interaction
-     * When the tub is clicked a pepperoni image will appear
-     * on the mouse. It can then be dragged and dropped onto the pizza .
-     * Once on the pizza is cannot be moved
-     */
-    createPepperoni() {
-        const pepperoniImage = this.add.image(1100, 400, 'pepperoniTray')
-            .setOrigin(0.5, 0.5)
-            .setInteractive();
-        
-        // Set the display size (width, height)
-        pepperoniImage.setDisplaySize(300, 300);  // Width and height in pixels
-    
-        // let currentPepperoniSlice; // Variable to store the current slice being dragged
-    
-        // // Add event listener for clicking to create a new pepperoni slice
-        // pepperoniImage.on('pointerdown', (pointer) => {
-        //     this.isDragging = true;
-        //     currentPepperoniSlice = this.add.image(30, 30, 'pepperoniSlice').setInteractive();
-        //     // currentPepperoniSlice = this.add.graphics();
-        //     // currentPepperoniSlice.fillStyle(0x530000); // Red color for pepperoni
-        //     // currentPepperoniSlice.fillCircle(pointer.x, pointer.y, 20); // Draw initial circle at click position
-        // });
-    
-        // // Add event listener for mouse dragging to move the pepperoni slice with the mouse
-        // this.input.on('pointermove', (pointer) => {
-        //     if (this.isDragging && currentPepperoniSlice) {
-        //         currentPepperoniSlice.clear(); // Clear the previous position
-        //         currentPepperoniSlice.fillStyle(0x530000); // Redraw the red color
-        //         currentPepperoniSlice.fillCircle(pointer.x, pointer.y, 20); // Redraw the circle at the new position
-        //     }
-        // });
-    
-        // // Add event listener to stop moving the pepperoni slice on mouse release
-        // this.input.on('pointerup', () => {
-        //     this.isDragging = false;
-        //     currentPepperoniSlice = null; // Release the reference to the current slice
-        // });
-        
-        // Add event listener for clicking to create a new pepperoni slice
-        pepperoniImage.on('pointerdown', (pointer) => {
-            if (!this.tomatoPasteOn) {
-                this.isDragging = true;
-
-                // Check if there's an existing pepperoni slice that hasn't been placed on the pizza
-                if (this.currentPepperoniSlice) {
-                    this.currentPepperoniSlice.destroy(); // Destroy the old slice if it exists
-                    this.currentPepperoniSlice = null; // Reset reference to ensure cleanup
-                }
-
-                // Create a new pepperoni slice image at the current mouse position
-                this.currentPepperoniSlice = this.add.image(pointer.x, pointer.y, 'pepperoniSlice')
-                    .setDisplaySize(100, 100) // Set the size of the pepperoni slice
-                    .setInteractive(); // Make it interactive
-
-                // Immediately make the pepperoni slice draggable
-                this.input.setDraggable(this.currentPepperoniSlice);
-
-                // Add drag event listeners specific to this pepperoni slice
-                this.currentPepperoniSlice.on('drag', (pointer, dragX, dragY) => {
-                    this.currentPepperoniSlice.x = dragX; // Update position based on dragging
-                    this.currentPepperoniSlice.y = dragY;
-                });
-
-                // Add event listener to stop moving the pepperoni slice on mouse release (for this specific slice)
-                this.currentPepperoniSlice.on('dragend', (pointer) => {
-                    if (this.pizza != null && this.pizza.isOnPizza(this.currentPepperoniSlice)) {
-                        // If a pizza exists and the slice is on it, add the topping and make it undraggable
-                        this.pizza.addTopping(this.currentPepperoniSlice); // Add topping to pizza
-                        this.input.setDraggable(this.currentPepperoniSlice, false); // Make it undraggable
-                        this.currentPepperoniSlice.setInteractive(false); // Optionally, make it non-interactive
-                    } else {
-                        // If there's no pizza or the slice is not on it, destroy the pepperoni slice
-                        this.currentPepperoniSlice.destroy(); // Remove the slice
-                    }
-
-                    // Reset the reference to the current pepperoni slice
-                    this.currentPepperoniSlice = null;
-                });
-            }
-        });
-    }
-
-    // // Function to add topping to the pizza (implement your logic here)
-    // addTopping(slice) {
-    //     // Add your topping logic here
-    //     console.log('Topping added:', slice);
-    // }
-
-    // cheese
-    createCheese(){
-        const cheeseImage = this.add.image(800, 550, 'cheese')
-            .setOrigin(0.5, 0.5)
-            .setInteractive();
-        
-        // // Set the display size (width, height)
-        cheeseImage.setDisplaySize(200, 200);  // Width and height in pixels
-    }
-
-    preparePizza() {
-        const pizza = new Pizza(this, this.game.config.width / 2, this.game.config.height / 2, 'small');
-        // Add toppings based on user interactions
-        const preparedPizza = {
-            id: Date.now(),
-            size: 'small',
-            toppings: ['cheese', 'pepperoni'] // Example toppings
-        };
-        this.game.socket.emit('pizzaPrepared', preparedPizza);
-    }
-
     updatePreparedPizzasDisplay() {
         // Clear previous display
         if (this.preparedTexts) {
@@ -312,5 +216,218 @@ export default class PrepareStation extends Station {
             this.preparedTexts.push(text);
         });
     }
+
+    /**
+     * Create the pepperoni tub and setup interaction
+     * When the tub is clicked a pepperoni image will appear
+     * on the mouse. It can then be dragged and dropped onto the pizza .
+     * Once on the pizza is cannot be moved
+     */
+    createPepperoni() {
+        const pepperoniImage = this.add.image(670, 500, 'pepperoniTray')
+            .setOrigin(0.5, 0.5)
+            .setInteractive();
+        
+        // Set the display size (width, height)
+        pepperoniImage.setDisplaySize(350, 350);  // Width and height in pixels
+        
+        this.createAndMoveTopping(pepperoniImage, 'pepperoniSlice');
+    }
+
+    /**
+     * Create the mushroom tub and setup interaction
+     * When the tub is clicked a mushroom image will appear
+     * on the mouse. It can then be dragged and dropped onto the pizza .
+     * Once on the pizza is cannot be moved
+     */
+    createMushroom() {
+        const mushroomImage = this.add.image(650, 200, 'mushroomSlice')
+            .setOrigin(0.5, 0.5)
+            .setInteractive();
+        
+        // Set the display size (width, height)
+        mushroomImage.setDisplaySize(250, 250);  // Width and height in pixels
+        
+        this.createAndMoveTopping(mushroomImage, 'mushroomSlice');
+    }
+
+    /**
+     * Create a topping and move it
+     * * When the tub is clicked a topping image will appear
+     * on the mouse. It can then be dragged and dropped onto the pizza .
+     * Once on the pizza is cannot be moved
+     */
+    createAndMoveTopping(topping, toppingName){
+        // Add event listener for clicking to create a new topping slice
+        topping.on('pointerdown', (pointer) => {
+            if (!this.tomatoPasteOn && !this.cheeseOn) {
+                this.isDragging = true;
+
+                // Check if there's an existing topping slice that hasn't been placed on the pizza
+                if (this.currentTopping) {
+                    this.currentTopping.destroy(); // Destroy the old slice if it exists
+                    this.currentTopping = null; // Reset reference to ensure cleanup
+                }
+
+                // Create a new topping slice image at the current mouse position
+                this.currentTopping = this.add.image(pointer.x, pointer.y, toppingName)
+                    .setDisplaySize(100, 100) // Set the size of the topping slice
+                    .setInteractive(); // Make it interactive
+
+                // Immediately make the topping slice draggable
+                this.input.setDraggable(this.currentTopping);
+
+                // Add drag event listeners specific to this topping slice
+                this.currentTopping.on('drag', (pointer, dragX, dragY) => {
+                    this.currentTopping.x = dragX; // Update position based on dragging
+                    this.currentTopping.y = dragY;
+                });
+
+                // Add event listener to stop moving the topping slice on mouse release (for this specific slice)
+                this.currentTopping.on('dragend', (pointer) => {
+                    if (this.pizza != null && this.pizza.isOnPizza(this.currentTopping)) {
+                        // If a pizza exists and the slice is on it, add the topping and make it undraggable
+                        this.pizza.addTopping(this.currentTopping); // Add topping to pizza
+                        this.input.setDraggable(this.currentTopping, false); // Make it undraggable
+                        this.currentTopping.setInteractive(false); // Optionally, make it non-interactive
+                    } else {
+                        // If there's no pizza or the slice is not on it, destroy the topping slice
+                        this.currentTopping.destroy(); // Remove the slice
+                    }
+
+                    // Reset the reference to the current topping slice
+                    this.currentTopping = null;
+                });
+            }
+        });
+    }
+
+    /**
+     * Create the tomato paste bottle and set to interactive
+     * When the bottle is clicked, a red circle will appear and
+     * follow the player's mouse. If the pizza base if clicked during this
+     * state the pizza sauce will appear on to[]
+     */
+    createTomatoPasteBottle() {
+        const tomatoPasteImage = this.add.image(900, 450, 'tomatoPaste')
+            .setOrigin(0.5, 0.5)
+            .setInteractive();
+        
+        // Set the display size (width, height)
+        tomatoPasteImage.setDisplaySize(300, 300);  // Width and height in pixels
+
+        this.addSpread(tomatoPasteImage, 'sauce', '0xff0000');
+    }
+
+    /**
+     * Create the cheese and setup functionality
+     */
+    createCheese(){
+        const cheeseImage = this.add.image(940, 200, 'cheese')
+            .setOrigin(0.5, 0.5)
+            .setInteractive();
+        
+        // Set the display size (width, height)
+        cheeseImage.setDisplaySize(250, 250);  // Width and height in pixels
+
+        this.addSpread(cheeseImage, 'cheese', '0xffe680');
+    }
+
+    /** 
+     * "Spread" refers to a pizza topping which spans the entire pizza base
+     * Both cheese and pizza sauces are the "spreads"
+     * @param {*} spread
+     */
+    addSpread(spread, spreadName, colour){
+        // Add event listener for click to toggle the circle
+        spread.on('pointerdown', (pointer) => {
+            this.toggleSpread(spreadName);
+            if (this.isCircleActive) {
+                this.removeCircle();  // Remove the circle if active
+            } else {
+                this.isCircleActive = true;  // Activate circle following
+                this.createCircle(pointer.x, pointer.y, colour);
+            }
+        });
+        
+        // Listen for mouse movements to move the circle while active
+        this.input.on('pointermove', (pointer) => {
+            if (this.isCircleActive && this.circle) {
+                this.circle.setPosition(pointer.x, pointer.y);
+            }
+        });
     
+        // Add event listener to allow drawing on mouse drag
+        this.input.on('pointerdown', (pointer) => {
+            if (this.isCircleActive) {
+                this.isDrawing = true;
+            }
+        });
+    }
+
+     /**
+     * Change status of cheese
+     */
+     toggleSpread(spreadName) {
+        if(spreadName === 'sauce'){
+            this.tomatoPasteOn = !this.tomatoPasteOn; // Toggle the value of cheeseOn
+            //this.cheeseOn = false;
+        } else if (spreadName === 'cheese') {
+            this.cheeseOn = !this.cheeseOn; // Toggle the value of cheeseOn
+            //this.tomatoPasteOn = false;
+        }
+    }
+
+    /**
+     * Create the circle which follows the mouse
+     * @param {*} x 
+     * @param {*} y 
+     * @returns 
+     */
+    createCircle(x, y, colour) {
+        // If a circle already exists with the same color, don't create a new one
+        if (this.circle && this.circle.colour === colour) return;
+    
+        // Create the new circle and set its color
+        this.circle = this.add.graphics();
+        this.circle.fillStyle(colour);
+        this.circle.fillCircle(0, 0, 40); // Draw circle with radius 40
+        this.circle.setPosition(x, y);
+        this.circle.colour = colour; // Store the color in the circle object
+    }  
+    
+    /**
+     * When the sauce bottle is clicked, the circle will be
+     * removed from the player's mouse
+     */
+    removeCircle() {
+        if (this.circle) {
+            this.circle.destroy(); // Destroy the circle graphic
+            this.circle = null;    // Set reference to null
+        }
+        this.isCircleActive = false;  // Deactivate the circle
+    }
+
+    currentTicket() {
+        // Define the position and size of the rectangle
+        const x = 1100; // X position of the rectangle
+        const y = 0; // Y position of the rectangle
+        const width = 200; // Width of the rectangle
+        const height = this.game.config.height; // Height of the rectangle
+    
+        // Create a graphics object for the rectangle
+        const ticketBackground = this.add.graphics()
+            .fillStyle(0xffffff, 1) // Set the fill color to white
+            .fillRect(x, y, width, height); // Draw the rectangle
+    
+        // Create the text label
+        const ticketText = this.add.text(x + width / 2, y + height / 2, 
+            'display current ticket', {
+                fontSize: '20px',
+                fill: '#000', // Text color
+                fontFamily: 'Calibri',
+                align: 'center'
+            })
+            .setOrigin(0.5); // Center the text within the rectangle
+    }
 }

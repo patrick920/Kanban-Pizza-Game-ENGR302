@@ -1,13 +1,13 @@
 import PrepareStation from './PrepareStation.js'; // Import the PrepareStation class
 
 export default class Pizza {
-    toppings = []; // Array to store toppings
     base;
     sauce;
+    toppings = []; // Array to store toppings
+    cheese;
+    
     filledSauceGraphics;
     scene;
-    PrepareStation;
-    // u added a preparestation, this may have been a mistake
 
     /**
      * Make the pizza object
@@ -20,7 +20,10 @@ export default class Pizza {
         this.scene = scene;
         this.x = x;
         this.y = y;
-        //this.PrepareStation = PrepareStation;
+
+        // Initialize sauce as null to track if it has been added
+        this.sauce = null;
+        this.cheese = null;
 
         // Define the size of the pizza base based on the size parameter
         if (size === 'small') {
@@ -40,10 +43,8 @@ export default class Pizza {
         // Add click event to the pizza base
         this.base.on('pointerdown', (pointer) => {
             this.fillSauce(pointer.x, pointer.y);  // Pass mouse position
-        });
-
-        // Initialize sauce as null to track if it has been added
-        this.sauce = null;
+            this.fillCheese(pointer.x, pointer.y);
+        });  
     }
 
     /**
@@ -56,11 +57,23 @@ export default class Pizza {
         if (this.scene.tomatoPasteOn && this.sauce === null) {
             // Add the sauce image if it doesn't exist yet
             this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce').setScale(this.scale * 3);
-            this.scene.removeRedCircle();
-            this.scene.toggleTomatoPaste();
-            // Optionally, you can reveal only a portion of the sauce based on mouse position
-            // Here, you can use a masking technique to reveal sauce in areas near mouseX and mouseY
-            // More sophisticated methods could follow here
+            this.scene.removeCircle();
+            this.scene.tomatoPasteOn = false;
+        }
+    }
+
+    /**
+     * Fill the cheese in
+     * @param {*} mouseX 
+     * @param {*} mouseY 
+     */
+    fillCheese(mouseX, mouseY) {
+        // Check if sauce should be added (e.g., check condition from a station class)
+        if (this.scene.cheeseOn && this.cheese === null) {
+             // Add the sauce image if it doesn't exist yet
+             this.cheese = this.scene.add.image(this.x, this.y, 'cheese').setScale(this.scale * 3);
+             this.scene.removeCircle();
+             this.scene.cheeseOn = false;
         }
     }
 

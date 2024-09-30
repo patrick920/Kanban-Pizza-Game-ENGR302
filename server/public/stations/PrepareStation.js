@@ -18,6 +18,7 @@ export default class PrepareStation extends Station {
     constructor() {
         super({ key: 'PrepareStation' });
         this.preparedPizzas = [];
+        this.pizzaBaseButtons = []; // Array to hold button references
     }
 
     /**
@@ -45,7 +46,7 @@ export default class PrepareStation extends Station {
         this.createBackground();
 
         // Game logic here
-        this.add.text(100, 100, 'Prepare your pizza!', { fontSize: '32px', fontFamily: 'Calibri', fill: '#fff' });
+        this.add.text((this.game.config.width/2)-50, 50, 'Make Your Pizza!', { fontSize: '32px', fontFamily: 'Calibri', fill: '#fff' });
 
         // Navigation buttons (from Station.js)
         this.createNavigationTabs();
@@ -53,19 +54,22 @@ export default class PrepareStation extends Station {
         // Create tomato paste image
         this.createTomatoPasteBottle();
 
+        // Create the cheese
+        this.createCheese();
+
         // Create the pepperoni
         this.createPepperoni();
 
         // Create the mushroom
         this.createMushroom();
 
-        // Create the cheese
-        this.createCheese();
+        // Display the current ticket
+        this.currentTicket();
 
         // Create prepare button
         const prepareButton = this.add.text(100, 500, 'Prepare Pizza', { fontSize: '24px', fill: '#fff', backgroundColor: '#28a745' })
             .setInteractive()
-            .on('pointerdown', () => this.preparePizza());
+            .on('pointerdown', () => this.createPizza());
 
         // Listen for prepared pizzas updates
         this.game.socket.on('preparedPizzasUpdate', (preparedPizzas) => {
@@ -86,23 +90,90 @@ export default class PrepareStation extends Station {
     createBackground() {
         // Set a specific background color for the PrepareStation
         this.cameras.main.setBackgroundColor('#996600');
-        this.createPizzaBaseButton(); // Setup pizza base buttons
+        this.createPizzaBaseButtons(); // Setup pizza base buttons
+    }
+
+    /**
+     * Create a button with a specified label and position
+     * @param {string} label - The text label for the button
+     * @param {number} x - The x position for the button
+     * @param {number} y - The y position for the button
+     * @param {function} onClick - The callback function to execute on click
+     */
+    createButton(label, x, y, onClick) {
+        // Create a rounded rectangle shape for the button background
+        const buttonBackground = this.add.graphics()
+            .fillStyle(0xffd11a, 1) // Set color to a light yellow
+            .fillRoundedRect(x, y, 200, 50, 10); // Width: 200, Height: 50, Radius: 10
+
+        // Create the button label
+        const buttonText = this.add.text(x + 100, y + 15, label, {
+            fontSize: '20px',
+            fill: '#000',
+            fontFamily: 'Calibri',
+            align: 'center'
+        })
+        .setOrigin(0.5); // Center the text within the button
+
+        // Set the button background and text as interactive
+        buttonBackground.setInteractive({ useHandCursor: true })
+            .on('pointerdown', onClick)
+            .on('pointerover', () => buttonBackground.setFillStyle(0xffbb33)) // Darker color on hover
+            .on('pointerout', () => buttonBackground.setFillStyle(0xffd11a)); // Reset color on hover out
+
+        // Store button references
+        this.pizzaBaseButtons.push(buttonBackground, buttonText);
     }
 
     /**
      * Create buttons for pizza base size options
      */
-    createPizzaBaseButton() {
-        const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.createPizza('small');
-            });
-        const baseLargeButton = this.add.text(50, 250, 'Large Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.createPizza('large');
-            });
+    createPizzaBaseButtons() {
+        const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { 
+            fontSize: '20px', 
+            fill: '#000', 
+            fontFamily: 'Calibri', 
+            backgroundColor: '#ffd11a',
+            align: 'center'
+        }).setInteractive().on('pointerdown', () => this.createPizza('small'))
+        
+        
+        const baseLargeButton = this.add.text(50, 250, 'Large Pizza Base', { 
+            fontSize: '20px', 
+            fill: '#000', 
+            fontFamily: 'Calibri', 
+            backgroundColor: '#ffd11a',
+            align: 'center'
+        }).setInteractive().on('pointerdown', () => { this.createPizza('large');
+
+        });
+        // const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
+        //     .setInteractive()
+        //     .on('pointerdown', () => {
+        //         this.createPizza('small');
+        //     });
+        
+        // const baseLargeButton = this.add.text(50, 250, 'Large Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
+        //     .setInteractive()
+        //     .on('pointerdown', () => {
+        //         this.createPizza('large');
+        //     });
+
+        // Store button references in the array
+        this.pizzaBaseButtons.push(baseSmallButton, baseLargeButton);
+    }
+
+
+
+    /**
+     * Remove pizza base buttons
+     */
+    removePizzaBaseButtons() {
+        // Iterate over the button references and destroy each one
+        this.pizzaBaseButtons.forEach(button => {
+            button.destroy(); // Destroy the button
+        });
+        this.pizzaBaseButtons = []; // Clear the references
     }
 
     /**
@@ -110,12 +181,40 @@ export default class PrepareStation extends Station {
      * @param {*} size 
      */
     createPizza(size) {
-        const pizzaX = this.game.config.width / 2;
+        this.removePizzaBaseButtons(); // remove pizza base after after choosing a size
+
+        const pizzaX = this.game.config.width / 4;
         const pizzaY = this.game.config.height / 2;
 
         // Create and display pizza
         this.pizza = new Pizza(this, pizzaX, pizzaY, size);
-        // Optionally, you can add additional actions on the pizza object
+        
+        // // something to hold information about the pizza object
+        // // ASK HANNING ABOUT THIS TOMORROW, HOW DOES HE WANT IT TO BE USED?
+        // const preparedPizza = {
+        //     id: Date.now(),
+        //     size: 'small',
+        //     toppings: ['cheese', 'pepperoni'] // Example toppings
+        // };
+        // this.game.socket.emit('pizzaPrepared', preparedPizza);
+        // if i use this suddenly toppings stop working
+    }
+
+    /**
+     * ASK HANNING ABOUT THIS TOMORROW
+     */
+    updatePreparedPizzasDisplay() {
+        // Clear previous display
+        if (this.preparedTexts) {
+            this.preparedTexts.forEach(text => text.destroy());
+        }
+        this.preparedTexts = [];
+
+        // Display prepared pizzas
+        this.preparedPizzas.forEach((pizza, index) => {
+            const text = this.add.text(600, 100 + index * 30, `Pizza ${pizza.id}: ${pizza.size} with ${pizza.toppings.join(', ')}`, { fontSize: '18px', fill: '#fff' });
+            this.preparedTexts.push(text);
+        });
     }
 
     /**
@@ -125,12 +224,12 @@ export default class PrepareStation extends Station {
      * Once on the pizza is cannot be moved
      */
     createPepperoni() {
-        const pepperoniImage = this.add.image(1100, 400, 'pepperoniTray')
+        const pepperoniImage = this.add.image(670, 500, 'pepperoniTray')
             .setOrigin(0.5, 0.5)
             .setInteractive();
         
         // Set the display size (width, height)
-        pepperoniImage.setDisplaySize(300, 300);  // Width and height in pixels
+        pepperoniImage.setDisplaySize(350, 350);  // Width and height in pixels
         
         this.createAndMoveTopping(pepperoniImage, 'pepperoniSlice');
     }
@@ -142,12 +241,12 @@ export default class PrepareStation extends Station {
      * Once on the pizza is cannot be moved
      */
     createMushroom() {
-        const mushroomImage = this.add.image(1100, 600, 'mushroomSlice')
+        const mushroomImage = this.add.image(650, 200, 'mushroomSlice')
             .setOrigin(0.5, 0.5)
             .setInteractive();
         
         // Set the display size (width, height)
-        mushroomImage.setDisplaySize(300, 300);  // Width and height in pixels
+        mushroomImage.setDisplaySize(250, 250);  // Width and height in pixels
         
         this.createAndMoveTopping(mushroomImage, 'mushroomSlice');
     }
@@ -210,7 +309,7 @@ export default class PrepareStation extends Station {
      * state the pizza sauce will appear on to[]
      */
     createTomatoPasteBottle() {
-        const tomatoPasteImage = this.add.image(1100, 100, 'tomatoPaste')
+        const tomatoPasteImage = this.add.image(900, 450, 'tomatoPaste')
             .setOrigin(0.5, 0.5)
             .setInteractive();
         
@@ -224,12 +323,12 @@ export default class PrepareStation extends Station {
      * Create the cheese and setup functionality
      */
     createCheese(){
-        const cheeseImage = this.add.image(800, 550, 'cheese')
+        const cheeseImage = this.add.image(940, 200, 'cheese')
             .setOrigin(0.5, 0.5)
             .setInteractive();
         
         // Set the display size (width, height)
-        cheeseImage.setDisplaySize(200, 200);  // Width and height in pixels
+        cheeseImage.setDisplaySize(250, 250);  // Width and height in pixels
 
         this.addSpread(cheeseImage, 'cheese', '0xffe680');
     }
@@ -309,42 +408,26 @@ export default class PrepareStation extends Station {
         this.isCircleActive = false;  // Deactivate the circle
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    preparePizza() {
-        const pizza = new Pizza(this, this.game.config.width / 2, this.game.config.height / 2, 'small');
-        // Add toppings based on user interactions
-        const preparedPizza = {
-            id: Date.now(),
-            size: 'small',
-            toppings: ['cheese', 'pepperoni'] // Example toppings
-        };
-        this.game.socket.emit('pizzaPrepared', preparedPizza);
-    }
-
-    updatePreparedPizzasDisplay() {
-        // Clear previous display
-        if (this.preparedTexts) {
-            this.preparedTexts.forEach(text => text.destroy());
-        }
-        this.preparedTexts = [];
-
-        // Display prepared pizzas
-        this.preparedPizzas.forEach((pizza, index) => {
-            const text = this.add.text(600, 100 + index * 30, `Pizza ${pizza.id}: ${pizza.size} with ${pizza.toppings.join(', ')}`, { fontSize: '18px', fill: '#fff' });
-            this.preparedTexts.push(text);
-        });
-    }
+    currentTicket() {
+        // Define the position and size of the rectangle
+        const x = 1100; // X position of the rectangle
+        const y = 0; // Y position of the rectangle
+        const width = 200; // Width of the rectangle
+        const height = this.game.config.height; // Height of the rectangle
     
+        // Create a graphics object for the rectangle
+        const ticketBackground = this.add.graphics()
+            .fillStyle(0xffffff, 1) // Set the fill color to white
+            .fillRect(x, y, width, height); // Draw the rectangle
+    
+        // Create the text label
+        const ticketText = this.add.text(x + width / 2, y + height / 2, 
+            'display current ticket', {
+                fontSize: '20px',
+                fill: '#000', // Text color
+                fontFamily: 'Calibri',
+                align: 'center'
+            })
+            .setOrigin(0.5); // Center the text within the rectangle
+    }
 }

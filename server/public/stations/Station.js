@@ -1,7 +1,7 @@
 export default class Station extends Phaser.Scene {
     // Create tabs at the bottom of the screen to switch to other scenes
     createNavigationTabs() {
-        const buttonY = this.game.config.height - 100;
+        const buttonY = this.game.config.height -50;
 
         const orderButton = this.add.text(100, buttonY, 'Back to Order', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#007bff' })
             .setInteractive()

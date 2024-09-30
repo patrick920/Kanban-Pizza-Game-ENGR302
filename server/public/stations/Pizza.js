@@ -58,10 +58,7 @@ export default class Pizza {
             // Add the sauce image if it doesn't exist yet
             this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce').setScale(this.scale * 3);
             this.scene.removeCircle();
-            this.scene.toggleSpread();
-            // Optionally, you can reveal only a portion of the sauce based on mouse position
-            // Here, you can use a masking technique to reveal sauce in areas near mouseX and mouseY
-            // More sophisticated methods could follow here
+            this.scene.tomatoPasteOn = false;
         }
     }
 
@@ -76,7 +73,7 @@ export default class Pizza {
              // Add the sauce image if it doesn't exist yet
              this.cheese = this.scene.add.image(this.x, this.y, 'cheese').setScale(this.scale * 3);
              this.scene.removeCircle();
-             this.scene.toggleSpread();
+             this.scene.cheeseOn = false;
         }
     }
 

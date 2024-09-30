@@ -9,6 +9,13 @@ export default class Pizza {
     PrepareStation;
     // u added a preparestation, this may have been a mistake
 
+    /**
+     * Make the pizza object
+     * @param {*} scene 
+     * @param {*} x 
+     * @param {*} y 
+     * @param {*} size 
+     */
     constructor(scene, x, y, size) {
         this.scene = scene;
         this.x = x;
@@ -39,6 +46,11 @@ export default class Pizza {
         this.sauce = null;
     }
 
+    /**
+     * Fill the sauce in
+     * @param {*} mouseX 
+     * @param {*} mouseY 
+     */
     fillSauce(mouseX, mouseY) {
         // Check if sauce should be added (e.g., check condition from a station class)
         if (this.scene.tomatoPasteOn) {
@@ -53,12 +65,32 @@ export default class Pizza {
         }
     }
 
+     /**
+     * Checks if topping is on pizza
+     * @param {Phaser.GameObjects.Image} topping - The topping image to check
+     * @returns {boolean} - True if the topping is on the pizza, false otherwise
+     */
+    isOnPizza(topping){
+        // check if the placement of the pepperoni overlaps the pizza base image
+        // Get the bounds of the topping and the pizza base
+        const toppingBounds = topping.getBounds(); // Get the bounds of the topping
+        const pizzaBounds = this.base.getBounds(); // Get the bounds of the pizza base
+
+        // Check if the rectangles intersect (i.e., if they overlap)
+        return Phaser.Geom.Intersects.RectangleToRectangle(toppingBounds, pizzaBounds);
+    }
+
+    /**
+     * Add a topping to the pizza
+     * @param {*} toppingKey 
+     */
     addTopping(toppingKey) {
         // Add a topping at a random position within the pizza
         const randomX = Phaser.Math.Between(this.x - this.base.displayWidth / 2, this.x + this.base.displayWidth / 2);
         const randomY = Phaser.Math.Between(this.y - this.base.displayHeight / 2, this.y + this.base.displayHeight / 2);
         const topping = this.scene.add.image(randomX, randomY, toppingKey).setScale(0.3);
         this.toppings.push(topping);
+        console.log(toppings);
     }
 }
 

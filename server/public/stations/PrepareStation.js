@@ -1,28 +1,42 @@
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
 
+/**
+ * This is the class for the PrepareStation
+ * This is where the player creates and builds their pizza
+ */
 export default class PrepareStation extends Station {
 
-    tomatoPasteOn = false;
+    tomatoPasteOn = false; // determines whether or not pizza sauce can be applied
+    pizza = null;
 
+    /**
+     * Construct the PrepareStation
+     */
     constructor() {
         super({ key: 'PrepareStation' });
         this.preparedPizzas = [];
     }
 
+    /**
+     * Preload images
+     */
     preload() {
         // load tomato paste image
         this.load.image('tomatoPaste', 'stations/assets/sauce_bucket.png');
         // load pepperoni image
-        this.load.image('pepperoni', 'stations/assets/pepperoni_tray.png');
+        this.load.image('pepperoniTray', 'stations/assets/pepperoni_tray.png');
         // load cheese image
         this.load.image('cheese', 'stations/assets/cheese_block.png');
         // Load the pizza base image and toppings images
         this.load.image('pizzaBase', 'stations/assets/pizza_base_raw.png');
         this.load.image('pizzaSauce', 'stations/assets/sauce.png');
-        this.load.image('pepperoni', 'stations/assets/pepperoni.png');
+        this.load.image('pepperoniSlice', 'stations/assets/pepperoni_slice.png');
     }
 
+    /**
+     * Setup the scene
+     */
     create() {
         this.createBackground();
 
@@ -59,12 +73,18 @@ export default class PrepareStation extends Station {
         });
     }
 
+    /**
+     * Create the background for the scene
+     */
     createBackground() {
         // Set a specific background color for the PrepareStation
         this.cameras.main.setBackgroundColor('#996600');
         this.createPizzaBaseButton(); // Setup pizza base buttons
     }
 
+    /**
+     * Create buttons for pizza base size options
+     */
     createPizzaBaseButton() {
         const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
             .setInteractive()
@@ -78,21 +98,25 @@ export default class PrepareStation extends Station {
             });
     }
 
+    /**
+     * Generate the pizza base
+     * @param {*} size 
+     */
     createPizza(size) {
         const pizzaX = this.game.config.width / 2;
         const pizzaY = this.game.config.height / 2;
 
         // Create and display pizza
-        const pizza = new Pizza(this, pizzaX, pizzaY, size);
+        this.pizza = new Pizza(this, pizzaX, pizzaY, size);
         // Optionally, you can add additional actions on the pizza object
     }
 
-    // when clicked a red circle will appear and follow the mouse
-    // the mouse is released and the red circle WILL CONTINUE TO FOLLOW IT
-    // while the red circle is ont the mouse, if the mouse in clicked and dragged
-    // it will draw red
-    // to get rid of the red circle on the mouse, the user must click the tomato paste again
-    // or another interactable object
+    /**
+     * Create the tomato paste bottle and set to interactive
+     * When the bottle is clicked, a red circle will appear and
+     * follow the player's mouse. If the pizza base if clicked during this
+     * state the pizza sauce will appear on to[]
+     */
     createTomatoPasteBottle() {
         const tomatoPasteImage = this.add.image(1100, 100, 'tomatoPaste')
             .setOrigin(0.5, 0.5)
@@ -128,10 +152,19 @@ export default class PrepareStation extends Station {
         });
     }
 
+    /**
+     * Change status of tomato paste
+     */
     toggleTomatoPaste() {
         this.tomatoPasteOn = !this.tomatoPasteOn; // Toggle the value of tomatoPasteOn
     }
 
+    /**
+     * Create the red circle which follows the mouse
+     * @param {*} x 
+     * @param {*} y 
+     * @returns 
+     */
     createRedCircle(x, y) {
         // If a red circle already exists, don't create another one
         if (this.redCircle) return;
@@ -143,6 +176,10 @@ export default class PrepareStation extends Station {
         this.redCircle.setPosition(x, y); // Set the initial position
     }
     
+    /**
+     * When the sauce bottle is clicked, the red circle will be
+     * removed from the player's mouse
+     */
     removeRedCircle() {
         if (this.redCircle) {
             this.redCircle.destroy(); // Destroy the red circle graphic
@@ -151,39 +188,94 @@ export default class PrepareStation extends Station {
         this.isRedCircleActive = false;  // Deactivate the red circle
     }
 
+    /**
+     * Create the pepperoni tub and setup interaction
+     * When the tub is clicked a pepperoni image will appear
+     * on the mouse. It can then be dragged and dropped onto the pizza .
+     * Once on the pizza is cannot be moved
+     */
     createPepperoni() {
-        const pepperoniImage = this.add.image(1100, 400, 'pepperoni')
+        const pepperoniImage = this.add.image(1100, 400, 'pepperoniTray')
             .setOrigin(0.5, 0.5)
             .setInteractive();
         
         // Set the display size (width, height)
         pepperoniImage.setDisplaySize(300, 300);  // Width and height in pixels
     
-        let currentPepperoniSlice; // Variable to store the current slice being dragged
+        // let currentPepperoniSlice; // Variable to store the current slice being dragged
     
+        // // Add event listener for clicking to create a new pepperoni slice
+        // pepperoniImage.on('pointerdown', (pointer) => {
+        //     this.isDragging = true;
+        //     currentPepperoniSlice = this.add.image(30, 30, 'pepperoniSlice').setInteractive();
+        //     // currentPepperoniSlice = this.add.graphics();
+        //     // currentPepperoniSlice.fillStyle(0x530000); // Red color for pepperoni
+        //     // currentPepperoniSlice.fillCircle(pointer.x, pointer.y, 20); // Draw initial circle at click position
+        // });
+    
+        // // Add event listener for mouse dragging to move the pepperoni slice with the mouse
+        // this.input.on('pointermove', (pointer) => {
+        //     if (this.isDragging && currentPepperoniSlice) {
+        //         currentPepperoniSlice.clear(); // Clear the previous position
+        //         currentPepperoniSlice.fillStyle(0x530000); // Redraw the red color
+        //         currentPepperoniSlice.fillCircle(pointer.x, pointer.y, 20); // Redraw the circle at the new position
+        //     }
+        // });
+    
+        // // Add event listener to stop moving the pepperoni slice on mouse release
+        // this.input.on('pointerup', () => {
+        //     this.isDragging = false;
+        //     currentPepperoniSlice = null; // Release the reference to the current slice
+        // });
+        // Add event listener for clicking to create a new pepperoni slice
+        
         // Add event listener for clicking to create a new pepperoni slice
         pepperoniImage.on('pointerdown', (pointer) => {
             this.isDragging = true;
-            currentPepperoniSlice = this.add.graphics();
-            currentPepperoniSlice.fillStyle(0x530000); // Red color for pepperoni
-            currentPepperoniSlice.fillCircle(pointer.x, pointer.y, 20); // Draw initial circle at click position
-        });
-    
-        // Add event listener for mouse dragging to move the pepperoni slice with the mouse
-        this.input.on('pointermove', (pointer) => {
-            if (this.isDragging && currentPepperoniSlice) {
-                currentPepperoniSlice.clear(); // Clear the previous position
-                currentPepperoniSlice.fillStyle(0x530000); // Redraw the red color
-                currentPepperoniSlice.fillCircle(pointer.x, pointer.y, 20); // Redraw the circle at the new position
-            }
-        });
-    
-        // Add event listener to stop moving the pepperoni slice on mouse release
-        this.input.on('pointerup', () => {
-            this.isDragging = false;
-            currentPepperoniSlice = null; // Release the reference to the current slice
-        });
+            // Create a new pepperoni slice image at the current mouse position
+            const currentPepperoniSlice = this.add.image(pointer.x, pointer.y, 'pepperoniSlice')
+                .setDisplaySize(100, 100) // Set the size of the pepperoni slice
+                .setInteractive(); // Make it interactive
+
+            // Immediately make the pepperoni slice draggable
+            this.input.setDraggable(currentPepperoniSlice);
+
+            // Add drag event listeners
+            currentPepperoniSlice.on('drag', (pointer, dragX, dragY) => {
+            //currentPepperoniSlice.on('pointermove', (pointer) => {
+                currentPepperoniSlice.x = dragX; // Update position based on dragging
+                currentPepperoniSlice.y = dragY;
+            });
+
+            // Add event listener to stop moving the pepperoni slice on mouse release
+            this.input.on('dragend', (pointer) => {
+                // Check if the pepperoni slice is on the pizza
+                if (this.pizza.isOnPizza(currentPepperoniSlice) && this.pizza != null) {
+                    // Make the pepperoni slice undraggable
+                    this.input.setDraggable(currentPepperoniSlice, false);
+                    currentPepperoniSlice.setInteractive(false); // Optionally, make it non-interactive
+                } else {
+                    // If not on pizza, destroy or reset the pepperoni slice
+                    currentPepperoniSlice.destroy(); // Or handle as needed
+                }
+            });
+
+            // currentPepperoniSlice.on('dragend', (pointer) => {
+            //     // Log the position where the pepperoni slice is dropped
+            //     console.log('Pepperoni slice placed at:', currentPepperoniSlice.x, currentPepperoniSlice.y);
+
+            //     // Optional: Disable dragging if you want the slice to be fixed after placing
+            //     currentPepperoniSlice.setInteractive(false); // Disable further interaction
+            //     this.input.setDraggable(currentPepperoniSlice, false); // Disable dragging
+            // });
+        });   
     }
+
+    // // Function to add topping to the pizza (implement your logic here)
+    // addTopping(slice) {
+    //     // Add your topping logic here
+    //     console.log('Topping added:', slice);
+    // }
 
     // cheese
     createCheese(){

@@ -5,6 +5,7 @@ export default class PrepareStation extends Station {
     constructor() {
         super({ key: 'PrepareStation' });
         this.preparedPizzas = [];
+        this.currentPizza = null;
     }
 
     preload() {
@@ -38,7 +39,6 @@ export default class PrepareStation extends Station {
         const prepareButton = this.add.text(100, 500, 'Prepare Pizza', { fontSize: '24px', fill: '#fff', backgroundColor: '#28a745' })
             .setInteractive()
             .on('pointerdown', () => this.preparePizza());
-
         // Listen for prepared pizzas updates
         this.game.socket.on('preparedPizzasUpdate', (preparedPizzas) => {
             this.preparedPizzas = preparedPizzas;
@@ -72,12 +72,12 @@ export default class PrepareStation extends Station {
     }
 
     createPizza(size) {
+        if (this.currentPizza) {
+            this.currentPizza.destroy();
+        }
         const pizzaX = this.game.config.width / 2;
         const pizzaY = this.game.config.height / 2;
-
-        // Create and display pizza
-        const pizza = new Pizza(this, pizzaX, pizzaY, size);
-        // Optionally, you can add additional actions on the pizza object
+        this.currentPizza = new Pizza(this, pizzaX, pizzaY, size);
     }
 
     // when clicked a red circle will appear and follow the mouse
@@ -128,6 +128,12 @@ export default class PrepareStation extends Station {
         // Add event listener to stop drawing when the mouse is released
         this.input.on('pointerup', () => {
             this.isDrawing = false;
+        });
+
+        tomatoPasteImage.on('pointerdown', (pointer) => {
+            if (this.currentPizza) {
+                this.currentPizza.addSauce();
+            }
         });
     }
     
@@ -193,6 +199,12 @@ export default class PrepareStation extends Station {
             this.isDragging = false;
             currentPepperoniSlice = null; // Release the reference to the current slice
         });
+
+        pepperoniImage.on('pointerdown', (pointer) => {
+            if (this.currentPizza) {
+                this.currentPizza.addTopping('pepperoni', pointer.x, pointer.y);
+            }
+        });
     }
 
     // cheese
@@ -203,29 +215,52 @@ export default class PrepareStation extends Station {
         
         // // Set the display size (width, height)
         cheeseImage.setDisplaySize(200, 200);  // Width and height in pixels
+
+        cheeseImage.on('pointerdown', (pointer) => {
+            if (this.currentPizza) {
+                this.currentPizza.addCheese();
+            }
+        });
     }
 
     preparePizza() {
-        const pizza = new Pizza(this, this.game.config.width / 2, this.game.config.height / 2, 'small');
-        // Add toppings based on user interactions
-        const preparedPizza = {
-            id: Date.now(),
-            size: 'small',
-            toppings: ['cheese', 'pepperoni'] // Example toppings
-        };
-        this.game.socket.emit('pizzaPrepared', preparedPizza);
+        try {
+            if (this.currentPizza) {
+                console.log('Preparing pizza...');
+                const preparedPizza = this.currentPizza.getState();
+                preparedPizza.id = Date.now();
+                console.log('Prepared pizza state:', preparedPizza);
+                
+                this.preparedPizzas.push(preparedPizza); // Add to local state
+                console.log('Updated local prepared pizzas:', this.preparedPizzas);
+                
+                this.game.socket.emit('pizzaPrepared', preparedPizza);
+                console.log('Emitted pizzaPrepared event');
+                
+                this.currentPizza.destroy();
+                this.currentPizza = null;
+                
+                this.updatePreparedPizzasDisplay(); // Update the display
+                console.log('Updated prepare station display');
+            } else {
+                console.log('No pizza to prepare');
+            }
+        } catch (error) {
+            console.error('Error in preparePizza:', error);
+        }
     }
 
     updatePreparedPizzasDisplay() {
-        // Clear previous display
         if (this.preparedTexts) {
             this.preparedTexts.forEach(text => text.destroy());
         }
         this.preparedTexts = [];
-
-        // Display prepared pizzas
+    
         this.preparedPizzas.forEach((pizza, index) => {
-            const text = this.add.text(600, 100 + index * 30, `Pizza ${pizza.id}: ${pizza.size} with ${pizza.toppings.join(', ')}`, { fontSize: '18px', fill: '#fff' });
+            const toppingsText = pizza.toppings.map(t => t.type).join(', ');
+            const text = this.add.text(600, 100 + index * 30, 
+                `Pizza ${pizza.id}: ${pizza.size} - Sauce: ${pizza.hasSauce}, Cheese: ${pizza.hasCheese}, Toppings: ${toppingsText}`, 
+                { fontSize: '18px', fill: '#fff' });
             this.preparedTexts.push(text);
         });
     }

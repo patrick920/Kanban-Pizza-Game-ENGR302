@@ -45,6 +45,7 @@ const io = new Server(expressServer, {
 const gameState = {
     orders: [],
     preparedPizzas: [],
+    cookingPizzas: [],
     cookedPizzas: [],
     kanbanTasks: []
 }
@@ -71,14 +72,57 @@ io.on('connection', socket => {
 
     // Prepare Station events
     socket.on('pizzaPrepared', pizza => {
-        gameState.preparedPizzas.push(pizza)
+        console.log('Server received prepared pizza:', pizza);
+        gameState.preparedPizzas.push(pizza);
+        console.log('Updated prepared pizzas:', gameState.preparedPizzas);
+        io.emit('preparedPizzasUpdate', gameState.preparedPizzas);
+    });
+
+    socket.on('requestGameState', () => {
+        console.log('Game state requested. Sending:', gameState);
+        socket.emit('gameStateUpdate', gameState);
+    });
+
+    
+
+    socket.on('startCooking', pizza => {
+        console.log('Starting to cook pizza:', pizza);
+        // Remove from prepared pizzas
+        gameState.preparedPizzas = gameState.preparedPizzas.filter(p => p.id !== pizza.id)
+        // Add to cooking pizzas
+        gameState.cookingPizzas.push(pizza)
         io.emit('preparedPizzasUpdate', gameState.preparedPizzas)
+        io.emit('cookingPizzasUpdate', gameState.cookingPizzas)
     })
 
-    // Cook Station events
     socket.on('pizzaCooked', pizza => {
+        // Remove from cooking pizzas
+        gameState.cookingPizzas = gameState.cookingPizzas.filter(p => p.id !== pizza.id)
+        // Add to cooked pizzas
         gameState.cookedPizzas.push(pizza)
+        io.emit('cookingPizzasUpdate', gameState.cookingPizzas)
         io.emit('cookedPizzasUpdate', gameState.cookedPizzas)
+    })
+
+    socket.on('pizzaBurnt', pizza => {
+        // Remove the pizza from cookingPizzas
+        gameState.cookingPizzas = gameState.cookingPizzas.filter(p => p.id !== pizza.id)
+        
+        // Add the pizza back to orders to be remade
+        const reorder = {
+            id: Date.now(),
+            type: pizza.toppings.join(', '),
+            size: pizza.size,
+            status: 'Reorder (Burnt)'
+        }
+        gameState.orders.push(reorder)
+    
+        // Emit updates
+        io.emit('orderUpdate', gameState.orders)
+        io.emit('cookingPizzasUpdate', gameState.cookingPizzas)
+    
+        // Emit a specific 'pizzaBurnt' event
+        io.emit('pizzaBurnt', reorder)
     })
 
     // Kanban Station events

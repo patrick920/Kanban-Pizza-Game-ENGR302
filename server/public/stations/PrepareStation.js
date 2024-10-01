@@ -36,7 +36,7 @@ export default class PrepareStation extends Station {
         this.load.image('pizzaSauce', 'stations/assets/sauce.png');
         this.load.image('pepperoniSlice', 'stations/assets/pepperoni_slice.png');
         this.load.image('mushroomSlice', 'stations/assets/mushroom_slice.png');
-        this.load.image('cheese', 'stations/assets/uncooked_cheese.png');
+        this.load.image('cheeseUncooked', 'stations/assets/cheese_uncooked.png');
     }
 
     /**

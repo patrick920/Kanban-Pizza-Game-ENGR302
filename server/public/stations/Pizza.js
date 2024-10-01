@@ -71,7 +71,7 @@ export default class Pizza {
         // Check if sauce should be added (e.g., check condition from a station class)
         if (this.scene.cheeseOn && this.cheese === null) {
              // Add the sauce image if it doesn't exist yet
-             this.cheese = this.scene.add.image(this.x, this.y, 'cheese').setScale(this.scale * 3);
+             this.cheese = this.scene.add.image(this.x, this.y, 'cheeseUncooked').setScale(this.scale * 2.3);
              this.scene.removeCircle();
              this.scene.cheeseOn = false;
         }

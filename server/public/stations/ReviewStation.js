@@ -64,8 +64,8 @@ export default class ReviewStation extends Station {
 
         // Style the input box
         inputBox.style.position = 'absolute';
-        inputBox.style.bottom = '10px';  
-        inputBox.style.right = '150px';
+        inputBox.style.bottom = '20px';  
+        inputBox.style.right = '120px';
         inputBox.style.width = '250px';
         inputBox.style.height = '40px';
         inputBox.style.fontSize = '18px';

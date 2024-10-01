@@ -1,48 +1,268 @@
-// OrderStation.js
-// import Phaser from 'phaser';
 import Station from './Station.js';
-// import { createNavigationTabs } from './Station.js'; // Import helper function
+
+// TO-DO:
+// - Randomize customer order and save it somewhere to assess correctness
+// - small / large pizza options + final toppings
+// - Make it look nice
+
+
+class Order {
+    constructor(orderId, pizzaType, toppings) {
+        this.orderId = orderId;
+        this.pizzaType = pizzaType;
+        this.toppings = toppings; 
+    }
+}
 
 export default class OrderStation extends Station {
+
+    preload() {
+        // load customer image
+        this.load.image('customer_one', 'stations/assets/customer_one.png');
+
+        // load table image
+        this.load.image('table', 'stations/assets/table.png');
+
+        // load notepad image
+        this.load.image('order_notepad', 'stations/assets/order_notepad.png');
+
+        // load order station sign image
+        this.load.image('order_station_sign', 'stations/assets/order_station_sign.png');
+
+        // load speech bubble image
+        this.load.image('speech_bubble', 'stations/assets/speech_bubble.png');
+
+        // load done button image
+        this.load.image('done_button', 'stations/assets/done_button.png');
+
+        // load background image
+        this.load.image('background', 'stations/assets/background.png');
+
+
+        
+    }
+
     constructor() {
         super({ key: 'OrderStation' });
         this.orders = [];
+        this.currentOrderId = null;
+        this.orderInputs = []; // Array to hold input data for orders
     }
 
     create() {
-        this.createBackground();
+        this.createBackground(); // This adds the brown rectangle first
+        const background = this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
+ 
+        const order_station_sign = this.add.image(160, 130, 'order_station_sign');
 
-        // Add your game logic here
-        this.add.text(100, 100, 'Order your pizza!', { fontSize: '32px', fontFamily: 'Calibri', fill: '#000' });
+        const speech_bubble = this.add.image(540, 150, 'speech_bubble').setDisplaySize(600, 200);
+    
+        // Create the customer shape (moved down to ensure it renders behind other elements)
+        this.createCustomer();
 
-        // Navigation buttons (from Station.js)
+        // Navigation buttons
         this.createNavigationTabs();
 
-        // Create order button
-        const orderButton = this.add.text(100, 200, 'Place Order', { fontSize: '24px', fill: '#fff', backgroundColor: '#007bff' })
+        //Done button, click to place order
+        const done_button = this.add.image(810, 300, 'done_button').setDisplaySize(100, 100)
             .setInteractive()
             .on('pointerdown', () => this.placeOrder());
-
+    
+        // Create the order form
+        this.createOrderForm();
+    
         // Listen for order updates
         this.game.socket.on('orderUpdate', (orders) => {
             this.orders = orders;
             this.updateOrderDisplay();
         });
-
+    
         // Get initial game state
         this.game.socket.on('initialGameState', (gameState) => {
             this.orders = gameState.orders;
             this.updateOrderDisplay();
         });
     }
+    
+    createCustomer() {
+        const customer_one = this.add.image(-200, 300, 'customer_one');
+
+        // Animate the customer to slide in from the left
+        this.tweens.add({
+            targets: customer_one,        // The target to animate
+            x: 150,                       // The final x position (where it stops)
+            duration: 1000,               // Duration of the animation in milliseconds (1 second)
+            ease: 'Power2',               // Easing function for a smooth transition
+            
+        });
+            
+        const table = this.add.image(300, 450, 'table').setDisplaySize(2000, 400);
+        
+        // Generate a random order
+        const orderId = Date.now(); // Unique order ID
+        const pepperoniCount = Math.floor(Math.random() * 8); // Random number between 0-7
+        const mushroomCount = Math.floor(Math.random() * 8); // Random number between 0-7
+        const orderText = `I want 1 pizza, with ${pepperoniCount} pepperonis, and ${mushroomCount} mushrooms`;
+    
+        // Create a new Order object (for internal use, not shown to the player)
+        const order = new Order(orderId, 'Pizza', [
+            { topping: 'Pepperoni', quantity: pepperoniCount },
+            { topping: 'Mushroom', quantity: mushroomCount }
+        ]);
+        this.orders.push(order); // Save the order internally
+    
+        // Display the order above the customer’s head
+        const text = this.add.text(550, 140, orderText, {
+            fontSize: '18px',
+            fill: '#000'
+        }).setOrigin(0.5);
+    }
+
+    createOrderForm() {
+        
+        //background for order form
+        const order_notepad = this.add.image(630, 330, 'order_notepad').setDisplaySize(300, 300);
+
+        // Add initial input fields for toppings
+        this.addOrderInput(505, 270, 'Pepperoni');
+        this.addOrderInput(505, 310, 'Mushroom');
+        this.addOrderInput(505, 350, 'Pineapple');
+    }
+
+    addOrderInput(x, y, toppingName) {
+        const orderInput = {
+            quantity: '', // Start with an empty string for quantity
+            topping: 'Pizza', // Default topping
+            graphics: this.add.graphics(),
+            quantityText: null,
+            selectedText: null
+        };
+
+        // Create number input
+        orderInput.graphics.fillStyle(0xffffff, 1);
+        orderInput.graphics.fillRect(x, y, 50, 30);
+        orderInput.quantityText = this.add.text(x + 5, y + 5, orderInput.quantity, { fontSize: '18px', fill: '#000' });
+
+        // Set up interaction for number input
+        this.setupNumberInput(orderInput, x, y);
+
+        // Create dropdown
+        orderInput.graphics.fillStyle(0xffffff, 1);
+        orderInput.graphics.fillRect(x + 55, y, 170, 30);
+        orderInput.selectedText = this.add.text(x + 60, y + 5, '', { fontSize: '18px', fill: '#000' });
+        orderInput.topping = orderInput.selectedText;
+
+        // Set up dropdown
+        this.setupDropdown(orderInput, x + 55, y);
+
+        // Add to order inputs array
+        this.orderInputs.push(orderInput);
+    }
+
+    setupNumberInput(orderInput, x, y) {
+        let focused = false;
+        const interactiveBox = this.add.rectangle(x + 25, y + 15, 50, 30, 0x000000, 0).setInteractive()
+            .on('pointerdown', () => {
+                focused = true; 
+                orderInput.quantityText.setStyle({ fill: '#ff0000' });
+            });
+
+        this.input.keyboard.on('keydown', (event) => {
+            if (focused) {
+                if (/^\d$/.test(event.key)) {  //regex for numbers
+                    orderInput.quantity += event.key; 
+                    orderInput.quantityText.setText(orderInput.quantity);
+                } else if (event.key === 'Backspace') {
+                    orderInput.quantity = orderInput.quantity.slice(0, -1) || '0';
+                    orderInput.quantityText.setText(orderInput.quantity);
+                } else if (event.key === 'Enter') {
+                    focused = false;  
+                    orderInput.quantityText.setStyle({ fill: '#000' });
+                }
+            }
+        });
+
+        this.input.on('pointerdown', (pointer, currentlyOver) => {
+            if (!currentlyOver.includes(interactiveBox)) {
+                focused = false;
+                orderInput.quantityText.setStyle({ fill: '#000' });
+            }
+        });
+    }
+
+    setupDropdown(orderInput, x, y) {
+        const options = ['Pizza', 'Pepperoni', 'Mushroom'];
+
+        // Initialize selected option to a placeholder
+        orderInput.selectedOption = '(Select Option)';
+        orderInput.selectedText.setText(orderInput.selectedOption);
+        orderInput.optionTexts = [];
+        orderInput.optionBackgrounds = [];
+
+        // Function to toggle the dropdown display
+        const toggleDropdown = () => {
+            if (orderInput.dropdownOpen) {
+                // Close dropdown: remove all option texts and backgrounds
+                orderInput.optionTexts.forEach(text => text.destroy());
+                orderInput.optionBackgrounds.forEach(background => background.destroy());
+                orderInput.optionTexts = [];
+                orderInput.optionBackgrounds = [];
+                orderInput.dropdownOpen = false;
+            } else {
+                // Open dropdown: create option texts and background boxes
+                options.forEach((option, index) => {
+                    // Create a background box for each option
+                    const background = this.add.graphics();
+                    background.fillStyle(0xffffff, 1); // White background
+                    background.fillRect(x, y + 35 + index * 30, 120, 30);
+                    orderInput.optionBackgrounds.push(background);
+
+                    // Create text for each option
+                    const optionText = this.add.text(x + 5, y + 35 + index * 30, option, { fontSize: '18px', fill: '#000' });
+                    optionText.setInteractive();
+                    optionText.on('pointerdown', () => {
+                        // Set the selected option and update the displayed text only if it's a valid selection
+                        orderInput.selectedOption = option;
+                        orderInput.selectedText.setText(orderInput.selectedOption);
+                        toggleDropdown();  // Close dropdown after selection
+                    });
+                    orderInput.optionTexts.push(optionText);
+                });
+                orderInput.dropdownOpen = true;
+            }
+        };
+
+        // Set interaction for the selected text to toggle the dropdown
+        orderInput.selectedText.setInteractive();
+        orderInput.selectedText.on('pointerdown', toggleDropdown);
+    }
 
     placeOrder() {
-        const order = {
-            id: Date.now(),
-            type: 'Pepperoni', // You can make this dynamic later
-            status: 'Ordered'
-        };
-        this.game.socket.emit('newOrder', order);
+        // Create a new order with pizza type and toppings
+        const pizzaType = 'Pizza'; // Default pizza type
+        const toppings = this.orderInputs.map(orderInput => ({
+            topping: orderInput.selectedOption, // Get the selected topping option
+            quantity: parseInt(orderInput.quantity, 10) || 0 // Convert quantity to integer, default to 0
+        })).filter(topping => topping.quantity > 0); // Only include toppings with quantities greater than 0
+
+        
+    if (toppings.length === 0) {
+        console.log('No toppings selected.');
+        return;
+    }
+
+    // Generate a unique order ID
+    const orderId = Date.now();
+
+    // Create the new order
+    const order = new Order(orderId, pizzaType, toppings);
+    this.orders.push(order);
+
+        // Send the order to the server
+        const newOrder = new Order(Date.now(), pizzaType, toppings);
+        this.game.socket.emit('newOrder', newOrder);
+        
+        console.log('New Order:', newOrder);
     }
 
     updateOrderDisplay() {
@@ -54,23 +274,14 @@ export default class OrderStation extends Station {
 
         // Display orders
         this.orders.forEach((order, index) => {
-            const text = this.add.text(400, 100 + index * 30, `Order ${order.id}: ${order.type} - ${order.status}`, { fontSize: '18px', fill: '#000' });
+            const toppingsText = order.toppings.map(t => `${t.quantity} ${t.topping}`).join(', ');
+            const text = this.add.text(400, 100 + index * 30, `Order ${order.orderId}: ${order.pizzaType} - Toppings: ${toppingsText}`, { fontSize: '18px', fill: '#000' });
             this.orderTexts.push(text);
         });
     }
 
-    createBackground(){
-        // Set a specific background color for the OrderStation scene
-        this.cameras.main.setBackgroundColor('#cce6ff');
-
-        // Add a rectangle along the bottom, this is the counter to order at
-        const graphics = this.add.graphics();
-        const rectWidth = this.game.config.width;
-        const rectHeight = 200;
-        const rectX = 0;
-        const rectY = this.game.config.height - rectHeight;
-
-        graphics.fillStyle(0x996600, 1); // Black color
-        graphics.fillRect(rectX, rectY, rectWidth, rectHeight);
+    createBackground() {
+        //TO DO - confirm if needed later
     }
 }
+

@@ -24,13 +24,18 @@ export default class ReviewStation extends Station {
     }
 
     preload() {
-       
+        // load customer image
+        this.load.image('customer_one', 'stations/assets/customer_one.png');
+
+        // load table image
+        this.load.image('table', 'stations/assets/table.png');
     }
 
     create() {
         this.createBackground();
 
         // Game logic here
+
         // Add review title to top of screen
         this.add.text(100, 100, 'Review', { fontSize: '32px', fontFamily: 'Calibri', fill: '#fff'});
 
@@ -40,6 +45,7 @@ export default class ReviewStation extends Station {
             .on('pointerdown', () => this.scene.start('KanbanStation'));
 
         //Add a text box on right side of screen people can type in
+        this.createTextBox();
 
         //Add button to restart order - needs functionality
         this.add.text(500, this.game.config.height - 100, 'Reject', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#f44336' });
@@ -50,12 +56,44 @@ export default class ReviewStation extends Station {
             //.on('pointerdown', () => ticket.completeTicket());
     }
 
+    createTextBox() {
+        const inputBox = document.createElement('input');
+        inputBox.type = 'text';
+        inputBox.id = 'playerInput';
+        inputBox.placeholder = 'Type your review...';
+
+        // Style the input box
+        inputBox.style.position = 'absolute';
+        inputBox.style.bottom = '20px';  
+        inputBox.style.right = '120px';
+        inputBox.style.width = '250px';
+        inputBox.style.height = '40px';
+        inputBox.style.fontSize = '18px';
+
+        // Add an event listener to handle input submission
+        inputBox.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                const inputValue = inputBox.value;
+                if (inputValue.trim()) {
+                    // Handle the input submission (validate order)
+                    this.handlePlayerInput(inputValue);
+                    inputBox.value = ''; // Clear the text box after submitting
+                }
+            }
+        });
+
+        document.body.appendChild(inputBox);
+    }
+
+    handlePlayerInput(inputValue) {
+        console.log('Player typed review:', inputValue);
+        // Review logic
+    }
+
     createBackground() {
         // Set a specific background color for the ReviewStation
         this.cameras.main.setBackgroundColor('#a7288a');
 
-        // Add functionality here to display the pizza image 
+        // Add functionality here to display the pizza image
     }
-
-
 }

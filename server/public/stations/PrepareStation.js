@@ -36,7 +36,7 @@ export default class PrepareStation extends Station {
         this.load.image('pizzaSauce', 'stations/assets/sauce.png');
         this.load.image('pepperoniSlice', 'stations/assets/pepperoni_slice.png');
         this.load.image('mushroomSlice', 'stations/assets/mushroom_slice.png');
-        this.load.image('cheese', 'stations/assets/cheese.png'); // needs to be changed to other sprite
+        this.load.image('cheeseUncooked', 'stations/assets/cheese_uncooked.png');
     }
 
     /**
@@ -147,18 +147,7 @@ export default class PrepareStation extends Station {
         }).setInteractive().on('pointerdown', () => { this.createPizza('large');
 
         });
-        // const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
-        //     .setInteractive()
-        //     .on('pointerdown', () => {
-        //         this.createPizza('small');
-        //     });
         
-        // const baseLargeButton = this.add.text(50, 250, 'Large Pizza Base', { fontSize: '20px', fill: '#000', fontFamily: 'Calibri', backgroundColor: '#ffd11a' })
-        //     .setInteractive()
-        //     .on('pointerdown', () => {
-        //         this.createPizza('large');
-        //     });
-
         // Store button references in the array
         this.pizzaBaseButtons.push(baseSmallButton, baseLargeButton);
     }

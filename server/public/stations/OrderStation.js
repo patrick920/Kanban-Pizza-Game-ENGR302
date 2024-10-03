@@ -1,5 +1,5 @@
 import Station from './Station.js';
-
+import Ticket from './Ticket.js';
 // TO-DO:
 // - Randomize customer order and save it somewhere to assess correctness
 // - small / large pizza options + final toppings
@@ -238,32 +238,32 @@ export default class OrderStation extends Station {
     }
 
     placeOrder() {
-        // Create a new order with pizza type and toppings
-        const pizzaType = 'Pizza'; // Default pizza type
+        const pizzaType = 'Pizza';
         const toppings = this.orderInputs.map(orderInput => ({
-            topping: orderInput.selectedOption, // Get the selected topping option
-            quantity: parseInt(orderInput.quantity, 10) || 0 // Convert quantity to integer, default to 0
-        })).filter(topping => topping.quantity > 0); // Only include toppings with quantities greater than 0
-
-        
-    if (toppings.length === 0) {
-        console.log('No toppings selected.');
-        return;
+            topping: orderInput.selectedOption,
+            quantity: parseInt(orderInput.quantity, 10) || 0
+        })).filter(topping => topping.quantity > 0);
+    
+        if (toppings.length === 0) {
+            console.log('No toppings selected.');
+            return;
+        }
+    
+        const orderId = Date.now();
+        const order = new Order(orderId, pizzaType, toppings);
+        this.orders.push(order);
+    
+        const ticket = new Ticket(order); // Create ticket
+    
+        // Get the kanban scene and add the ticket
+        const kanbanScene = this.scene.get('KanbanStation');
+        kanbanScene.addTicket(ticket);  // Add ticket to kanban board
+    
+        this.game.socket.emit('newOrder', order);
+        console.log('New Order:', order);
+        console.log('New Ticket:', ticket);
     }
-
-    // Generate a unique order ID
-    const orderId = Date.now();
-
-    // Create the new order
-    const order = new Order(orderId, pizzaType, toppings);
-    this.orders.push(order);
-
-        // Send the order to the server
-        const newOrder = new Order(Date.now(), pizzaType, toppings);
-        this.game.socket.emit('newOrder', newOrder);
-        
-        console.log('New Order:', newOrder);
-    }
+    
 
     updateOrderDisplay() {
         // Clear previous order display

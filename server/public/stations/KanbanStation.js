@@ -9,6 +9,7 @@
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
 import { makeDraggable } from './kanban/draggable.js';
+import Ticket from './Ticket.js';
 
 //Source: https://www.w3schools.com/js/js_const.asp
 const TOP_TO_TITLE_GAP = 10;
@@ -31,7 +32,6 @@ export default class KanbanStation extends Station {
     constructor() {
         super({ key: 'KanbanStation' });
         this.tasks = [];
-        this.orderTickets = [];
         this.prepTickets = [];
         this.cookTickets = [];
         this.reviewTickets = [];
@@ -263,6 +263,12 @@ export default class KanbanStation extends Station {
             // setTimeout(() => {
             //   this.scene.restart();
             // }, 3000)
+
+            this.add.text(1000, this.game.config.height - 50, 'Show Tickets', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#000' })
+            .setInteractive()
+            .on('pointerdown', () => {
+            console.log('tickets:', this.prepTickets);
+            });
     }
 
     createBackground() {
@@ -299,7 +305,7 @@ export default class KanbanStation extends Station {
     // Add ticket to kanban board
     addTicket(ticket) {
         if (ticket instanceof Ticket) {
-            this.orderTickets.push(ticket);
+            this.prepTickets.push(ticket);
         } else {
             throw new Error('Only Ticket objects can be added.');
         }
@@ -307,12 +313,7 @@ export default class KanbanStation extends Station {
    
    // Moves ticket to the next stations array
    nextStation(ticket) {
-    if (this.orderTickets.includes(ticket)) {
-        // Move from Order to Prep
-        this.orderTickets.splice(this.orderTickets.indexOf(ticket), 1);
-        this.prepTickets.push(ticket);
-        // ticket.getPizza().nextStation(); 
-    } else if (this.prepTickets.includes(ticket)) {
+    if (this.prepTickets.includes(ticket)) {
         // Move from Prep to Cook
         this.prepTickets.splice(this.prepTickets.indexOf(ticket), 1);
         this.cookTickets.push(ticket);

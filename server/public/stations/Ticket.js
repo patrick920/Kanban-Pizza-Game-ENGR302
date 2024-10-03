@@ -1,22 +1,23 @@
-import KanbanStation from "./KanbanStation";
-
-// needs further functionality
-
 export default class Ticket {
-    //an array as the ticket may have been rejected and restarted and multiple notes may be written
+    // An array for review notes (ticket may have been rejected and restarted)
     reviewNotes = []; 
-    constructor(pizza, order = '', kanbanStation) {
-        this.pizza = pizza; // Reference to a Pizza object
-        this.order = order; // Optional string of instructions for the pizza
+    pizza; 
+    
+    constructor(order) {
+        this.order = order; // Order associated with this ticket
         this.isCompleted = false; // Track if the ticket has been completed
         this.station = "prepare"; // Set the initial station
-        this.kanbanStation = kanbanStation; // Reference to kanaban station
     }
 
     // Mark the ticket as completed
     completeTicket() {
         this.isCompleted = true;
-        kanbanStation.completeTicket(ticket);
+        // Now the responsibility for completing the ticket lies with the KanbanStation
+        // Remove reference to kanbanStation.completeTicket(ticket);
+    }
+
+    setPizza(pizza) {
+        this.pizza = pizza;
     }
 
     // Get the pizza object associated with this ticket
@@ -38,10 +39,9 @@ export default class Ticket {
     setReviewNotes(notes) {
         this.reviewNotes.push(notes); 
     }
+
     // Get the review notes associated with this ticket
     getNotes() {
         return this.reviewNotes; 
     }
-
-    
 }

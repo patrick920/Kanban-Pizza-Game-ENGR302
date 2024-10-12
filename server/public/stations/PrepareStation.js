@@ -1,5 +1,7 @@
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
+import ImagePreloader from './ImagePreloader.js';
+import GameStateManager from './GameStateManager.js';
 
 /**
  * This is the class for the PrepareStation
@@ -19,24 +21,15 @@ export default class PrepareStation extends Station {
         super({ key: 'PrepareStation' });
         this.preparedPizzas = [];
         this.pizzaBaseButtons = []; // Array to hold button references
+        this.gameStateManager = new GameStateManager();
+        this.currentTicket = null;
     }
 
     /**
      * Preload images
      */
     preload() {
-        // load tomato paste image
-        this.load.image('tomatoPaste', 'stations/assets/sauce_bucket.png');
-        // load pepperoni image
-        this.load.image('pepperoniTray', 'stations/assets/pepperoni_tray.png');
-        // load cheese image
-        this.load.image('cheese', 'stations/assets/cheese_block.png');
-        // Load the pizza base image and toppings images
-        this.load.image('pizzaBase', 'stations/assets/pizza_base_raw.png');
-        this.load.image('pizzaSauce', 'stations/assets/sauce.png');
-        this.load.image('pepperoniSlice', 'stations/assets/pepperoni_slice.png');
-        this.load.image('mushroomSlice', 'stations/assets/mushroom_slice.png');
-        this.load.image('cheeseUncooked', 'stations/assets/cheese_uncooked.png');
+        ImagePreloader.preloadImages(this);
     }
 
     /**
@@ -64,12 +57,11 @@ export default class PrepareStation extends Station {
         this.createMushroom();
 
         // Display the current ticket
-        this.currentTicket();
+        this.displayCurrentTicket();
 
-        // Create prepare button
-        const prepareButton = this.add.text(100, 500, 'Prepare Pizza', { fontSize: '24px', fill: '#fff', backgroundColor: '#28a745' })
-            .setInteractive()
-            .on('pointerdown', () => this.createPizza());
+        
+        this.createSendToCookButton();
+        console.log("created send to cook");
 
         // Listen for prepared pizzas updates
         this.game.socket.on('preparedPizzasUpdate', (preparedPizzas) => {
@@ -82,6 +74,12 @@ export default class PrepareStation extends Station {
             this.preparedPizzas = gameState.preparedPizzas;
             this.updatePreparedPizzasDisplay();
         });
+        this.currentTicket = this.gameStateManager.getCurrentTicket();
+        if (this.currentTicket) {
+            this.displayTicketInfo();
+        } else {
+            console.error('No current ticket found in PrepareStation');
+        }
     }
 
     /**
@@ -170,24 +168,70 @@ export default class PrepareStation extends Station {
      * @param {*} size 
      */
     createPizza(size) {
-        this.removePizzaBaseButtons(); // remove pizza base after after choosing a size
-
+        this.removePizzaBaseButtons();
+    
         const pizzaX = this.game.config.width / 4;
         const pizzaY = this.game.config.height / 2;
-
+    
         // Create and display pizza
         this.pizza = new Pizza(this, pizzaX, pizzaY, size);
         
-        // // something to hold information about the pizza object
-        // // ASK HANNING ABOUT THIS TOMORROW, HOW DOES HE WANT IT TO BE USED?
-        // const preparedPizza = {
-        //     id: Date.now(),
-        //     size: 'small',
-        //     toppings: ['cheese', 'pepperoni'] // Example toppings
-        // };
-        // this.game.socket.emit('pizzaPrepared', preparedPizza);
-        // if i use this suddenly toppings stop working
+        // Setup interaction for sauce and cheese
+        this.setupSauceInteraction();
+        this.setupCheeseInteraction();
+        this.currentTicket.setPizza(this.pizza.toJSON());
+        this.sendToCookButton.setVisible(true); // Show the button when pizza is created
     }
+
+    setupSauceInteraction() {
+        this.input.on('pointerdown', (pointer) => {
+            if (this.tomatoPasteOn && this.pizza) {
+                this.pizza.addSauce();
+                this.tomatoPasteOn = false;
+                this.removeCircle();
+            }
+        });
+    }
+
+    setupCheeseInteraction() {
+        this.input.on('pointerdown', (pointer) => {
+            if (this.cheeseOn && this.pizza) {
+                this.pizza.addCheese();
+                this.cheeseOn = false;
+                this.removeCircle();
+            }
+        });
+    }
+
+    createSendToCookButton() {
+        const button = this.add.text(100, 500, 'Send to Cook', { 
+            fontSize: '24px', 
+            fill: '#fff', 
+            backgroundColor: '#4a4a4a' 
+        })
+        .setInteractive()
+        .on('pointerdown', () => this.sendToCook());
+
+        this.sendToCookButton = button;
+        this.sendToCookButton.setVisible(true); // Hide initially
+    }
+
+    sendToCook() {
+        if (this.currentTicket && this.currentTicket.getPizza()) {
+            this.gameStateManager.setCurrentTicket(this.currentTicket);
+            
+            // Reset the prepare station
+            this.pizza = null;
+            this.currentTicket = null;
+            this.sendToCookButton.setVisible(false);
+            this.createPizzaBaseButtons();
+            
+            this.scene.start('CookStation');
+        } else {
+            console.error('Cannot send to cook: No ticket or pizza available');
+        }
+    }
+
 
     /**
      * ASK HANNING ABOUT THIS TOMORROW
@@ -246,11 +290,15 @@ export default class PrepareStation extends Station {
      * on the mouse. It can then be dragged and dropped onto the pizza .
      * Once on the pizza is cannot be moved
      */
-    createAndMoveTopping(topping, toppingName){
-        // Add event listener for clicking to create a new topping slice
+    createAndMoveTopping(topping, toppingName) {
         topping.on('pointerdown', (pointer) => {
             if (!this.tomatoPasteOn && !this.cheeseOn) {
                 this.isDragging = true;
+
+                // Create a new topping slice image at the current mouse position
+                this.currentTopping = this.add.image(pointer.x, pointer.y, toppingName)
+                    .setDisplaySize(100, 100)
+                    .setInteractive();
 
                 // Check if there's an existing topping slice that hasn't been placed on the pizza
                 if (this.currentTopping) {
@@ -289,6 +337,8 @@ export default class PrepareStation extends Station {
                 });
             }
         });
+        // When topping is placed:
+        
     }
 
     /**
@@ -397,7 +447,7 @@ export default class PrepareStation extends Station {
         this.isCircleActive = false;  // Deactivate the circle
     }
 
-    currentTicket() {
+    displayCurrentTicket() {
         // Define the position and size of the rectangle
         const x = 1100; // X position of the rectangle
         const y = 0; // Y position of the rectangle
@@ -418,5 +468,9 @@ export default class PrepareStation extends Station {
                 align: 'center'
             })
             .setOrigin(0.5); // Center the text within the rectangle
+    }
+
+    displayTicketInfo(){
+
     }
 }

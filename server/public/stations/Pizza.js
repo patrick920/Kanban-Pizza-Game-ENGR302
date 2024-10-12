@@ -1,6 +1,6 @@
 import PrepareStation from './PrepareStation.js'; // Import the PrepareStation class
 
-export default class Pizza {
+export default class Pizza extends Phaser.GameObjects.Container{
     base;
     sauce;
     toppings = []; // Array to store toppings
@@ -17,6 +17,7 @@ export default class Pizza {
      * @param {*} size 
      */
     constructor(scene, x, y, size) {
+        super(scene, x, y);
         this.scene = scene;
         this.x = x;
         this.y = y;
@@ -26,27 +27,120 @@ export default class Pizza {
         this.cheese = null;
 
         // Define the size of the pizza base based on the size parameter
-        if (size === 'small') {
-            this.scale = 0.5;  // Small size scale
-        } else if (size === 'large') {
-            this.scale = 0.75;  // Large size scale
-        } else {
-            throw new Error('Invalid pizza size');
-        }
-
+        this.size = size;
         // Add the pizza base image and make it interactive
         console.log(this.scene);
-        this.base = this.scene.add.image(this.x, this.y, 'pizzaBase')
-            .setScale(this.scale)
-            .setInteractive();
-
-        // Add click event to the pizza base
-        this.base.on('pointerdown', (pointer) => {
-            this.fillSauce(pointer.x, pointer.y);  // Pass mouse position
-            this.fillCheese(pointer.x, pointer.y);
-        });  
+        this.base = null;
+        this.toppings = [];
+        this.cookingState = 'raw'; // 'raw', 'cooked', or 'burnt'
+        this.createBase();  
+        scene.add.existing(this);
     }
 
+    createBase() {
+        const scale = this.size === 'small' ? 0.5 : 0.75;
+        this.base = this.scene.add.image(0, 0, 'pizzaBase')
+            .setScale(scale)
+            .setInteractive();
+        this.add(this.base);
+    }
+
+    addSauce() {
+        if (!this.sauce) {
+            const scale = this.size === 'small' ? 1.5 : 2.25;
+            this.sauce = this.scene.add.image(0, 0, 'pizzaSauce').setScale(scale);
+            this.add(this.sauce);
+        }
+    }
+
+    addCheese() {
+        if (!this.cheese) {
+            const scale = this.size === 'small' ? 1.15 : 1.725;
+            this.cheese = this.scene.add.image(0, 0, 'cheeseUncooked').setScale(scale);
+            this.add(this.cheese);
+        }
+    }
+
+    addTopping(toppingKey) {
+        const scale = this.size === 'small' ? 0.15 : 0.225;
+        const randomX = Phaser.Math.Between(this.x - this.base.displayWidth / 2, this.x + this.base.displayWidth / 2);
+        const randomY = Phaser.Math.Between(this.y - this.base.displayHeight / 2, this.y + this.base.displayHeight / 2);
+        const topping = this.scene.add.image(randomX, randomY, toppingKey).setScale(scale);
+        this.add(topping);
+        this.toppings.push(topping);
+        
+    }
+
+    isOnPizza(item) {
+        const itemBounds = item.getBounds();
+        const pizzaBounds = this.getBounds();
+        return Phaser.Geom.Intersects.RectangleToRectangle(itemBounds, pizzaBounds);
+    }
+
+    displayInScene() {
+        this.setVisible(true);
+    }
+
+    hideInScene() {
+        this.setVisible(false);
+    }
+
+    cook() {
+        if (this.cookingState === 'raw') {
+            this.cookingState = 'cooked';
+            this.updateAppearance();
+        } else if (this.cookingState === 'cooked') {
+            this.cookingState = 'burnt';
+            this.updateAppearance();
+        }
+    }
+
+    updateAppearance() {
+        if (this.cookingState === 'cooked') {
+            this.base.setTexture('pizzaBaseCooked');
+            if (this.cheese) {
+                this.cheese.setTexture('cheeseCooked');
+            }
+        } else if (this.cookingState === 'burnt') {
+            this.base.setTexture('pizzaBaseBurnt');
+        }
+    }
+
+    isBurnt() {
+        return this.cookingState === 'burnt';
+    }
+
+    isCooked() {
+        return this.cookingState === 'cooked';
+    }
+
+    toJSON() {
+        return {
+            x: this.x,
+            y: this.y,
+            size: this.size,
+            hasSauce: !!this.sauce,
+            hasCheese: !!this.cheese,
+            toppings: this.toppings.map(t => t.texture.key),
+            cookingState: this.cookingState
+        };
+    }
+
+    static fromJSON(scene, data) {
+        const pizza = new Pizza(scene, data.x, data.y, data.size);
+        if (data.hasSauce) pizza.addSauce();
+        if (data.hasCheese) pizza.addCheese();
+        data.toppings.forEach(topping => pizza.addTopping(topping));
+        pizza.cookingState = data.cookingState;
+        return pizza;
+    }
+/*
+    destroy() {
+        this.base.destroy();
+        if (this.sauce) this.sauce.destroy();
+        if (this.cheese) this.cheese.destroy();
+        this.toppings.forEach(topping => topping.destroy());
+    } */ 
     /**
      * Fill the sauce in
      * @param {*} mouseX 
@@ -54,11 +148,9 @@ export default class Pizza {
      */
     fillSauce(mouseX, mouseY) {
         // Check if sauce should be added (e.g., check condition from a station class)
-        if (this.scene.tomatoPasteOn && this.sauce === null) {
-            // Add the sauce image if it doesn't exist yet
-            this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce').setScale(this.scale * 3);
-            this.scene.removeCircle();
-            this.scene.tomatoPasteOn = false;
+        if (this.sauce === null) {
+            const scale = this.size === 'small' ? 1.5 : 2.25;
+            this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce').setScale(scale);
         }
     }
 
@@ -68,12 +160,10 @@ export default class Pizza {
      * @param {*} mouseY 
      */
     fillCheese(mouseX, mouseY) {
-        // Check if sauce should be added (e.g., check condition from a station class)
-        if (this.scene.cheeseOn && this.cheese === null) {
-             // Add the sauce image if it doesn't exist yet
-             this.cheese = this.scene.add.image(this.x, this.y, 'cheeseUncooked').setScale(this.scale * 2.3);
-             this.scene.removeCircle();
-             this.scene.cheeseOn = false;
+        // Check if cheese should be added (e.g., check condition from a station class)
+        if (this.cheese === null) {
+            const scale = this.size === 'small' ? 1.15 : 1.725;
+            this.cheese = this.scene.add.image(this.x, this.y, 'cheeseUncooked').setScale(scale);
         }
     }
 

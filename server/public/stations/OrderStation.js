@@ -1,5 +1,6 @@
 import Station from './Station.js';
 import Ticket from './Ticket.js';
+import GameStateManager from './GameStateManager.js';
 // TO-DO:
 // - Randomize customer order and save it somewhere to assess correctness
 // - small / large pizza options + final toppings
@@ -47,6 +48,7 @@ export default class OrderStation extends Station {
         this.orders = [];
         this.currentOrderId = null;
         this.orderInputs = []; // Array to hold input data for orders
+        this.gameStateManager = new GameStateManager();
     }
 
     create() {
@@ -253,7 +255,9 @@ export default class OrderStation extends Station {
         const order = new Order(orderId, pizzaType, toppings);
         this.orders.push(order);
     
-        const ticket = new Ticket(order); // Create ticket
+        // Create ticket
+        const ticket = new Ticket(order);
+        this.gameStateManager.setCurrentTicket(ticket);
     
         // Get the kanban scene and add the ticket
         const kanbanScene = this.scene.get('KanbanStation');

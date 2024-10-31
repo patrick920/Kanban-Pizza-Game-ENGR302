@@ -299,6 +299,15 @@ export default class KanbanStation extends Station {
         // Adjust container rotation for demonstration
         this.container.setAngle(15);
 
+        //Set the container's size, as otherwise it prevents the Container from being draggable.
+        this.container.setSize(200, 100);
+
+        //Code to make the Container draggable, using the draggable.js file which worked successfully
+        //for a basic rectangle.
+        //Can see the name the below being logged in the log statement in the "destroy" function in draggable.js.
+        this.container.name = 'Basic Phaser Container With Text'
+        makeDraggable(this.container, true); //true to log.
+
         // // Enable drag for the container
         // this.input.setDraggable(this.container);
 

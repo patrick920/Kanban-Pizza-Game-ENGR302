@@ -269,6 +269,44 @@ export default class KanbanStation extends Station {
             .on('pointerdown', () => {
             console.log('tickets:', this.prepTickets);
             });
+        
+        //-----------------------------------------------------------
+        //Phaser Draggable Container Object
+        //-----------------------------------------------------------
+
+        //Code below from ChatGPT:
+        // Create a Phaser Container positioned at (200, 200)
+        this.container = this.add.container(200, 200);
+
+        // Create a background rectangle for visual clarity (optional)
+        const graphics = this.add.graphics();
+        graphics.fillStyle(0x3498db, 1);  // blue color
+        graphics.fillRect(-50, -50, 200, 100);  // x, y, width, height
+
+        // Add the rectangle to the container
+        this.container.add(graphics);
+
+        // Add two text labels inside the container
+        const label1 = this.add.text(0, 0, 'Label 1', { fontSize: '20px', fill: '#ffffff' });
+        const label2 = this.add.text(0, 30, 'Label 2', { fontSize: '20px', fill: '#ffffff' });
+
+        // Add text labels to the container
+        this.container.add([label1, label2]);
+
+        // Adjust the container's scale
+        this.container.setScale(1.5);
+
+        // Adjust container rotation for demonstration
+        this.container.setAngle(15);
+
+        // // Enable drag for the container
+        // this.input.setDraggable(this.container);
+
+        // // Listen for drag events
+        // this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+        //     gameObject.x = dragX;
+        //     gameObject.y = dragY;
+        // });
     }
 
     createBackground() {

@@ -13,22 +13,7 @@ import { makeDraggable } from './kanban/draggable.js';
 import KanbanBoard from './kanban/KanbanBoard.js';
 import Ticket from './Ticket.js';
 
-//Source: https://www.w3schools.com/js/js_const.asp
-const TOP_TO_TITLE_GAP = 10;
-const TITLE_TEXT_HEIGHT = 40;
-const TITLE_TO_COLUMN_TITLES_HEIGHT = 5; //Used to be 10.
-const COLUMN_TITLES_TEXT_HEIGHT = 20; //Used to be 15.
-//The width of the Kanban board column.
-const COLUMN_RECTANGLE_WIDTH = 200;
-//The gap between the Kanban board column and the menu at the bottom of the screen.
-const COLUMN_RECTANGLES_TO_MENU_GAP = 10;
-//Y position for the start of the buttons for the menu at the bottom of the screen.
-const Y_MENU_START = 100;
-//The gap between each of the Kanban board columns.
-const GAP_BETWEEN_COLUMN_RECTANGLES = 14;
-//The additional gap at the left and right sides of the screen, as when you divide an odd number is produced so must
-//balance things out.
-const ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN = 1;
+
 
 export default class KanbanStation extends Station {
     constructor() {
@@ -52,7 +37,7 @@ export default class KanbanStation extends Station {
         this.createBackground();
 
         const kanbanBoard = new KanbanBoard();
-        kanbanBoard.createKanbanBoard();
+        kanbanBoard.createKanbanBoard(this);
 
         //-----------------------------------------------------------
         //Test object only.

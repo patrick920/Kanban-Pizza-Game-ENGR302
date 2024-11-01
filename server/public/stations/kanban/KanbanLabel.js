@@ -8,7 +8,10 @@
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
  */
 
-import { makeDraggable } from './draggable.js';
+//import { makeDraggable } from './draggable.js';
+//From ChatGPT:
+import { makeDraggable } from './DraggableObject.js';
+
 //From ChatGPT:
 import { GAP_BETWEEN_COLUMN_RECTANGLES, ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN,
     GAP_BETWEEN_COLUMN_AND_LABELS, LABEL_WIDTH, COLUMN_RECTANGLE_WIDTH } from './KanbanBoard.js';
@@ -42,7 +45,7 @@ export default class KanbanLabel {
         //-----------------------------------------
         //Some code from ChatGPT taken and modified.
         //Create the Phaser Container which contains all elements for this.
-        this.container = kanbanStation.add.container(200, height);
+        this.container = kanbanStation.add.container(LABEL_WIDTH, height); //Is this x and y or width/height?
         const graphics = kanbanStation.add.graphics();
         //Source: Google RGB color picker.
         graphics.fillStyle(0x3e81e6, 1);  // blue color
@@ -66,8 +69,11 @@ export default class KanbanLabel {
         //for a basic rectangle.
         this.container.name = 'Kanban Label'
         //Can see the name above being logged in the log statement in the "destroy" function in draggable.js.
-        //makeDraggable(this.container, true); //true to log.
-        makeDraggable(this.container, false); //False to not log any messages in the console.
+        //makeDraggable(this.container, false); //False to not log any messages in the console.
+
+        //Code from ChatGPT.
+        //Make the rectangle draggable vertically only.
+        makeDraggable(this.container, false, true);
 
         //TODO: Create the button that leads to a particular scene.
     }
@@ -90,4 +96,19 @@ export default class KanbanLabel {
     //But for simplicity, might be easier not to make it static at this stage. No, don't make it static.
 
     //TODO: Create a KanbanBoard class and copy and pasted the KanbanStation code to there for layout and positioning.
+
+    //----------------------------------------------------------------------
+    /*
+     * Code to drag Kanban Board labels up and down.
+     */
+
+    //TODO: Make code triggered by mouse events.
+
+    beginDragOperation(){
+
+    }
+
+    endDragOperation(){
+        
+    }
 }

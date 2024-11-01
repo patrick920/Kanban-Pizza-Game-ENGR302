@@ -251,18 +251,43 @@ export default class KanbanBoard{
     }
     
     displayLabels(){
+        // xport const TOP_TO_TITLE_GAP = 10;
+        // export const TITLE_TEXT_HEIGHT = 40;
+        // export const TITLE_TO_COLUMN_TITLES_HEIGHT = 5; //Used to be 10.
+        // export const COLUMN_TITLES_TEXT_HEIGHT = 20; //Used to be 15.
+        // //The width of the Kanban board column.
+        // export const COLUMN_RECTANGLE_WIDTH = 200;
+        // //The gap between the Kanban board column and the menu at the bottom of the screen.
+        // export const COLUMN_RECTANGLES_TO_MENU_GAP = 10;
+        // //Y position for the start of the buttons for the menu at the bottom of the screen.
+        // export const Y_MENU_START = 100;
+        // //The gap between each of the Kanban board columns.
+        // export const GAP_BETWEEN_COLUMN_RECTANGLES = 14;
+        // //The additional gap at the left and right sides of the screen, as when you divide an odd number is produced so must
+        // //balance things out.
+        // export const ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN = 1;
+        
+        // //Constants for layout of the labels.
+        // export const GAP_BETWEEN_COLUMN_AND_LABELS = 10;
+
         //The Y position where the next label on the Kanban board will be drawn. This will keep going up as
         //new labels are added.
-        //currentYPos = 
+        //Set the initial Y position for the first Kanban board label.
+        let currentYPos = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT +
+                            COLUMN_TITLES_TEXT_HEIGHT + GAP_BETWEEN_COLUMN_AND_LABELS;
 
         //Use the lists in KanbanStation.
         for(let i = 0; i < kanbanLabelsList.length; i++){
             console.log("Display label " + i + " on the Kanban board.");
             let currentLabel = kanbanLabelsList[i];
             //Random number code from ChatGPT.
-            currentLabel.drawLabelOnKanbanBoard(Math.floor(Math.random() * (800 - 200 + 1)) + 200);
+            //currentLabel.drawLabelOnKanbanBoard(Math.floor(Math.random() * (800 - 200 + 1)) + 200);
+            currentLabel.drawLabelOnKanbanBoard(currentYPos);
             //Call a method to display the label. EVERYTHING about positioning is decided by KanbanLabel except for
             //the y position on the column which is decided here.
+
+            //Update "currentYPos" with the height of the label and the gap.
+            currentYPos += currentLabel.height + GAP_BETWEEN_COLUMN_AND_LABELS;
         }
     }
 
@@ -271,6 +296,7 @@ export default class KanbanBoard{
         //kanbanStation code should be removed later on.
         this.addLabel(200);
         this.addLabel(90);
+        this.addLabel(120);
     }
 
 }

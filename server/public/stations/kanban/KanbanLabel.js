@@ -9,6 +9,10 @@
  */
 
 import { makeDraggable } from './draggable.js';
+//From ChatGPT:
+import { GAP_BETWEEN_COLUMN_RECTANGLES, ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN,
+    GAP_BETWEEN_COLUMN_AND_LABELS, LABEL_WIDTH } from './KanbanBoard.js';
+//import KanbanBoard from './KanbanBoard.js';
 
 export default class KanbanLabel {
     //TODO: Add the Ticket/Label object that will be created by the Pizza order.
@@ -39,7 +43,8 @@ export default class KanbanLabel {
         const graphics = kanbanStation.add.graphics();
         //Source: Google RGB color picker.
         graphics.fillStyle(0x3e81e6, 1);  // blue color
-        graphics.fillRect(-50, -50, 200, height);  // x, y, width, height
+        graphics.fillRect(0, 0, LABEL_WIDTH, height);  // x, y, width, height
+        //TODO: Do the dimensions for items in the container need to be relative to the container or the entire screen?
 
         //Add the rectangle for the label to the container.
         this.container.add(graphics);
@@ -52,7 +57,7 @@ export default class KanbanLabel {
         this.container.add([label1, label2]);
 
         //Set the container's size, as otherwise it prevents the Container from being draggable.
-        this.container.setSize(200, height);
+        this.container.setSize(LABEL_WIDTH, height);
 
         //Code to make the Container draggable, using the draggable.js file which worked successfully
         //for a basic rectangle.
@@ -68,7 +73,9 @@ export default class KanbanLabel {
      * Display the label on the specified y position on the Kanban board.
      */
     drawLabelOnKanbanBoard(yPos){
-        //this.container.x = GAP_BETWEEN_COLUMN_RECTANGLES + ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN + __;
+        this.container.x = GAP_BETWEEN_COLUMN_RECTANGLES + 
+                            ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN +
+                            GAP_BETWEEN_COLUMN_AND_LABELS;
         //Only need to set the container's y because everything else will move with the container.
         this.container.y = yPos;
     }

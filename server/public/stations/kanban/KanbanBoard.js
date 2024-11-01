@@ -7,22 +7,28 @@ import KanbanLabel from './KanbanLabel.js';
 //TODO: Have a list for each of the stations with the labels currently in there. Have a hardcoded list for each
 //one as it will be simpler. NO, get the list from the KanbanStation that has already been defined.
 
+//Source: ChatGPT
 //Source: https://www.w3schools.com/js/js_const.asp
-const TOP_TO_TITLE_GAP = 10;
-const TITLE_TEXT_HEIGHT = 40;
-const TITLE_TO_COLUMN_TITLES_HEIGHT = 5; //Used to be 10.
-const COLUMN_TITLES_TEXT_HEIGHT = 20; //Used to be 15.
+export const TOP_TO_TITLE_GAP = 10;
+export const TITLE_TEXT_HEIGHT = 40;
+export const TITLE_TO_COLUMN_TITLES_HEIGHT = 5; //Used to be 10.
+export const COLUMN_TITLES_TEXT_HEIGHT = 20; //Used to be 15.
 //The width of the Kanban board column.
-const COLUMN_RECTANGLE_WIDTH = 200;
+export const COLUMN_RECTANGLE_WIDTH = 200;
 //The gap between the Kanban board column and the menu at the bottom of the screen.
-const COLUMN_RECTANGLES_TO_MENU_GAP = 10;
+export const COLUMN_RECTANGLES_TO_MENU_GAP = 10;
 //Y position for the start of the buttons for the menu at the bottom of the screen.
-const Y_MENU_START = 100;
+export const Y_MENU_START = 100;
 //The gap between each of the Kanban board columns.
-const GAP_BETWEEN_COLUMN_RECTANGLES = 14;
+export const GAP_BETWEEN_COLUMN_RECTANGLES = 14;
 //The additional gap at the left and right sides of the screen, as when you divide an odd number is produced so must
 //balance things out.
-const ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN = 1;
+export const ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN = 1;
+
+//Constants for layout of the labels.
+export const GAP_BETWEEN_COLUMN_AND_LABELS = 10;
+//Width of a label on the Kanban board.
+export const LABEL_WIDTH = COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABELS * 2);
 
 /**
  * Have just a 1D list, not a 2D list for the labels on the Kanban board. This is because there can
@@ -235,14 +241,20 @@ export default class KanbanBoard{
 
     /**
      * Create a label in the Kanban Board.
+     * Height is just a temporary variable. Height should be automatic based on how the
+     * Kanban tasks work.
      */
-    addLabel(){
+    addLabel(height){
         //"push" is used to add to the list.
-        kanbanLabelsList.push(new KanbanLabel(this.kanbanStation, 200, [this.kanbanStation.add.text("Top"),
+        kanbanLabelsList.push(new KanbanLabel(this.kanbanStation, height, [this.kanbanStation.add.text("Top"),
             this.kanbanStation.add.text("Bottom")]));
     }
     
     displayLabels(){
+        //The Y position where the next label on the Kanban board will be drawn. This will keep going up as
+        //new labels are added.
+        //currentYPos = 
+
         //Use the lists in KanbanStation.
         for(let i = 0; i < kanbanLabelsList.length; i++){
             console.log("Display label " + i + " on the Kanban board.");
@@ -257,8 +269,8 @@ export default class KanbanBoard{
     createTestLabels(){
         //Create several test labels on the Kanban board automatically for testing purposes.
         //kanbanStation code should be removed later on.
-        this.addLabel();
-        this.addLabel();
+        this.addLabel(200);
+        this.addLabel(90);
     }
 
 }

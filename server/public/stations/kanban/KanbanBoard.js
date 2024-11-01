@@ -48,6 +48,7 @@ export default class KanbanBoard{
         this.kanbanStation = kanbanStation;
     }
 
+    //Use "this.kanbanStation" instead of the "this" keyword for many (but not all) things.
     createKanbanBoard(){
         //const kanbanStation = this.kanbanStation;
 
@@ -307,5 +308,54 @@ export default class KanbanBoard{
         this.addLabel(230, 5);
         this.addLabel(70, 5);
         this.addLabel(90, 5);
+    }
+
+    //----------------------------------------------------------------------
+    //Code to drag Kanban Board labels up and down.
+    //----------------------------------------------------------------------
+    
+    /*
+     * Code to drag Kanban Board labels up and down.
+     * Will use scene-wide mouse events.
+     * TODO: Only one label can be dragged at a time.
+     */
+
+    /**
+     * This sets up the drag functionality by setting up mouse listeners.
+     * This function is called from KanbanStation.js.
+     * TODO: Don't put too much code in the mouse listener functions (separate it out into separate functions),
+     * as this will make it easier to read and understand which mouse listeners are doing what.
+     */
+    setupDragFunctionality(){
+        //Code from ChatGPT:
+
+        // Capture any click on the scene
+        this.kanbanStation.input.on('pointerdown', (pointer) => {
+            console.log('SCENE-WIDE Mouse clicked at:', pointer.x, pointer.y);
+            //If the pointer's position is within one of the Kanban Board's columns, then begin the move operation.
+            checkIfMouseWithinKanbanColumn(pointer);
+        });
+
+        // Capture any mouse movement in the scene
+        this.kanbanStation.input.on('pointermove', (pointer) => {
+            //console.log('SCENE-WIDE Pointer moved to:', pointer.x, pointer.y);
+        });
+    }
+
+    /**
+     * TODO: Get the position from the KanbanLabel object for the individual labels.
+     * @param {*} pointer 
+     */
+    checkIfMouseWithinKanbanColumn(pointer){
+        //Loop over all columns on the Kanban board to display the label(s) on each column.
+        for(let columnIndex = 0; columnIndex < kanbanLabelsList.length; columnIndex++){
+            //Check if the mouse pointer is within a column.
+            
+
+            //Use the lists in KanbanStation.
+            for(let i = 0; i < kanbanLabelsList[columnIndex].length; i++){
+
+            }
+        }
     }
 }

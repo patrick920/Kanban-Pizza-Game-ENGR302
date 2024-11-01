@@ -45,6 +45,9 @@ export default class KanbanStation extends Station {
         //Display the labels on the Kanban Board.
         kanbanBoard.displayLabels();
 
+        //Setup drag functionality for Kanban Board labels.
+        kanbanBoard.setupDragFunctionality();
+
         //-----------------------------------------------------------
         //Test object only.
         //-----------------------------------------------------------

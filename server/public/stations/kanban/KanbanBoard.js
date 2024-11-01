@@ -321,6 +321,50 @@ export default class KanbanBoard{
      */
 
     /**
+     * This takes into account the space between labels and the column rectangle.
+     * TODO: Get the position from the KanbanLabel object for the individual labels.
+     * TODO: Make this function generic to mouse move as well, as it doesn't have to be just for mouse clicks.
+     * @param {*} pointer 
+     */
+    checkIfMouseWithinKanbanColumn(pointer){
+        let insideColumn = -1; //If it's -1 then the mouse is not within a column.
+
+        //TODO: Duplicate the below code for other mouse checking functions.
+        //Loop over all columns on the Kanban board to display the label(s) on each column.
+        for(let columnIndex = 0; columnIndex < kanbanLabelsList.length; columnIndex++){
+            let LEFT_X_CURRENT_COL = GAP_BETWEEN_COLUMN_RECTANGLES + 
+                                    ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN +
+                                    GAP_BETWEEN_COLUMN_AND_LABELS +
+                                    columnIndex * (COLUMN_RECTANGLE_WIDTH + GAP_BETWEEN_COLUMN_RECTANGLES);
+            let RIGHT_X_CURRENT_COL = LEFT_X_CURRENT_COL + COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABELS * 2);
+            let TOP_Y_CURRENT_COL = 0;
+            let BOTTOM_Y_CURRENT_COL = 900;
+
+            //console.log("LEFT_X_CURRENT_COL = " + LEFT_X_CURRENT_COL); //This currently gives NaN.
+            //console.log("RIGHT_X_CURRENT_COL = " + RIGHT_X_CURRENT_COL);
+
+            //Check if the mouse pointer is within a column.
+            //If true, check individual labels and the BREAK out of this for loop.
+            if(pointer.x >= LEFT_X_CURRENT_COL && pointer.x <= RIGHT_X_CURRENT_COL &&
+                pointer.y >= TOP_Y_CURRENT_COL && pointer.y <= BOTTOM_Y_CURRENT_COL){
+                console.log("DEBUG: Mouse clicked inside of column " + columnIndex + ".");
+                insideColumn = columnIndex;
+            } else{
+                //console.log("DEBUG: Mouse clicked outside of column " + columnIndex + ".");
+                //There is no point checking the others.
+                //break;
+            }
+
+            //Use the lists in KanbanStation.
+            for(let i = 0; i < kanbanLabelsList[columnIndex].length; i++){
+
+            }
+        }
+
+        console.log("insideColumn = " + insideColumn);
+    }
+
+    /**
      * This sets up the drag functionality by setting up mouse listeners.
      * This function is called from KanbanStation.js.
      * TODO: Don't put too much code in the mouse listener functions (separate it out into separate functions),
@@ -333,29 +377,12 @@ export default class KanbanBoard{
         this.kanbanStation.input.on('pointerdown', (pointer) => {
             console.log('SCENE-WIDE Mouse clicked at:', pointer.x, pointer.y);
             //If the pointer's position is within one of the Kanban Board's columns, then begin the move operation.
-            checkIfMouseWithinKanbanColumn(pointer);
+            this.checkIfMouseWithinKanbanColumn(pointer);
         });
 
         // Capture any mouse movement in the scene
         this.kanbanStation.input.on('pointermove', (pointer) => {
             //console.log('SCENE-WIDE Pointer moved to:', pointer.x, pointer.y);
         });
-    }
-
-    /**
-     * TODO: Get the position from the KanbanLabel object for the individual labels.
-     * @param {*} pointer 
-     */
-    checkIfMouseWithinKanbanColumn(pointer){
-        //Loop over all columns on the Kanban board to display the label(s) on each column.
-        for(let columnIndex = 0; columnIndex < kanbanLabelsList.length; columnIndex++){
-            //Check if the mouse pointer is within a column.
-            
-
-            //Use the lists in KanbanStation.
-            for(let i = 0; i < kanbanLabelsList[columnIndex].length; i++){
-
-            }
-        }
     }
 }

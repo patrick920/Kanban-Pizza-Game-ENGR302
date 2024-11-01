@@ -21,6 +21,7 @@ export default class ReviewStation extends Station {
     constructor(ticket) {
         super({ key: 'ReviewStation' });
         this.ticket = ticket; 
+        this.score = 0;
     }
 
     preload() {
@@ -48,12 +49,14 @@ export default class ReviewStation extends Station {
         this.createTextBox();
 
         //Add button to restart order - needs functionality
-        this.add.text(500, this.game.config.height - 100, 'Reject', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#f44336' });
+        this.add.text(500, this.game.config.height - 100, 'Reject', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#f44336' })
+            .setInteractive()
+            .on('pointerdown', () => this.rejectOrder());
 
         //Add button to allow order through - needs functionality
-        this.add.text(700, this.game.config.height - 100, 'Serve', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#8fce00' });
-            //.setInteractive()
-            //.on('pointerdown', () => ticket.completeTicket());
+        this.add.text(700, this.game.config.height - 100, 'Serve', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#8fce00' })
+            .setInteractive()
+            .on('pointerdown', () => serveOrder());
     }
 
     createTextBox() {
@@ -95,5 +98,38 @@ export default class ReviewStation extends Station {
         this.cameras.main.setBackgroundColor('#a7288a');
 
         // Add functionality here to display the pizza image
+    }
+
+    validateOrder(playerOrder, customerOrder) {
+        let score = 0;
+
+        // Calculate score for the pizza base and toppings
+        score += -5; // Base cost
+        score += -1 * playerOrder.toppings.length; // Toppings cost
+    
+        // Update the player's score
+        this.score = Math.max(0, score);
+        console.log('Player score:', this.score);
+
+        // If all checks pass, the order matches
+        return score > 0;
+
+        // Add functionality here to validateOrder ....
+    }
+
+    rejectOrder() {
+        // Logic to handle rejecting the order
+        console.log('Order has been rejected.');
+    }
+
+    serveOrder() {
+        // Logic to handle serving the order
+        if (this.validateOrder()) {
+            console.log('Order has been served successfully.');
+            this.score += Math.abs(this.score);
+            this.ticket.completeTicket();
+        } else {
+            console.log('Order validation failed. Please review the order.');
+        }
     }
 }

@@ -80,7 +80,7 @@ export default class KanbanStation extends Station {
 
         //Code below from ChatGPT:
         // Create a Phaser Container positioned at (200, 200)
-        this.container = this.add.container(200, 200);
+        this.container = this.add.container(500, 200);
 
         // Create a background rectangle for visual clarity (optional)
         const graphics = this.add.graphics();

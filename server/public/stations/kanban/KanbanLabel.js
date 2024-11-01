@@ -11,7 +11,7 @@
 import { makeDraggable } from './draggable.js';
 //From ChatGPT:
 import { GAP_BETWEEN_COLUMN_RECTANGLES, ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN,
-    GAP_BETWEEN_COLUMN_AND_LABELS, LABEL_WIDTH } from './KanbanBoard.js';
+    GAP_BETWEEN_COLUMN_AND_LABELS, LABEL_WIDTH, COLUMN_RECTANGLE_WIDTH } from './KanbanBoard.js';
 //import KanbanBoard from './KanbanBoard.js';
 
 export default class KanbanLabel {
@@ -27,12 +27,15 @@ export default class KanbanLabel {
     /**
      * This is a TEST constructor. The proper one will take the ticket/label object for the Pizza order, and will be
      * instantiated when a pizza order is submitted (when the player takes the order from the customer.)
-     * @param {*} textList List of text objects.
+     * @param {*} kanbanStation Reference to the KanbanStation object.
      * @param {*} height The height can be set, but the width is fixed to the column width.
+     * @param {*} columnIndex Index of the column on the Kanban board, can be 0 to 5 (as there are 6 columns.)
+     * @param {*} labelList List of text labels to be displayed (not currently implemented fully.)
      */
-    constructor(kanbanStation, height, labelList){
+    constructor(kanbanStation, height, columnIndex, labelList){
         this.kanbanStation = kanbanStation
         this.labelList = labelList
+        this.columnIndex = columnIndex
         this.height = height
         console.log("DEBUG: KanbanLabel object created.");
 
@@ -75,7 +78,8 @@ export default class KanbanLabel {
     drawLabelOnKanbanBoard(yPos){
         this.container.x = GAP_BETWEEN_COLUMN_RECTANGLES + 
                             ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN +
-                            GAP_BETWEEN_COLUMN_AND_LABELS;
+                            GAP_BETWEEN_COLUMN_AND_LABELS +
+                            this.columnIndex * (COLUMN_RECTANGLE_WIDTH + GAP_BETWEEN_COLUMN_RECTANGLES);
         //Only need to set the container's y because everything else will move with the container.
         this.container.y = yPos;
     }

@@ -2,6 +2,8 @@
  * kanbanStation file will hold all the display code for the Kanban board, to keep KanbanStation.js cleaner and not too long.
  */
 
+import KanbanLabel from './KanbanLabel.js';
+
 //TODO: Have a list for each of the stations with the labels currently in there. Have a hardcoded list for each
 //one as it will be simpler. NO, get the list from the KanbanStation that has already been defined.
 
@@ -22,41 +24,54 @@ const GAP_BETWEEN_COLUMN_RECTANGLES = 14;
 //balance things out.
 const ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN = 1;
 
-export default class KanbanBoard{
+/**
+ * Have just a 1D list, not a 2D list for the labels on the Kanban board. This is because there can
+ * be an attribute somewhere that stores its position, maybe in the KanbanLabel class itself.
+ * 
+ * This does not store all tickets, it only stores the ones that should be visible on the board.
+ */
+let kanbanLabelsList = []
 
-    createKanbanBoard(kanbanStation){
+export default class KanbanBoard{
+    constructor(kanbanStation) {
+        this.kanbanStation = kanbanStation;
+    }
+
+    createKanbanBoard(){
+        //const kanbanStation = this.kanbanStation;
+
         // Game logic here
         //Changed from 100, 100 to 800, 100
         //Source: https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.GameObjects.GameObjectFactory-text
         //Source: https://newdocs.phaser.io/docs/3.80.0/Phaser.Types.GameObjects.Text.TextStyle
         //Some code from ChatGPT:
         //650 as kanbanStation is the middle.
-        const titleText = kanbanStation.add.text(650, TOP_TO_TITLE_GAP, 'Kanban Board', { fontSize: TITLE_TEXT_HEIGHT + 'px', fontFamily: 'Calibri', fill: '#fff' });
+        const titleText = this.kanbanStation.add.text(650, TOP_TO_TITLE_GAP, 'Kanban Board', { fontSize: TITLE_TEXT_HEIGHT + 'px', fontFamily: 'Calibri', fill: '#fff' });
 
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         titleText.setOrigin(0.5, 0);
 
         // Navigation buttons (from Station.js)
-        kanbanStation.createNavigationTabs();
+        this.kanbanStation.createNavigationTabs();
 
         // Create tomato paste image
         //kanbanStation.createTomatoPasteBottle();
 
         // Create add task button
-        const addTaskButton = kanbanStation.add.text(100, 200, 'Add Task', { fontSize: '24px', fill: '#fff', backgroundColor: '#17a2b8' })
+        const addTaskButton = this.kanbanStation.add.text(100, 200, 'Add Task', { fontSize: '24px', fill: '#fff', backgroundColor: '#17a2b8' })
             .setInteractive()
-            .on('pointerdown', () => kanbanStation.addTask());
+            .on('pointerdown', () => this.kanbanStation.addTask());
 
         // Listen for kanban tasks updates
-        kanbanStation.game.socket.on('kanbanTasksUpdate', (tasks) => {
-            kanbanStation.tasks = tasks;
-            kanbanStation.updateKanbanDisplay();
+        this.kanbanStation.game.socket.on('kanbanTasksUpdate', (tasks) => {
+            this.kanbanStation.tasks = tasks;
+            this.kanbanStation.updateKanbanDisplay();
         });
 
         // Get initial game state
-        kanbanStation.game.socket.on('initialGameState', (gameState) => {
-            kanbanStation.tasks = gameState.kanbanTasks;
-            kanbanStation.updateKanbanDisplay();
+        this.kanbanStation.game.socket.on('initialGameState', (gameState) => {
+            this.kanbanStation.tasks = gameState.kanbanTasks;
+            this.kanbanStation.updateKanbanDisplay();
         });
         
         //Add the 6 rectangles or other objects to represent the columns on the Kanban board.
@@ -69,7 +84,7 @@ export default class KanbanBoard{
         console.log("Y_TOP_COLUMN_RECTANGLES = " + Y_TOP_COLUMN_RECTANGLES);
         
         //Some stuff from ChatGPT.
-        const Y_BOTTOM_COLUMN_RECTANGLES = kanbanStation.scale.height - (COLUMN_RECTANGLES_TO_MENU_GAP + Y_MENU_START);
+        const Y_BOTTOM_COLUMN_RECTANGLES = this.kanbanStation.scale.height - (COLUMN_RECTANGLES_TO_MENU_GAP + Y_MENU_START);
         console.log("Y_BOTTOM_COLUMN_RECTANGLES = " + Y_BOTTOM_COLUMN_RECTANGLES);
         //The height of the column rectangles for the Kanban board.
         const COLUMN_RECTANGLE_HEIGHT = Y_BOTTOM_COLUMN_RECTANGLES - Y_TOP_COLUMN_RECTANGLES;
@@ -87,42 +102,42 @@ export default class KanbanBoard{
         }
 
         console.log("Before drawing 1st column, currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
-        const orderColumnRectangle = kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+        const orderColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         orderColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing 2nd column (prep), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
-        const prepColumnRectangle = kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+        const prepColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         prepColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing 3rd column (cook), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
-        const cookColumnRectangle = kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+        const cookColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         cookColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing 4th column (review), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
-        const reviewColumnRectangle = kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+        const reviewColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         reviewColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing 5th column (service), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
-        const serviceColumnRectangle = kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+        const serviceColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         serviceColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing last (6th) column (completed), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
-        const completedColumnRectangle = kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
+        const completedColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         completedColumnRectangle.setOrigin(0, 0);
@@ -160,7 +175,7 @@ export default class KanbanBoard{
 
         console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
-        const orderText = kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Orders', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
+        const orderText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Orders', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         orderText.setOrigin(0.5, 0);
@@ -169,7 +184,7 @@ export default class KanbanBoard{
 
         console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
-        const prepText = kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Preparation', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
+        const prepText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Preparation', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         prepText.setOrigin(0.5, 0);
@@ -178,7 +193,7 @@ export default class KanbanBoard{
 
         console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
-        const cookText = kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Cooking and Cutting', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
+        const cookText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Cooking and Cutting', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         cookText.setOrigin(0.5, 0);
@@ -187,7 +202,7 @@ export default class KanbanBoard{
 
         console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
-        const reviewText = kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Reviewing', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
+        const reviewText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Reviewing', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         reviewText.setOrigin(0.5, 0);
@@ -196,7 +211,7 @@ export default class KanbanBoard{
 
         console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
-        const serviceText = kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Service', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
+        const serviceText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Service', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         serviceText.setOrigin(0.5, 0);
@@ -205,7 +220,7 @@ export default class KanbanBoard{
 
         console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
-        const completedText = kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Completed Pizzas', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
+        const completedText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Completed Pizzas', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         completedText.setOrigin(0.5, 0);
@@ -218,9 +233,32 @@ export default class KanbanBoard{
         //To create labels, use the "Container" object.
     }
 
+    /**
+     * Create a label in the Kanban Board.
+     */
+    addLabel(){
+        //"push" is used to add to the list.
+        kanbanLabelsList.push(new KanbanLabel(this.kanbanStation, 200, [this.kanbanStation.add.text("Top"),
+            this.kanbanStation.add.text("Bottom")]));
+    }
+    
+    displayLabels(){
+        //Use the lists in KanbanStation.
+        for(let i = 0; i < kanbanLabelsList.length; i++){
+            console.log("Display label " + i + " on the Kanban board.");
+            let currentLabel = kanbanLabelsList[i];
+            //Random number code from ChatGPT.
+            currentLabel.drawLabelOnKanbanBoard(Math.floor(Math.random() * (800 - 200 + 1)) + 200);
+            //Call a method to display the label. EVERYTHING about positioning is decided by KanbanLabel except for
+            //the y position on the column which is decided here.
+        }
+    }
+
     createTestLabels(){
         //Create several test labels on the Kanban board automatically for testing purposes.
         //kanbanStation code should be removed later on.
+        this.addLabel();
+        this.addLabel();
     }
 
 }

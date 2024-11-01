@@ -36,8 +36,14 @@ export default class KanbanStation extends Station {
     create() {
         this.createBackground();
 
-        const kanbanBoard = new KanbanBoard();
-        kanbanBoard.createKanbanBoard(this);
+        const kanbanBoard = new KanbanBoard(this);
+        kanbanBoard.createKanbanBoard();
+
+        //Add test labels to the Kanban Board code.
+        kanbanBoard.createTestLabels();
+
+        //Display the labels on the Kanban Board.
+        kanbanBoard.displayLabels();
 
         //-----------------------------------------------------------
         //Test object only.

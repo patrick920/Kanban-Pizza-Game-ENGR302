@@ -73,7 +73,7 @@ export default class KanbanLabel {
 
         //Code from ChatGPT.
         //Make the rectangle draggable vertically only.
-        makeDraggable(this.container, false, true);
+        //makeDraggable(this.container, false, true);
 
         //TODO: Create the button that leads to a particular scene.
     }

@@ -79,13 +79,21 @@ export default class KanbanLabel {
     }
 
     /**
+     * Calculate the x position where this label should be displayed on the Kanban board.
+     * @returns x position of the label on the Kanban board.
+     */
+    calculateLabelXPos(){
+        return GAP_BETWEEN_COLUMN_RECTANGLES + 
+                ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN +
+                GAP_BETWEEN_COLUMN_AND_LABELS +
+                this.columnIndex * (COLUMN_RECTANGLE_WIDTH + GAP_BETWEEN_COLUMN_RECTANGLES);
+    }
+
+    /**
      * Display the label on the specified y position on the Kanban board.
      */
     drawLabelOnKanbanBoard(yPos){
-        this.container.x = GAP_BETWEEN_COLUMN_RECTANGLES + 
-                            ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN +
-                            GAP_BETWEEN_COLUMN_AND_LABELS +
-                            this.columnIndex * (COLUMN_RECTANGLE_WIDTH + GAP_BETWEEN_COLUMN_RECTANGLES);
+        this.container.x = this.calculateLabelXPos();
         //Only need to set the container's y because everything else will move with the container.
         this.container.y = yPos;
     }
@@ -109,6 +117,6 @@ export default class KanbanLabel {
     }
 
     endDragOperation(){
-        
+
     }
 }

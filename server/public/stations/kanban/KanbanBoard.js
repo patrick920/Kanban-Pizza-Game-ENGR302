@@ -374,8 +374,54 @@ export default class KanbanBoard{
             }
         }
 
-        console.log("insideColumn = " + insideColumn);
+        //console.log("insideColumn = " + insideColumn);
+        return insideColumn; //Return index of column or -1 if mouse is not on any column.
     }
+
+    checkIfMouseInKanbanLabel(currentColumnKanbanLabelsList){
+        //Code from displayLabels() function.
+
+        //The index of the Kanban label the mouse is currently clicked over. This will be -1 if
+        //it is not over any Kanban label.
+
+        //The Y position where the next label on the Kanban board will be drawn. This will keep going up as
+        //new labels are added.
+        //Set the initial Y position for the first Kanban board label.
+        let currentYPos = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT +
+                            COLUMN_TITLES_TEXT_HEIGHT + GAP_BETWEEN_COLUMN_AND_LABELS;
+
+        //Use the lists in KanbanStation.
+        for(let i = 0; i < currentColumnKanbanLabelsList.length; i++){
+            console.log("Check label " + i + " on the Kanban board.");
+            let currentLabel = currentColumnKanbanLabelsList[i];
+            
+            //currentLabel.drawLabelOnKanbanBoard(currentYPos);
+            let currentXPos = currentLabel.calculateLabelXPos();
+
+            console.log("currentXPos = " + currentXPos + " | currentYPos = " + currentYPos);
+            //if(pointer.x >= currentXPos && pointer.x <= currentXPos + LABEL_WIDTH)
+
+            //Update "currentYPos" with the height of the label and the gap.
+            currentYPos += currentLabel.height + GAP_BETWEEN_COLUMN_AND_LABELS;
+        }
+    }
+
+    /**
+     * This function is called if the mouse is clicked over a column (within the padding around the labels.)
+     * It will check if the mouse is over a particular label, and if yes it will begin the move operation.
+     */
+    startColumnDragCode(insideColumn){
+        if(insideColumn < 0){return;} //-1 means that it's not currently on a column.
+        //const CURRENT_COL
+        //Instead of manually checking, maybe check if the mouse is on one of the objects.
+
+        let mouseInLabelIndex = this.checkIfMouseInKanbanLabel(kanbanLabelsList[insideColumn]);
+
+        //If it is within a column, then call a function to start dragging.
+        
+        
+    }
+
 
     /**
      * This sets up the drag functionality by setting up mouse listeners.
@@ -390,12 +436,16 @@ export default class KanbanBoard{
         this.kanbanStation.input.on('pointerdown', (pointer) => {
             console.log('SCENE-WIDE Mouse clicked at:', pointer.x, pointer.y);
             //If the pointer's position is within one of the Kanban Board's columns, then begin the move operation.
-            this.checkIfMouseWithinKanbanColumn(pointer);
+            let insideColumn = this.checkIfMouseWithinKanbanColumn(pointer);
+            console.log("Mouse clicked: insideColumn = " + insideColumn);
+            this.startColumnDragCode(insideColumn);
         });
 
         // Capture any mouse movement in the scene
         this.kanbanStation.input.on('pointermove', (pointer) => {
             //console.log('SCENE-WIDE Pointer moved to:', pointer.x, pointer.y);
+            let insideColumn = this.checkIfMouseWithinKanbanColumn(pointer);
+            //console.log("Mouse moved over: insideColumn = " + insideColumn);
         });
     }
 }

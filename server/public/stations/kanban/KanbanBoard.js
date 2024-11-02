@@ -360,7 +360,7 @@ export default class KanbanBoard{
             //If true, check individual labels and the BREAK out of this for loop.
             if(pointer.x >= LEFT_X_CURRENT_COL && pointer.x <= RIGHT_X_CURRENT_COL &&
                 pointer.y >= TOP_Y_CURRENT_COL && pointer.y <= BOTTOM_Y_CURRENT_COL){
-                console.log("DEBUG: Mouse clicked inside of column " + columnIndex + ".");
+                //console.log("DEBUG: Mouse inside of column " + columnIndex + ".");
                 insideColumn = columnIndex;
             } else{
                 //console.log("DEBUG: Mouse clicked outside of column " + columnIndex + ".");
@@ -378,7 +378,14 @@ export default class KanbanBoard{
         return insideColumn; //Return index of column or -1 if mouse is not on any column.
     }
 
-    checkIfMouseInKanbanLabel(currentColumnKanbanLabelsList){
+    /**
+     * Check if the mouse is inside of a label on the Kanban board.
+     * @param {*} currentColumnKanbanLabelsList Current column on the Kanban board.
+     */
+    checkIfMouseInKanbanLabel(pointer, currentColumnKanbanLabelsList){
+        //-1 if the mouse did not click over any column.
+        let kanbanLabelIndexMouseOver = -1;
+
         //Code from displayLabels() function.
 
         //The index of the Kanban label the mouse is currently clicked over. This will be -1 if
@@ -392,30 +399,40 @@ export default class KanbanBoard{
 
         //Use the lists in KanbanStation.
         for(let i = 0; i < currentColumnKanbanLabelsList.length; i++){
-            console.log("Check label " + i + " on the Kanban board.");
+            //console.log("Check label " + i + " on the Kanban board.");
             let currentLabel = currentColumnKanbanLabelsList[i];
             
             //currentLabel.drawLabelOnKanbanBoard(currentYPos);
             let currentXPos = currentLabel.calculateLabelXPos();
 
-            console.log("currentXPos = " + currentXPos + " | currentYPos = " + currentYPos);
-            //if(pointer.x >= currentXPos && pointer.x <= currentXPos + LABEL_WIDTH)
+            //console.log("currentXPos = " + currentXPos + " | currentYPos = " + currentYPos);
+            if(pointer.x >= currentXPos && pointer.x <= currentXPos + LABEL_WIDTH && pointer.y >= currentYPos &&
+                pointer.y <= currentYPos + currentLabel.height){
+                //console.log("currentXPos = " + currentXPos + " | currentYPos = " + currentYPos);
+                console.log("Mouse is within label index " + i);
+                kanbanLabelIndexMouseOver = i;
+            }
 
             //Update "currentYPos" with the height of the label and the gap.
             currentYPos += currentLabel.height + GAP_BETWEEN_COLUMN_AND_LABELS;
         }
+
+        if(kanbanLabelIndexMouseOver == -1){
+            console.log("Did not click inside of a Kanban Label.");
+        }
+        return kanbanLabelIndexMouseOver;
     }
 
     /**
      * This function is called if the mouse is clicked over a column (within the padding around the labels.)
      * It will check if the mouse is over a particular label, and if yes it will begin the move operation.
      */
-    startColumnDragCode(insideColumn){
+    startColumnDragCode(pointer, insideColumn){
         if(insideColumn < 0){return;} //-1 means that it's not currently on a column.
         //const CURRENT_COL
         //Instead of manually checking, maybe check if the mouse is on one of the objects.
 
-        let mouseInLabelIndex = this.checkIfMouseInKanbanLabel(kanbanLabelsList[insideColumn]);
+        let mouseInLabelIndex = this.checkIfMouseInKanbanLabel(pointer, kanbanLabelsList[insideColumn]);
 
         //If it is within a column, then call a function to start dragging.
         
@@ -438,7 +455,7 @@ export default class KanbanBoard{
             //If the pointer's position is within one of the Kanban Board's columns, then begin the move operation.
             let insideColumn = this.checkIfMouseWithinKanbanColumn(pointer);
             console.log("Mouse clicked: insideColumn = " + insideColumn);
-            this.startColumnDragCode(insideColumn);
+            this.startColumnDragCode(pointer, insideColumn);
         });
 
         // Capture any mouse movement in the scene

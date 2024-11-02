@@ -25,6 +25,11 @@ export const GAP_BETWEEN_COLUMN_RECTANGLES = 14;
 //balance things out.
 export const ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN = 1;
 
+//The Y position for the TOP of the Kanban board column rectangle.
+export const Y_TOP_COLUMN_RECTANGLES = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT +
+                                        COLUMN_TITLES_TEXT_HEIGHT;
+console.log("Y_TOP_COLUMN_RECTANGLES = " + Y_TOP_COLUMN_RECTANGLES);
+
 //Constants for layout of the labels.
 export const GAP_BETWEEN_COLUMN_AND_LABELS = 10;
 //Width of a label on the Kanban board.
@@ -47,6 +52,13 @@ export default class KanbanBoard{
     constructor(kanbanStation) {
         this.kanbanStation = kanbanStation;
     }
+
+    //Some stuff from ChatGPT.
+    Y_BOTTOM_COLUMN_RECTANGLES;
+    //console.log("Y_BOTTOM_COLUMN_RECTANGLES = " + Y_BOTTOM_COLUMN_RECTANGLES);
+    //The height of the column rectangles for the Kanban board.
+    COLUMN_RECTANGLE_HEIGHT;
+    //console.log("COLUMN_RECTANGLE_HEIGHT = " + COLUMN_RECTANGLE_HEIGHT);
 
     //Use "this.kanbanStation" instead of the "this" keyword for many (but not all) things.
     createKanbanBoard(){
@@ -86,21 +98,17 @@ export default class KanbanBoard{
             this.kanbanStation.updateKanbanDisplay();
         });
         
+        // //Some stuff from ChatGPT.
+        this.Y_BOTTOM_COLUMN_RECTANGLES = this.kanbanStation.scale.height - (COLUMN_RECTANGLES_TO_MENU_GAP + Y_MENU_START);
+        console.log("Y_BOTTOM_COLUMN_RECTANGLES = " + this.Y_BOTTOM_COLUMN_RECTANGLES);
+        // //The height of the column rectangles for the Kanban board.
+        this.COLUMN_RECTANGLE_HEIGHT = this.Y_BOTTOM_COLUMN_RECTANGLES - Y_TOP_COLUMN_RECTANGLES;
+        console.log("COLUMN_RECTANGLE_HEIGHT = " + this.COLUMN_RECTANGLE_HEIGHT);
+
         //Add the 6 rectangles or other objects to represent the columns on the Kanban board.
         //Source: https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.GameObjects.GameObjectFactory-rectangle
         //rectangle([x], [y], [width], [height], [fillColor], [fillAlpha])
         //TODO: Height should be x top minus x bottom.
-
-        //The Y position for the TOP of the Kanban board column rectangle.
-        const Y_TOP_COLUMN_RECTANGLES = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT + COLUMN_TITLES_TEXT_HEIGHT;
-        console.log("Y_TOP_COLUMN_RECTANGLES = " + Y_TOP_COLUMN_RECTANGLES);
-        
-        //Some stuff from ChatGPT.
-        const Y_BOTTOM_COLUMN_RECTANGLES = this.kanbanStation.scale.height - (COLUMN_RECTANGLES_TO_MENU_GAP + Y_MENU_START);
-        console.log("Y_BOTTOM_COLUMN_RECTANGLES = " + Y_BOTTOM_COLUMN_RECTANGLES);
-        //The height of the column rectangles for the Kanban board.
-        const COLUMN_RECTANGLE_HEIGHT = Y_BOTTOM_COLUMN_RECTANGLES - Y_TOP_COLUMN_RECTANGLES;
-        console.log("COLUMN_RECTANGLE_HEIGHT = " + COLUMN_RECTANGLE_HEIGHT);
 
         //kanbanStation variable will be incremented as I draw each of the rectangles for the columns on the Kanban board.
         //Set it at the initial position for the first rectangle.
@@ -115,42 +123,42 @@ export default class KanbanBoard{
 
         console.log("Before drawing 1st column, currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const orderColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
-            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+            COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         orderColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing 2nd column (prep), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const prepColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
-            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+            COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         prepColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing 3rd column (cook), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const cookColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
-            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+            COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         cookColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing 4th column (review), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const reviewColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
-            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+            COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         reviewColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing 5th column (service), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const serviceColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
-            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+            COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         serviceColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
         console.log("Before drawing last (6th) column (completed), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const completedColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
-            COLUMN_RECTANGLE_WIDTH, COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
+            COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         completedColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
@@ -337,8 +345,13 @@ export default class KanbanBoard{
                                     GAP_BETWEEN_COLUMN_AND_LABELS +
                                     columnIndex * (COLUMN_RECTANGLE_WIDTH + GAP_BETWEEN_COLUMN_RECTANGLES);
             let RIGHT_X_CURRENT_COL = LEFT_X_CURRENT_COL + COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABELS * 2);
-            let TOP_Y_CURRENT_COL = 0;
-            let BOTTOM_Y_CURRENT_COL = 900;
+            //let TOP_Y_CURRENT_COL = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT +
+            //COLUMN_TITLES_TEXT_HEIGHT + GAP_BETWEEN_COLUMN_AND_LABELS;
+            //let BOTTOM_Y_CURRENT_COL = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT +
+            //COLUMN_TITLES_TEXT_HEIGHT + ;
+            let TOP_Y_CURRENT_COL = Y_TOP_COLUMN_RECTANGLES + GAP_BETWEEN_COLUMN_AND_LABELS;
+            let BOTTOM_Y_CURRENT_COL = Y_TOP_COLUMN_RECTANGLES + this.COLUMN_RECTANGLE_HEIGHT -
+                                        GAP_BETWEEN_COLUMN_AND_LABELS;
 
             //console.log("LEFT_X_CURRENT_COL = " + LEFT_X_CURRENT_COL); //This currently gives NaN.
             //console.log("RIGHT_X_CURRENT_COL = " + RIGHT_X_CURRENT_COL);

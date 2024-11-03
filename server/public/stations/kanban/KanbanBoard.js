@@ -437,6 +437,10 @@ export default class KanbanBoard{
     //Index of the label on the Kanban board where dragging is active.
     dragMouseInLabelIndex = -1;
 
+    //Index of the place on the Kanban board column where the label should be placed after the drag operation has
+    //been finished (cancelled).
+    dragNewLabelIndex = -1;
+
     //TODO: Make variables to store the previous x and y positions of the last drag move.
 
     /**
@@ -463,6 +467,9 @@ export default class KanbanBoard{
         this.dragActive = true;
         this.dragInsideColumn = insideColumn;
         this.dragMouseInLabelIndex = mouseInLabelIndex;
+        //By default, if the drag operation is cancelled, the label will return to its initial position on the
+        //Kanban board column.
+        this.dragNewLabelIndex = mouseInLabelIndex;
 
         //Call a function to draw the red lines on the Kanban board showing eligible positions where the
         //label could be moved to.
@@ -510,6 +517,7 @@ export default class KanbanBoard{
         this.dragActive = false;
         this.dragInsideColumn = -1;
         this.dragMouseInLabelIndex = -1;
+        this.dragNewLabelIndex = -1;
     }
 
     /**
@@ -518,11 +526,8 @@ export default class KanbanBoard{
      * @param {*} pointer Mouse object with x and y position.
      */
     linesLabelPotentialPositions(pointer){
-        //TODO: Maybe create a field for the current index in the list where the label should be dropped
-        //if the drag operation is cancelled.
-
         //Whether or not all the lines should be displayed for testing purposes.
-        const LINES_TEST = true;
+        const LINES_TEST = false;
 
         //First get the regular code for drawing labels, then modify it.
         //Code from checkIfMouseInKanbanLabel() function in this file but modified.
@@ -563,7 +568,7 @@ export default class KanbanBoard{
                 //Set the fill color to red.
                 graphics.fillStyle(0xdb1a1a);
 
-                //Draw a rectangle at (100, 100) with a width and height of 200
+                //Draw a rectangle.
                 graphics.fillRect(TOP_X_POS, TOP_LINE_Y_POS,
                                     COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABELS * 2), LINE_HEIGHT);
             }
@@ -601,13 +606,56 @@ export default class KanbanBoard{
                 //Set the fill color to red.
                 graphics.fillStyle(0xdb1a1a);
 
-                //Draw a rectangle at (100, 100) with a width and height of 200
+                //Draw a rectangle.
                 graphics.fillRect(currentXPos, currentLineYPos,
                                     COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABELS * 2), LINE_HEIGHT);
             }
 
             //Update "currentYPos" with the height of the label and the gap.
             currentYPos += currentLabel.height + GAP_BETWEEN_COLUMN_AND_LABELS;
+        }
+
+        //--------------------------------------------------
+        //TODO: Maybe create a field for the current index in the list where the label should be dropped
+        //if the drag operation is cancelled.
+
+        //Evaluate which potential red line drawing position is the closest to the mouse's y coordinate, then
+        //update the "this.dragNewLabelIndex" field which holds the index for where the label will go
+        //when the drag operation finishes (cancels).
+
+        let shortestDistance = -1;
+        let shortestDistanceIndex = -1;
+
+        for(let i = 0; i < potentialLineDrawingPositions.length; i++){
+            //Calculate the distance between the mouse's y position and the potential line drawing position.
+            let currentDistance = Math.abs(pointer.y - potentialLineDrawingPositions[i]);
+
+            //See if it is the shortest distance, and if yes set it as the shortest distance.
+            //Also set the current distance to the shortest if it is the first one.
+            if(i == 0 || currentDistance <= shortestDistance){
+                shortestDistance = currentDistance;
+                shortestDistanceIndex = i;
+            }
+        }
+
+        console.log("shortestDistance = " + shortestDistance + " | shortestDistanceIndex = " + shortestDistanceIndex);
+
+        //Set the shortest distance index as the index where the label will be put after the dragging operation has
+        //been finished (cancelled). However, don't do this if "shortestDistanceIndex" is -1.
+        if(shortestDistanceIndex != -1){
+            this.dragNewLabelIndex = shortestDistanceIndex;
+
+            //Draw the red line in this position, if there is at least 1 label on the column.
+            //Code below from ChatGPT:
+            //Create a graphics object (for the red line which is a rectangle.)
+            let graphics = this.kanbanStation.add.graphics();
+            //Set the fill color to red.
+            graphics.fillStyle(0xdb1a1a);
+
+            //Draw a rectangle.
+            graphics.fillRect(kanbanLabelsList[this.dragInsideColumn][0].calculateLabelXPos(),
+                                potentialLineDrawingPositions[shortestDistanceIndex],
+                                COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABELS * 2), LINE_HEIGHT);
         }
     }
 

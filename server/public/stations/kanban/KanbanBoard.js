@@ -536,6 +536,16 @@ export default class KanbanBoard{
 
         console.log("CANCEL DRAG OPERATION.");
 
+        //Make the label no longer transparent, only if a drag operation is currently active.
+        if(this.dragActive){
+            //Get the label which was associated with a drag operation.
+            let currentLabel = kanbanLabelsList[this.dragInsideColumn][this.dragMouseInLabelIndex];
+        
+            //Code from ChatGPT:
+            //0 is fully transparent, 1 is fully opaque.
+            currentLabel.container.alpha = 1;
+        }
+
         //Put the current label in a different position in the "kanbanLabelsList" based on where it was dragged.
         //This could potentially be the initial position.
         //Code below from ChatGPT:
@@ -558,16 +568,6 @@ export default class KanbanBoard{
 
         //Redraw the labels on the Kanban board in their standard positions.
         this.displayLabels();
-
-        //Make the label no longer transparent, only if a drag operation is currently active.
-        if(this.dragActive){
-            //Get the label which was associated with a drag operation.
-            let currentLabel = kanbanLabelsList[this.dragInsideColumn][this.dragMouseInLabelIndex];
-        
-            //Code from ChatGPT:
-            //0 is fully transparent, 1 is fully opaque.
-            currentLabel.container.alpha = 1;
-        }
 
         //At the very end of this function, reset the variables.
         this.dragInitialMouseX = -1;

@@ -423,6 +423,79 @@ export default class KanbanBoard{
         return kanbanLabelIndexMouseOver;
     }
 
+    //Initial mouse x and y positions when the drag operation begins.
+    //-1 if dragging operation is not active.
+    dragInitialMouseX = -1;
+    dragInitialMouseY = -1;
+    //Whether or not the dragging operation is active.
+    dragActive = false;
+    //Index of the column where dragging is active.
+    dragInsideColumn = -1;
+    //Index of the label on the Kanban board where dragging is active.
+    dragMouseInLabelIndex = -1;
+
+    /**
+     * Activate the code to potentially start dragging the label vertically on the column.
+     * 
+     * Ways to can
+     * 
+     * @param {*} pointer Mouse object with the mouse's x and y position.
+     * @param {*} insideColumn Index of the clicked column on the Kanban board.
+     * @param {*} mouseInLabelIndex Index of the clicked label on the Kanban board.
+     */
+    beginDragOperation(pointer, insideColumn, mouseInLabelIndex){
+        //Do not begin drag operation if one is already active.
+        if(this.dragActive){
+            console.log("MAJOR PROBLEM: Drag operation is already active.");
+            return;
+        }
+        console.log("BEGIN DRAG OPERATION.");
+
+        this.dragInitialMouseX = pointer.x;
+        this.dragInitialMouseY = pointer.y;
+        this.dragActive = true;
+        this.dragInsideColumn = insideColumn;
+        this.dragMouseInLabelIndex = mouseInLabelIndex;
+
+        //Call a function to draw the red lines on the Kanban board showing eligible positions where the
+        //label could be moved to.
+    }
+
+    /**
+     * Reasons to cancel the drag operation.
+     * - Mouse button is released.
+     * - Mouse movement is detected outside of the CURRENT LABEL.
+     * - Mouse initial click is detected inside of another label on the Kanban board.
+     * 
+     * When the drag operation is cancelled:
+     * - Determine where the label should fit based on the red lines on the Kanban board,
+     *   which could either be the original position or a different one if it was moved substantially. If the label is
+     *   placed in a different column, update "kanbanLabelsList" by reordering it.
+     * - Redraw the labels in the Kanban board, using the standard function in this file. DO NOT UPDATE THE LABEL'S
+     *   X AND Y COORDINATES, as this will be handled by the standard function to draw the labels.
+     */
+    cancelDragOperation(){
+        //Do not have an if statement checking "dragActive", as there are multiple reasons why the drag
+        //operation could be cancelled, and all of those reasons could trigger this.
+
+        console.log("BEGIN DRAG OPERATION.");
+
+        //Redraw the labels on the Kanban board in their standard positions.
+        this.displayLabels();
+    }
+
+    /**
+     * Drag the label across the Kanban board if a drag operation is currently active.
+     */
+    doLabelDragging(){
+        if(!dragActive){
+            return; //A label drag operation is not currently active.
+        }
+        let currentLabel = kanbanLabelsList[this.dragInsideColumn][this.dragMouseInLabelIndex];
+        currentLabel.x += 0;
+        currentLabel.y += 0;
+    }
+
     /**
      * This function is called if the mouse is clicked over a column (within the padding around the labels.)
      * It will check if the mouse is over a particular label, and if yes it will begin the move operation.
@@ -435,6 +508,9 @@ export default class KanbanBoard{
         let mouseInLabelIndex = this.checkIfMouseInKanbanLabel(pointer, kanbanLabelsList[insideColumn]);
 
         //If it is within a column, then call a function to start dragging.
+        if(mouseInLabelIndex != -1){
+            this.beginDragOperation(pointer, insideColumn, mouseInLabelIndex);
+        }
         
         
     }

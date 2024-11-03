@@ -542,20 +542,28 @@ export default class KanbanBoard{
         //Get the labels list for the current column.
         let currentColumnKanbanLabelsList = kanbanLabelsList[this.dragInsideColumn];
 
+        //TODO: Must draw a red line at the top.
+
         //Add potential positions to the "potentialLineDrawingPositions" list.
-        //Length - 1 because a red line should not be drawn at the end of all the labels on the column.
-        for(let i = 0; i < currentColumnKanbanLabelsList.length - 1; i++){
-            //Skip potentialy drawing a red line for the current label that is being dragged.
-            if(i == this.dragMouseInLabelIndex){continue;}
-            
+        for(let i = 0; i < currentColumnKanbanLabelsList.length; i++){
             //console.log("Label " + i + " on the Kanban board.");
             let currentLabel = currentColumnKanbanLabelsList[i];
+
+            //Skip potentialy drawing a red line for the current label that is being dragged.
+            if(i == this.dragMouseInLabelIndex){
+                //If currentYPos is not incremented the time where "i" is equal to "thos.dragMouseInLabelIndex",
+                //this will lead to issues with drawing the red lines in the correct places.
+                //Update "currentYPos" with the height of the label and the gap.
+                currentYPos += currentLabel.height + GAP_BETWEEN_COLUMN_AND_LABELS;
+                continue;
+            }
             
             //x position of the label and also the potential red line.
             let currentXPos = currentLabel.calculateLabelXPos();
 
             let currentLineYPos = currentYPos + currentLabel.container.height + GAP_BETWEEN_LABEL_AND_LINE;
-            console.log("currentLineYPos = " + currentLineYPos);
+            console.log("i = " + i + " | currentLabel.container.height = " + currentLabel.container.height +
+                        " | curentYPos = " + currentYPos + " | currentLineYPos = " + currentLineYPos);
             potentialLineDrawingPositions.push(currentLineYPos);
 
             //Code to draw the line. After all iterations of the for loop this will draw all the lines. This is
@@ -569,15 +577,8 @@ export default class KanbanBoard{
                 graphics.fillStyle(0xdb1a1a);
 
                 //Draw a rectangle at (100, 100) with a width and height of 200
-                graphics.fillRect(currentXPos, currentLineYPos, COLUMN_RECTANGLE_WIDTH, LINE_HEIGHT);
-            }
-
-            //console.log("currentXPos = " + currentXPos + " | currentYPos = " + currentYPos);
-            if(pointer.x >= currentXPos && pointer.x <= currentXPos + LABEL_WIDTH && pointer.y >= currentYPos &&
-                pointer.y <= currentYPos + currentLabel.height){
-                //console.log("currentXPos = " + currentXPos + " | currentYPos = " + currentYPos);
-                console.log("Mouse is within label index " + i);
-                kanbanLabelIndexMouseOver = i;
+                graphics.fillRect(currentXPos, currentLineYPos,
+                                    COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABELS * 2), LINE_HEIGHT);
             }
 
             //Update "currentYPos" with the height of the label and the gap.
@@ -610,10 +611,10 @@ export default class KanbanBoard{
         //Need to access the container inside of currentLabel then increment y.
         //console.log("DEBUG: currentLabel = " + currentLabel);
         //console.log("DEBUG: currentLabel.y = " + currentLabel.y);
-        console.log("DEBUG: currentLabel.container.y = " + currentLabel.container.y);
-        console.log("DEBUG: (this.dragCurrentMouseY - pointer.y) = " + (this.dragCurrentMouseY - pointer.y));
-        console.log("DEBUG: this.dragCurrentMouseY = " + this.dragCurrentMouseY);
-        console.log("DEBUG: pointer.y = " + pointer.y);
+        //console.log("DEBUG: currentLabel.container.y = " + currentLabel.container.y);
+        //console.log("DEBUG: (this.dragCurrentMouseY - pointer.y) = " + (this.dragCurrentMouseY - pointer.y));
+        //console.log("DEBUG: this.dragCurrentMouseY = " + this.dragCurrentMouseY);
+        //console.log("DEBUG: pointer.y = " + pointer.y);
 
         //Update the label's container position on the Phaser Scene.
         currentLabel.container.y -= (this.dragCurrentMouseY - pointer.y);

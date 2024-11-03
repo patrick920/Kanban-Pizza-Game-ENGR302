@@ -450,7 +450,23 @@ export default class KanbanBoard{
     //TODO: Make variables to store the previous x and y positions of the last drag move.
 
     //This is only for testing purposes to see when a drag operation begins.
-    beginDragOperationTestCounter = 0;
+    //beginDragOperationTestCounter = 0;
+
+    /**
+     * Destroy all red lines currently drawn on the Kanban board.
+     */
+    destroyAllRedLines(){
+        for(let colIndex = 0; colIndex < kanbanRedLinesBetweenLabels.length; colIndex++){
+            for(let labelIndex = 0; labelIndex < kanbanRedLinesBetweenLabels[colIndex].length; labelIndex++){
+                //From ChatGPT:
+                let currentRedLine = kanbanRedLinesBetweenLabels[colIndex][labelIndex];
+                //Destroy the red line if there is one.
+                if (!(typeof currentRedLine === 'undefined')) {
+                    currentRedLine.destroy();
+                }
+            }
+        }
+    }
 
     /**
      * Activate the code to potentially start dragging the label vertically on the column.
@@ -467,9 +483,9 @@ export default class KanbanBoard{
             console.log("MAJOR PROBLEM: Drag operation is already active.");
             return;
         }
-        //console.log("BEGIN DRAG OPERATION.");
-        console.log("BEGIN DRAG OPERATION " + this.beginDragOperationTestCounter + ".");
-        this.beginDragOperationTestCounter++;
+        console.log("BEGIN DRAG OPERATION.");
+        //console.log("BEGIN DRAG OPERATION " + this.beginDragOperationTestCounter + ".");
+        //this.beginDragOperationTestCounter++;
 
         this.dragInitialMouseX = pointer.x;
         this.dragInitialMouseY = pointer.y;
@@ -575,6 +591,9 @@ export default class KanbanBoard{
 
         ///console.log("CANCEL DRAG OPERATION.");
 
+        //Destroy any red lines currently on the Kanban board.
+        this.destroyAllRedLines();
+
         //Make the label no longer transparent, only if a drag operation is currently active.
         if(this.dragActive){
             //Get the label which was associated with a drag operation.
@@ -593,8 +612,8 @@ export default class KanbanBoard{
         //console.log(moveItemInArray(list, 4, 2)); // Output: ['a', 'b', 'e', 'c', 'd']
         //I just realised that this function may not work, but try it.
 
-        console.log("this.dragMouseInLabelIndex = " + this.dragMouseInLabelIndex +
-            " | this.dragNewLabelIndex = " + this.dragNewLabelIndex);
+        ///console.log("this.dragMouseInLabelIndex = " + this.dragMouseInLabelIndex +
+        ///    " | this.dragNewLabelIndex = " + this.dragNewLabelIndex);
 
         //Add a check not to do this if the variables are -1.
         if(this.dragMouseInLabelIndex != -1 && this.dragNewLabelIndex != -1){
@@ -611,7 +630,7 @@ export default class KanbanBoard{
             ///console.log("ELSE");
         }
 
-        console.log("Display labels.");
+        //console.log("Display labels.");
         //Redraw the labels on the Kanban board in their standard positions.
         this.displayLabels();
 
@@ -749,21 +768,12 @@ export default class KanbanBoard{
         //Set the shortest distance index as the index where the label will be put after the dragging operation has
         //been finished (cancelled). However, don't do this if "shortestDistanceIndex" is -1.
         if(shortestDistanceIndex != -1){
-            let printString = "BEFORE: this.dragNewLabelIndex = " + this.dragNewLabelIndex;
+            //let printString = "BEFORE: this.dragNewLabelIndex = " + this.dragNewLabelIndex;
             this.dragNewLabelIndex = shortestDistanceIndex;
-            console.log(printString + " | AFTER: this.dragNewLabelIndex = " + this.dragNewLabelIndex);
+            //console.log(printString + " | AFTER: this.dragNewLabelIndex = " + this.dragNewLabelIndex);
 
             //Delete all existing red lines, which will hide them from the screen.
-            for(let colIndex = 0; colIndex < kanbanRedLinesBetweenLabels.length; colIndex++){
-                for(let labelIndex = 0; labelIndex < kanbanRedLinesBetweenLabels[colIndex].length; labelIndex++){
-                    //From ChatGPT:
-                    let currentRedLine = kanbanRedLinesBetweenLabels[colIndex][labelIndex];
-                    //Destroy the red line if there is one.
-                    if (!(typeof currentRedLine === 'undefined')) {
-                        currentRedLine.destroy();
-                    }
-                }
-            }
+            this.destroyAllRedLines();
 
             //Draw the red line in this position, if there is at least 1 label on the column.
             //Code below from ChatGPT:

@@ -434,6 +434,8 @@ export default class KanbanBoard{
     //Index of the label on the Kanban board where dragging is active.
     dragMouseInLabelIndex = -1;
 
+    //TODO: Make variables to store the previous x and y positions of the last drag move.
+
     /**
      * Activate the code to potentially start dragging the label vertically on the column.
      * 
@@ -482,18 +484,34 @@ export default class KanbanBoard{
 
         //Redraw the labels on the Kanban board in their standard positions.
         this.displayLabels();
+
+        //At the very end of this function, reset the variables.
+        this.dragInitialMouseX = -1;
+        this.dragInitialMouseY = -1;
+        this.dragActive = false;
+        this.dragInsideColumn = -1;
+        this.dragMouseInLabelIndex = -1;
     }
 
     /**
      * Drag the label across the Kanban board if a drag operation is currently active.
      */
     doLabelDragging(){
-        if(!dragActive){
+        if(!this.dragActive){
             return; //A label drag operation is not currently active.
         }
+        //console.log("DEBUG: this.dragInsideColumn = " + this.dragInsideColumn);
+        //console.log("DEBUG: this.dragMouseInLabelIndex = " + this.dragMouseInLabelIndex);
+        //console.log("DEBUG: kanbanLabelsList = " + kanbanLabelsList);
         let currentLabel = kanbanLabelsList[this.dragInsideColumn][this.dragMouseInLabelIndex];
-        currentLabel.x += 0;
-        currentLabel.y += 0;
+        //currentLabel.x += (pointer.x - );
+
+        //Need to access the container inside of currentLabel then increment y.
+        console.log("DEBUG: currentLabel = " + currentLabel);
+        console.log("DEBUG: currentLabel.y = " + currentLabel.y);
+        console.log("DEBUG: currentLabel.container.y = " + currentLabel.container.y);
+
+        currentLabel.container.y += 10;
     }
 
     /**
@@ -539,6 +557,10 @@ export default class KanbanBoard{
             //console.log('SCENE-WIDE Pointer moved to:', pointer.x, pointer.y);
             let insideColumn = this.checkIfMouseWithinKanbanColumn(pointer);
             //console.log("Mouse moved over: insideColumn = " + insideColumn);
+
+            //Do the actual drag operation. Note that the function will do nothing if a drag operation is not
+            //current active.
+            this.doLabelDragging(pointer);
         });
     }
 }

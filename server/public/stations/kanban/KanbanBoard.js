@@ -467,6 +467,7 @@ export default class KanbanBoard{
 
         //Call a function to draw the red lines on the Kanban board showing eligible positions where the
         //label could be moved to.
+        //No, do this in the function where dragging happens as just clicking should not show this.
     }
 
     /**
@@ -479,6 +480,7 @@ export default class KanbanBoard{
      * - Determine where the label should fit based on the red lines on the Kanban board,
      *   which could either be the original position or a different one if it was moved substantially. If the label is
      *   placed in a different column, update "kanbanLabelsList" by reordering it.
+     * - Make the label opaque (a solid colour) as it would have been transparent during dragging.
      * - Redraw the labels in the Kanban board, using the standard function in this file. DO NOT UPDATE THE LABEL'S
      *   X AND Y COORDINATES, as this will be handled by the standard function to draw the labels.
      */
@@ -491,6 +493,16 @@ export default class KanbanBoard{
         //Redraw the labels on the Kanban board in their standard positions.
         this.displayLabels();
 
+        //Make the label no longer transparent, only if a drag operation is currently active.
+        if(this.dragActive){
+            //Get the label which was associated with a drag operation.
+            let currentLabel = kanbanLabelsList[this.dragInsideColumn][this.dragMouseInLabelIndex];
+        
+            //Code from ChatGPT:
+            //0 is fully transparent, 1 is fully opaque.
+            currentLabel.container.alpha = 1;
+        }
+
         //At the very end of this function, reset the variables.
         this.dragInitialMouseX = -1;
         this.dragInitialMouseY = -1;
@@ -499,6 +511,78 @@ export default class KanbanBoard{
         this.dragActive = false;
         this.dragInsideColumn = -1;
         this.dragMouseInLabelIndex = -1;
+    }
+
+    /**
+     * Draw a line where the Kanban board label is the closest to when dragging to indicate where it will go
+     * if the mouse is released.
+     * @param {*} pointer Mouse object with x and y position.
+     */
+    linesLabelPotentialPositions(pointer){
+        //TODO: Maybe create a field for the current index in the list where the label should be dropped
+        //if the drag operation is cancelled.
+
+        //Whether or not all the lines should be displayed for testing purposes.
+        const LINES_TEST = true;
+
+        //First get the regular code for drawing labels, then modify it.
+        //Code from checkIfMouseInKanbanLabel() function in this file but modified.
+        let currentYPos = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT +
+                            COLUMN_TITLES_TEXT_HEIGHT + GAP_BETWEEN_COLUMN_AND_LABELS;
+
+        //Constant for the gap between a label and a red line.
+        const GAP_BETWEEN_LABEL_AND_LINE = 2;
+        //Height of the red line.
+        const LINE_HEIGHT = GAP_BETWEEN_COLUMN_AND_LABELS - (GAP_BETWEEN_LABEL_AND_LINE * 2);
+
+        //Create list of potential drawing positions for the red line, and then choose the closest one, but
+        //COMPARE FROM THE MIDDLE OF THE LINE, not the drawing position in the top left corner.
+        let potentialLineDrawingPositions = [];
+
+        //Get the labels list for the current column.
+        let currentColumnKanbanLabelsList = kanbanLabelsList[this.dragInsideColumn];
+
+        //Add potential positions to the "potentialLineDrawingPositions" list.
+        //Length - 1 because a red line should not be drawn at the end of all the labels on the column.
+        for(let i = 0; i < currentColumnKanbanLabelsList.length - 1; i++){
+            //Skip potentialy drawing a red line for the current label that is being dragged.
+            if(i == this.dragMouseInLabelIndex){continue;}
+            
+            //console.log("Label " + i + " on the Kanban board.");
+            let currentLabel = currentColumnKanbanLabelsList[i];
+            
+            //x position of the label and also the potential red line.
+            let currentXPos = currentLabel.calculateLabelXPos();
+
+            let currentLineYPos = currentYPos + currentLabel.container.height + GAP_BETWEEN_LABEL_AND_LINE;
+            console.log("currentLineYPos = " + currentLineYPos);
+            potentialLineDrawingPositions.push(currentLineYPos);
+
+            //Code to draw the line. After all iterations of the for loop this will draw all the lines. This is
+            //ONLY for testing purposes, as the proper code will only draw the line which is closest to the current y
+            //position of the mouse pointer.
+            if(LINES_TEST){
+                //Code below from ChatGPT:
+                //Create a graphics object (for the red line which is a rectangle.)
+                let graphics = this.kanbanStation.add.graphics();
+                //Set the fill color to red.
+                graphics.fillStyle(0xdb1a1a);
+
+                //Draw a rectangle at (100, 100) with a width and height of 200
+                graphics.fillRect(currentXPos, currentLineYPos, COLUMN_RECTANGLE_WIDTH, LINE_HEIGHT);
+            }
+
+            //console.log("currentXPos = " + currentXPos + " | currentYPos = " + currentYPos);
+            if(pointer.x >= currentXPos && pointer.x <= currentXPos + LABEL_WIDTH && pointer.y >= currentYPos &&
+                pointer.y <= currentYPos + currentLabel.height){
+                //console.log("currentXPos = " + currentXPos + " | currentYPos = " + currentYPos);
+                console.log("Mouse is within label index " + i);
+                kanbanLabelIndexMouseOver = i;
+            }
+
+            //Update "currentYPos" with the height of the label and the gap.
+            currentYPos += currentLabel.height + GAP_BETWEEN_COLUMN_AND_LABELS;
+        }
     }
 
     /**
@@ -514,6 +598,14 @@ export default class KanbanBoard{
         //console.log("DEBUG: kanbanLabelsList = " + kanbanLabelsList);
         let currentLabel = kanbanLabelsList[this.dragInsideColumn][this.dragMouseInLabelIndex];
         //currentLabel.x += (pointer.x - );
+
+        //Make the label partially transparent when it is dragged.
+        //Code from ChatGPT:
+        //0 is fully transparent, 1 is fully opaque.
+        currentLabel.container.alpha = 0.5;
+
+        //Call function to draw a red line showing where the label can be placed.
+        this.linesLabelPotentialPositions(pointer);
 
         //Need to access the container inside of currentLabel then increment y.
         //console.log("DEBUG: currentLabel = " + currentLabel);

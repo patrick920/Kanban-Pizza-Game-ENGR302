@@ -42,10 +42,16 @@ export const LABEL_WIDTH = COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABE
  */
 //ChatGPT helped.
 //let kanbanLabelsList = [[], [], [], [], [], []];
+//This stores all the labels on the Kanban board.
 let kanbanLabelsList = [];
+
+//2D list to store the rectangles for the temporary red lines between Kanban labels.
+let kanbanRedLinesBetweenLabels = []
+
 //Initialise empty lists for each of the 6 columns.
 for(let i = 0; i < 6; i++){
     kanbanLabelsList[i] = [];
+    kanbanRedLinesBetweenLabels[i]= [];
 }
 
 export default class KanbanBoard{
@@ -645,6 +651,18 @@ export default class KanbanBoard{
         if(shortestDistanceIndex != -1){
             this.dragNewLabelIndex = shortestDistanceIndex;
 
+            //Delete all existing red lines, which will hide them from the screen.
+            for(let colIndex = 0; colIndex < kanbanRedLinesBetweenLabels.length; colIndex++){
+                for(let labelIndex = 0; labelIndex < kanbanRedLinesBetweenLabels[colIndex].length; labelIndex++){
+                    //From ChatGPT:
+                    let currentRedLine = kanbanRedLinesBetweenLabels[colIndex][labelIndex];
+                    //Destroy the red line if there is one.
+                    if (!(typeof currentRedLine === 'undefined')) {
+                        currentRedLine.destroy();
+                    }
+                }
+            }
+
             //Draw the red line in this position, if there is at least 1 label on the column.
             //Code below from ChatGPT:
             //Create a graphics object (for the red line which is a rectangle.)
@@ -656,6 +674,9 @@ export default class KanbanBoard{
             graphics.fillRect(kanbanLabelsList[this.dragInsideColumn][0].calculateLabelXPos(),
                                 potentialLineDrawingPositions[shortestDistanceIndex],
                                 COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABELS * 2), LINE_HEIGHT);
+            
+            //TODO: Keep a record of these graphics objects drawn so that they can be deleted later on.
+            kanbanRedLinesBetweenLabels[this.dragInsideColumn][shortestDistanceIndex] = graphics;
         }
     }
 

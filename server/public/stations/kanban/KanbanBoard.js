@@ -449,6 +449,9 @@ export default class KanbanBoard{
 
     //TODO: Make variables to store the previous x and y positions of the last drag move.
 
+    //This is only for testing purposes to see when a drag operation begins.
+    beginDragOperationTestCounter = 0;
+
     /**
      * Activate the code to potentially start dragging the label vertically on the column.
      * 
@@ -464,7 +467,9 @@ export default class KanbanBoard{
             console.log("MAJOR PROBLEM: Drag operation is already active.");
             return;
         }
-        console.log("BEGIN DRAG OPERATION.");
+        //console.log("BEGIN DRAG OPERATION.");
+        console.log("BEGIN DRAG OPERATION " + this.beginDragOperationTestCounter + ".");
+        this.beginDragOperationTestCounter++;
 
         this.dragInitialMouseX = pointer.x;
         this.dragInitialMouseY = pointer.y;
@@ -502,16 +507,50 @@ export default class KanbanBoard{
     
         return arr;
     }
+    
+    // //Try your own way of implementing this.
+    // moveItemInArray(arr, fromIndex, toIndex) {
+    //     //TODO: Add edge checks.
+    //     //TODO: Draw a diagram if needed, or use a test program to test this functionality.
+
+    //     currentValue = arr[fromIndex];
+
+    //     //Move all other items after it.
+    //     for(let i = arr.lenth - 1; i > fromIndex; i++){
+
+    //     }
+    
+    //     return arr;
+    // }
 
     /**
      * Print debug information about the "kanbanLabelsList" 2D list containing the labels on the Kanban board.
      * @param {*} columnIndex Index of the column to be printed.
      */
     debugPrintKanbalLabelsListContent(columnIndex){
-        let printString = "";
+        let printString = "Kanban List Contents:\n";
         for(let i = 0; i < kanbanLabelsList[columnIndex].length; i++){
-            let currentLabel = kanbanLabelsList[i];
-            printString += "Label " + i + " has height " + currentLabel.container.height + ".\n";
+            let currentLabel = kanbanLabelsList[columnIndex][i];
+            let currentLabelContainer = currentLabel.container;
+            if (typeof currentLabelContainer === 'undefined'){
+                printString += "Label " + i + " has height undefined.\n";
+            } else{
+                printString += "Label " + i + " has height " + currentLabelContainer.height + ".\n";
+            }
+        }
+        console.log(printString);
+    }
+
+    debug2PrintKanbanLabelsListContent(currentList){
+        let printString = "Debug2: Kanban List Contents:\n";
+        for(let i = 0; i < currentList.length; i++){
+            let currentLabel = currentList[i];
+            let currentLabelContainer = currentLabel.container;
+            if (typeof currentLabelContainer === 'undefined'){
+                printString += "Label " + i + " has height undefined.\n";
+            } else{
+                printString += "Label " + i + " has height " + currentLabelContainer.height + ".\n";
+            }
         }
         console.log(printString);
     }
@@ -534,7 +573,7 @@ export default class KanbanBoard{
         //Do not have an if statement checking "dragActive", as there are multiple reasons why the drag
         //operation could be cancelled, and all of those reasons could trigger this.
 
-        console.log("CANCEL DRAG OPERATION.");
+        ///console.log("CANCEL DRAG OPERATION.");
 
         //Make the label no longer transparent, only if a drag operation is currently active.
         if(this.dragActive){
@@ -558,14 +597,21 @@ export default class KanbanBoard{
             " | this.dragNewLabelIndex = " + this.dragNewLabelIndex);
 
         //Add a check not to do this if the variables are -1.
-        if(this.dragMouseInLabelIndex != -1 && this.dragNewLabelIndex != 1){
-            console.log("this.dragMouseInLabelIndex = " + this.dragMouseInLabelIndex +
-                        " | this.dragNewLabelIndex = " + this.dragNewLabelIndex);
+        if(this.dragMouseInLabelIndex != -1 && this.dragNewLabelIndex != -1){
+            ///console.log("this.dragMouseInLabelIndex = " + this.dragMouseInLabelIndex +
+            ///            " | this.dragNewLabelIndex = " + this.dragNewLabelIndex);
+            ///console.log("IF");
+            this.debugPrintKanbalLabelsListContent(this.dragInsideColumn);
             //this.dragNewLabelIndex = shortestDistanceIndex;
-            kanbanLabelsList[this.dragInsideColumn] = this.moveItemInArray(kanbanLabelsList[this.dragInsideColumn],
-                                                        this.dragMouseInLabelIndex, this.dragNewLabelIndex);
+            let newListItem = this.moveItemInArray(kanbanLabelsList[this.dragInsideColumn],
+                                                this.dragMouseInLabelIndex, this.dragNewLabelIndex);
+            this.debug2PrintKanbanLabelsListContent(newListItem);
+            kanbanLabelsList[this.dragInsideColumn] = newListItem;
+        } else{
+            ///console.log("ELSE");
         }
 
+        console.log("Display labels.");
         //Redraw the labels on the Kanban board in their standard positions.
         this.displayLabels();
 
@@ -652,8 +698,8 @@ export default class KanbanBoard{
             let currentXPos = currentLabel.calculateLabelXPos();
 
             let currentLineYPos = currentYPos + currentLabel.container.height + GAP_BETWEEN_LABEL_AND_LINE;
-            console.log("i = " + i + " | currentLabel.container.height = " + currentLabel.container.height +
-                        " | curentYPos = " + currentYPos + " | currentLineYPos = " + currentLineYPos);
+            ///console.log("i = " + i + " | currentLabel.container.height = " + currentLabel.container.height +
+            ///            " | curentYPos = " + currentYPos + " | currentLineYPos = " + currentLineYPos);
             potentialLineDrawingPositions.push(currentLineYPos);
 
             //Code to draw the line. After all iterations of the for loop this will draw all the lines. This is
@@ -698,12 +744,14 @@ export default class KanbanBoard{
             }
         }
 
-        console.log("shortestDistance = " + shortestDistance + " | shortestDistanceIndex = " + shortestDistanceIndex);
+        ///console.log("shortestDistance = " + shortestDistance + " | shortestDistanceIndex = " + shortestDistanceIndex);
 
         //Set the shortest distance index as the index where the label will be put after the dragging operation has
         //been finished (cancelled). However, don't do this if "shortestDistanceIndex" is -1.
         if(shortestDistanceIndex != -1){
+            let printString = "BEFORE: this.dragNewLabelIndex = " + this.dragNewLabelIndex;
             this.dragNewLabelIndex = shortestDistanceIndex;
+            console.log(printString + " | AFTER: this.dragNewLabelIndex = " + this.dragNewLabelIndex);
 
             //Delete all existing red lines, which will hide them from the screen.
             for(let colIndex = 0; colIndex < kanbanRedLinesBetweenLabels.length; colIndex++){

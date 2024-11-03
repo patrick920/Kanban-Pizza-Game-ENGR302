@@ -603,7 +603,7 @@ export default class KanbanBoard{
             //0 is fully transparent, 1 is fully opaque.
             currentLabel.container.alpha = 1;
             //Make the rectangle the regular colour again.
-            
+            currentLabel.drawRectangle(false);
         }
 
         //Put the current label in a different position in the "kanbanLabelsList" based on where it was dragged.
@@ -812,6 +812,8 @@ export default class KanbanBoard{
         //Code from ChatGPT:
         //0 is fully transparent, 1 is fully opaque.
         currentLabel.container.alpha = 0.5;
+        //Make the rectangle a darker colour so it can be seen even though it is transparent.
+        currentLabel.drawRectangle(true);
 
         //Call function to draw a red line showing where the label can be placed.
         this.linesLabelPotentialPositions(pointer);

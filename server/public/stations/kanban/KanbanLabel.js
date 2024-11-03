@@ -33,11 +33,11 @@ export default class KanbanLabel {
      * @param {*} kanbanStation Reference to the KanbanStation object.
      * @param {*} height The height can be set, but the width is fixed to the column width.
      * @param {*} columnIndex Index of the column on the Kanban board, can be 0 to 5 (as there are 6 columns.)
-     * @param {*} labelList List of text labels to be displayed (not currently implemented fully.)
+     * @param {*} labelTextList List of text strings for text to be displayed on the Kanban label.
      */
-    constructor(kanbanStation, height, columnIndex, labelList){
+    constructor(kanbanStation, height, columnIndex, labelTextList){
         this.kanbanStation = kanbanStation
-        this.labelList = labelList
+        this.labelTextList = labelTextList
         this.columnIndex = columnIndex
         this.height = height
         console.log("DEBUG: KanbanLabel object created.");
@@ -56,11 +56,17 @@ export default class KanbanLabel {
         this.container.add(graphics);
 
         //Add text labels inside the container.
-        const label1 = kanbanStation.add.text(0, 0, 'Label 1', { fontSize: '20px', fill: '#ffffff' });
-        const label2 = kanbanStation.add.text(0, 30, 'Label 2', { fontSize: '20px', fill: '#ffffff' });
+        //const label1 = kanbanStation.add.text(0, 0, 'Label 1', { fontSize: '20px', fill: '#ffffff' });
+        //const label2 = kanbanStation.add.text(0, 30, 'Label 2', { fontSize: '20px', fill: '#ffffff' });
 
         // Add text labels to the container
-        this.container.add([label1, label2]);
+        //this.container.add([label1, label2]);
+        let currentTextYPos = 0; //This will be incremented to update the position to draw the next text label.
+        for(let i = 0; i < labelTextList.length; i++){
+            const label = kanbanStation.add.text(0, currentTextYPos, labelTextList[i], { fontSize: '20px', fill: '#ffffff' });
+            this.container.add(label);
+            currentTextYPos += 30;
+        }
 
         //Set the container's size, as otherwise it prevents the Container from being draggable.
         this.container.setSize(LABEL_WIDTH, height);

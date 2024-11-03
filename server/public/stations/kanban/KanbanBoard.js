@@ -264,10 +264,10 @@ export default class KanbanBoard{
      * Height is just a temporary variable. Height should be automatic based on how the
      * Kanban tasks work.
      */
-    addLabel(height, columnIndex){
+    addLabel(height, columnIndex, labelNumber){
         //"push" is used to add to the list.
-        kanbanLabelsList[columnIndex].push(new KanbanLabel(this.kanbanStation, height, columnIndex, [this.kanbanStation.add.text("Top"),
-            this.kanbanStation.add.text("Bottom")]));
+        kanbanLabelsList[columnIndex].push(new KanbanLabel(this.kanbanStation, height, columnIndex,
+                                            ["Label " + labelNumber, "Example text."]));
     }
     
     displayLabels(){
@@ -299,27 +299,27 @@ export default class KanbanBoard{
     createTestLabels(){
         //Create several test labels on the Kanban board automatically for testing purposes.
         //kanbanStation code should be removed later on.
-        this.addLabel(200, 0);
-        this.addLabel(90, 0);
+        this.addLabel(200, 0, 1);
+        this.addLabel(90, 0, 2);
 
-        this.addLabel(50, 1);
-        this.addLabel(100, 1);
-        this.addLabel(80, 1);
-        this.addLabel(60, 1);
+        this.addLabel(50, 1, 1);
+        this.addLabel(100, 1, 2);
+        this.addLabel(80, 1, 3);
+        this.addLabel(60, 1, 4);
 
-        this.addLabel(140, 2);
+        this.addLabel(140, 2, 1);
 
         //NO test labels on column 3.
 
-        this.addLabel(140, 4);
-        this.addLabel(80, 4);
-        this.addLabel(120, 4);
+        this.addLabel(140, 4, 1);
+        this.addLabel(80, 4, 2);
+        this.addLabel(120, 4, 3);
 
-        this.addLabel(50, 5);
-        this.addLabel(70, 5);
-        this.addLabel(90, 5);
-        this.addLabel(60, 5);
-        this.addLabel(80, 5);
+        this.addLabel(50, 5, 1);
+        this.addLabel(70, 5, 2);
+        this.addLabel(90, 5, 3);
+        this.addLabel(60, 5, 4);
+        this.addLabel(80, 5, 5);
         //TODO: Try 1, 2, 3, 4, 5 and no labels in the columns.
     }
 
@@ -602,6 +602,8 @@ export default class KanbanBoard{
             //Code from ChatGPT:
             //0 is fully transparent, 1 is fully opaque.
             currentLabel.container.alpha = 1;
+            //Make the rectangle the regular colour again.
+            
         }
 
         //Put the current label in a different position in the "kanbanLabelsList" based on where it was dragged.

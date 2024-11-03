@@ -295,27 +295,25 @@ export default class KanbanBoard{
         //kanbanStation code should be removed later on.
         this.addLabel(200, 0);
         this.addLabel(90, 0);
-        this.addLabel(120, 0);
 
-        this.addLabel(150, 1);
+        this.addLabel(50, 1);
         this.addLabel(100, 1);
         this.addLabel(80, 1);
+        this.addLabel(60, 1);
 
-        this.addLabel(70, 2);
-        this.addLabel(190, 2);
-        this.addLabel(80, 2);
+        this.addLabel(140, 2);
 
-        this.addLabel(210, 3);
-        this.addLabel(70, 3);
-        this.addLabel(130, 3);
+        //NO test labels on column 3.
 
         this.addLabel(140, 4);
         this.addLabel(80, 4);
         this.addLabel(120, 4);
 
-        this.addLabel(230, 5);
+        this.addLabel(50, 5);
         this.addLabel(70, 5);
         this.addLabel(90, 5);
+        this.addLabel(60, 5);
+        this.addLabel(80, 5);
         //TODO: Try 1, 2, 3, 4, 5 and no labels in the columns.
     }
 
@@ -545,7 +543,7 @@ export default class KanbanBoard{
         let currentColumnKanbanLabelsList = kanbanLabelsList[this.dragInsideColumn];
 
         //Must potentially draw a red line at the TOP of all the labels.
-        if(currentColumnKanbanLabelsList.length > 1){
+        if(currentColumnKanbanLabelsList.length >= 1){
             let topLabel = currentColumnKanbanLabelsList[0];
 
             //x position of the label and also the potential red line.

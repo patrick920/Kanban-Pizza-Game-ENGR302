@@ -440,11 +440,7 @@ export default class KanbanBoard{
     dragActive = false;
     //Index of the column where dragging is active.
     dragInsideColumn = -1;
-    //Initial index of the label on the Kanban board when the dragging operation is started. This will not change
-    //during the dragging operation.
-    dragInitialMouseInLabelIndex = -1;
-    //Index of the label on the Kanban board where dragging is active. This may or may not change
-    //during the dragging operation.
+    //Index of the label on the Kanban board where dragging is active.
     dragMouseInLabelIndex = -1;
 
     //Index of the place on the Kanban board column where the label should be placed after the drag operation has
@@ -476,7 +472,6 @@ export default class KanbanBoard{
         this.dragCurrentMouseY = pointer.y;
         this.dragActive = true;
         this.dragInsideColumn = insideColumn;
-        this.dragInitialMouseInLabelIndex = mouseInLabelIndex;
         this.dragMouseInLabelIndex = mouseInLabelIndex;
         //By default, if the drag operation is cancelled, the label will return to its initial position on the
         //Kanban board column.
@@ -549,16 +544,16 @@ export default class KanbanBoard{
         //console.log(moveItemInArray(list, 4, 2)); // Output: ['a', 'b', 'e', 'c', 'd']
         //I just realised that this function may not work, but try it.
 
-        console.log("this.dragInitialMouseInLabelIndex = " + this.dragInitialMouseInLabelIndex +
-            " | this.dragMouseInLabelIndex = " + this.dragMouseInLabelIndex);
+        console.log("this.dragMouseInLabelIndex = " + this.dragMouseInLabelIndex +
+            " | this.dragNewLabelIndex = " + this.dragNewLabelIndex);
 
         //Add a check not to do this if the variables are -1.
-        if(this.dragInitialMouseInLabelIndex != -1 && this.dragMouseInLabelIndex != 1){
-            console.log("this.dragInitialMouseInLabelIndex = " + this.dragInitialMouseInLabelIndex +
-                        " | this.dragMouseInLabelIndex = " + this.dragMouseInLabelIndex);
+        if(this.dragMouseInLabelIndex != -1 && this.dragNewLabelIndex != 1){
+            console.log("this.dragMouseInLabelIndex = " + this.dragMouseInLabelIndex +
+                        " | this.dragNewLabelIndex = " + this.dragNewLabelIndex);
             //this.dragNewLabelIndex = shortestDistanceIndex;
             kanbanLabelsList[this.dragInsideColumn] = this.moveItemInArray(kanbanLabelsList[this.dragInsideColumn],
-                                                        this.dragInitialMouseInLabelIndex, this.dragMouseInLabelIndex);
+                                                        this.dragMouseInLabelIndex, this.dragNewLabelIndex);
         }
 
         //Redraw the labels on the Kanban board in their standard positions.
@@ -581,7 +576,6 @@ export default class KanbanBoard{
         this.dragCurrentMouseY = -1;
         this.dragActive = false;
         this.dragInsideColumn = -1;
-        this.dragInitialMouseInLabelIndex = -1;
         this.dragMouseInLabelIndex = -1;
         this.dragNewLabelIndex = -1;
     }

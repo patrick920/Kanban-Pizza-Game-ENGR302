@@ -276,7 +276,7 @@ export default class KanbanBoard{
 
             //Use the lists in KanbanStation.
             for(let i = 0; i < kanbanLabelsList[columnIndex].length; i++){
-                console.log("Display label " + i + " on the Kanban board.");
+                //console.log("Display label " + i + " on the Kanban board.");
                 let currentLabel = kanbanLabelsList[columnIndex][i];
                 //Random number code from ChatGPT.
                 //currentLabel.drawLabelOnKanbanBoard(Math.floor(Math.random() * (800 - 200 + 1)) + 200);
@@ -486,7 +486,7 @@ export default class KanbanBoard{
         //Do not have an if statement checking "dragActive", as there are multiple reasons why the drag
         //operation could be cancelled, and all of those reasons could trigger this.
 
-        console.log("BEGIN DRAG OPERATION.");
+        console.log("CANCEL DRAG OPERATION.");
 
         //Redraw the labels on the Kanban board in their standard positions.
         this.displayLabels();
@@ -570,11 +570,23 @@ export default class KanbanBoard{
             this.startColumnDragCode(pointer, insideColumn);
         });
 
+        //Fires when the mouse button is released
+        this.kanbanStation.input.on('pointerup', (pointer) => {
+            console.log('SCENE-WIDE Mouse released at:', pointer.x, pointer.y);
+            //If the mouse button is released anywhere on the Phaser Scene, stop any active label dragging operation.
+            this.cancelDragOperation();
+        });
+
         // Capture any mouse movement in the scene
         this.kanbanStation.input.on('pointermove', (pointer) => {
             //console.log('SCENE-WIDE Pointer moved to:', pointer.x, pointer.y);
             let insideColumn = this.checkIfMouseWithinKanbanColumn(pointer);
             //console.log("Mouse moved over: insideColumn = " + insideColumn);
+
+            //If it's not inside of a column, CANCEL the current drag operation (if one is currently active.)
+            if(insideColumn == -1 || insideColumn != this.dragInsideColumn){
+                this.cancelDragOperation();
+            }
 
             //Do the actual drag operation. Note that the function will do nothing if a drag operation is not
             //current active.

@@ -427,6 +427,10 @@ export default class KanbanBoard{
     //-1 if dragging operation is not active.
     dragInitialMouseX = -1;
     dragInitialMouseY = -1;
+    //Current mouse x and y positions. This may be updated as the dragging goes on.
+    dragCurrentMouseX = -1;
+    dragCurrentMouseY = -1;
+
     //Whether or not the dragging operation is active.
     dragActive = false;
     //Index of the column where dragging is active.
@@ -455,6 +459,8 @@ export default class KanbanBoard{
 
         this.dragInitialMouseX = pointer.x;
         this.dragInitialMouseY = pointer.y;
+        this.dragCurrentMouseX = pointer.x;
+        this.dragCurrentMouseY = pointer.y;
         this.dragActive = true;
         this.dragInsideColumn = insideColumn;
         this.dragMouseInLabelIndex = mouseInLabelIndex;
@@ -488,6 +494,8 @@ export default class KanbanBoard{
         //At the very end of this function, reset the variables.
         this.dragInitialMouseX = -1;
         this.dragInitialMouseY = -1;
+        this.dragCurrentMouseX = -1;
+        this.dragCurrentMouseY = -1;
         this.dragActive = false;
         this.dragInsideColumn = -1;
         this.dragMouseInLabelIndex = -1;
@@ -495,8 +503,9 @@ export default class KanbanBoard{
 
     /**
      * Drag the label across the Kanban board if a drag operation is currently active.
+     * @param pointer Mouse pointer object with x and y.
      */
-    doLabelDragging(){
+    doLabelDragging(pointer){
         if(!this.dragActive){
             return; //A label drag operation is not currently active.
         }
@@ -507,11 +516,20 @@ export default class KanbanBoard{
         //currentLabel.x += (pointer.x - );
 
         //Need to access the container inside of currentLabel then increment y.
-        console.log("DEBUG: currentLabel = " + currentLabel);
-        console.log("DEBUG: currentLabel.y = " + currentLabel.y);
+        //console.log("DEBUG: currentLabel = " + currentLabel);
+        //console.log("DEBUG: currentLabel.y = " + currentLabel.y);
         console.log("DEBUG: currentLabel.container.y = " + currentLabel.container.y);
+        console.log("DEBUG: (this.dragCurrentMouseY - pointer.y) = " + (this.dragCurrentMouseY - pointer.y));
+        console.log("DEBUG: this.dragCurrentMouseY = " + this.dragCurrentMouseY);
+        console.log("DEBUG: pointer.y = " + pointer.y);
 
-        currentLabel.container.y += 10;
+        //Update the label's container position on the Phaser Scene.
+        currentLabel.container.y -= (this.dragCurrentMouseY - pointer.y);
+
+        //Keep this code at the VERY END of this function.
+        //Update the current x and y mouse variables for the dragging operation.
+        this.dragCurrentMouseX = pointer.x;
+        this.dragCurrentMouseY = pointer.y;
     }
 
     /**

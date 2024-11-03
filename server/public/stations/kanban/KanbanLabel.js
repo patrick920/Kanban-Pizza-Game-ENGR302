@@ -28,6 +28,34 @@ export default class KanbanLabel {
     //}
 
     /**
+     * Code from ChatGPT.
+     * Draw rectangle with the specified colour.
+     * @param {*} dragColor false if the regular color, true if for the drag color.
+     */
+    drawRectangle(dragColor) {
+        // Clear previous graphics
+        this.graphics.clear();
+    
+        // Set the new color
+        //graphics.fillStyle(newColor, 1);
+    
+        // Redraw the rectangle
+        //graphics.fillRect(100, 100, 200, 150);
+
+        //Source: Google RGB color picker.
+        if(dragColor){
+            this.graphics.fillStyle(0x091447, 1); //Darker blue color used for when dragging the label on the column.
+        } else{
+            this.graphics.fillStyle(0x3e81e6, 1); //Regular blue color.
+        }
+        this.graphics.fillRect(0, 0, LABEL_WIDTH, this.height);  // x, y, width, height
+        //TODO: Do the dimensions for items in the container need to be relative to the container or the entire screen?
+
+        //Add the rectangle for the label to the container.
+        this.container.add(this.graphics);
+    }
+
+    /**
      * This is a TEST constructor. The proper one will take the ticket/label object for the Pizza order, and will be
      * instantiated when a pizza order is submitted (when the player takes the order from the customer.)
      * @param {*} kanbanStation Reference to the KanbanStation object.
@@ -46,14 +74,8 @@ export default class KanbanLabel {
         //Some code from ChatGPT taken and modified.
         //Create the Phaser Container which contains all elements for this.
         this.container = kanbanStation.add.container(LABEL_WIDTH, height); //Is this x and y or width/height?
-        const graphics = kanbanStation.add.graphics();
-        //Source: Google RGB color picker.
-        graphics.fillStyle(0x3e81e6, 1);  // blue color
-        graphics.fillRect(0, 0, LABEL_WIDTH, height);  // x, y, width, height
-        //TODO: Do the dimensions for items in the container need to be relative to the container or the entire screen?
-
-        //Add the rectangle for the label to the container.
-        this.container.add(graphics);
+        this.graphics = kanbanStation.add.graphics();
+        this.drawRectangle(false);
 
         //Add text labels inside the container.
         //const label1 = kanbanStation.add.text(0, 0, 'Label 1', { fontSize: '20px', fill: '#ffffff' });

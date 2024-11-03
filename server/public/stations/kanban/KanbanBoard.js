@@ -316,6 +316,7 @@ export default class KanbanBoard{
         this.addLabel(230, 5);
         this.addLabel(70, 5);
         this.addLabel(90, 5);
+        //TODO: Try 1, 2, 3, 4, 5 and no labels in the columns.
     }
 
     //----------------------------------------------------------------------
@@ -527,8 +528,9 @@ export default class KanbanBoard{
 
         //First get the regular code for drawing labels, then modify it.
         //Code from checkIfMouseInKanbanLabel() function in this file but modified.
-        let currentYPos = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT +
-                            COLUMN_TITLES_TEXT_HEIGHT + GAP_BETWEEN_COLUMN_AND_LABELS;
+        const BASE_Y_POS = TOP_TO_TITLE_GAP + TITLE_TEXT_HEIGHT + TITLE_TO_COLUMN_TITLES_HEIGHT +
+                        COLUMN_TITLES_TEXT_HEIGHT;
+        let currentYPos = BASE_Y_POS + GAP_BETWEEN_COLUMN_AND_LABELS;
 
         //Constant for the gap between a label and a red line.
         const GAP_BETWEEN_LABEL_AND_LINE = 2;
@@ -542,7 +544,32 @@ export default class KanbanBoard{
         //Get the labels list for the current column.
         let currentColumnKanbanLabelsList = kanbanLabelsList[this.dragInsideColumn];
 
-        //TODO: Must draw a red line at the top.
+        //Must potentially draw a red line at the TOP of all the labels.
+        if(currentColumnKanbanLabelsList.length > 1){
+            let topLabel = currentColumnKanbanLabelsList[0];
+
+            //x position of the label and also the potential red line.
+            const TOP_X_POS = topLabel.calculateLabelXPos();
+
+            let TOP_LINE_Y_POS = BASE_Y_POS + GAP_BETWEEN_LABEL_AND_LINE;
+
+            //Add to the list of potential positions where the red line might get drawn.
+            potentialLineDrawingPositions.push(TOP_LINE_Y_POS);
+
+            //Code to draw the top line. This is ONLY for testing purposes, as the proper code will only draw
+            //the line which is closest to the current y position of the mouse pointer.
+            if(LINES_TEST){
+                //Code below from ChatGPT:
+                //Create a graphics object (for the red line which is a rectangle.)
+                let graphics = this.kanbanStation.add.graphics();
+                //Set the fill color to red.
+                graphics.fillStyle(0xdb1a1a);
+
+                //Draw a rectangle at (100, 100) with a width and height of 200
+                graphics.fillRect(TOP_X_POS, TOP_LINE_Y_POS,
+                                    COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABELS * 2), LINE_HEIGHT);
+            }
+        }
 
         //Add potential positions to the "potentialLineDrawingPositions" list.
         for(let i = 0; i < currentColumnKanbanLabelsList.length; i++){

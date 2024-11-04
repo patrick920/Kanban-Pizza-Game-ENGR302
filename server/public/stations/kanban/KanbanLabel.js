@@ -53,6 +53,13 @@ export default class KanbanLabel {
 
         //Add the rectangle for the label to the container.
         this.container.add(this.graphics);
+
+        //---------------------------------------------------------------------------------
+        this.buttonGraphics = this.kanbanStation.add.graphics();
+        this.graphics.fillStyle(0x091447, 1); //Dark blue color.
+        const goToStationButton = this.buttonGraphics.fillRect(3, 65, LABEL_WIDTH - 6, 16);
+        //Add the button rectangles to the container.
+        this.container.add(this.buttonGraphics);
     }
 
     /**

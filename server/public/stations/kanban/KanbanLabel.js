@@ -87,11 +87,11 @@ export default class KanbanLabel {
         // Add text labels to the container
         //this.container.add([label1, label2]);
         
-        let currentTextYPos = 0; //This will be incremented to update the position to draw the next text label.
+        let currentTextYPos = 1; //This will be incremented to update the position to draw the next text label.
         for(let i = 0; i < this.labelTextList.length; i++){
-            const label = this.kanbanStation.add.text(0, currentTextYPos, this.labelTextList[i], { fontSize: '20px', fill: '#ffffff' });
+            const label = this.kanbanStation.add.text(0, currentTextYPos, this.labelTextList[i], { fontSize: '16px', fill: '#ffffff' });
             this.container.add(label);
-            currentTextYPos += 30;
+            currentTextYPos += 16;
         }
 
         //Set the container's size, as otherwise it prevents the Container from being draggable.

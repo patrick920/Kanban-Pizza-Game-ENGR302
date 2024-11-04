@@ -55,11 +55,11 @@ export default class KanbanLabel {
         this.container.add(this.graphics);
 
         //---------------------------------------------------------------------------------
-        this.buttonGraphics = this.kanbanStation.add.graphics();
-        this.graphics.fillStyle(0x091447, 1); //Dark blue color.
-        const goToStationButton = this.buttonGraphics.fillRect(3, 65, LABEL_WIDTH - 6, 16);
-        //Add the button rectangles to the container.
-        this.container.add(this.buttonGraphics);
+        // this.buttonGraphics = this.kanbanStation.add.graphics();
+        // this.graphics.fillStyle(0x091447, 1); //Dark blue color.
+        // const goToStationButton = this.buttonGraphics.fillRect(3, 65, LABEL_WIDTH - 6, 16);
+        // //Add the button rectangles to the container.
+        // this.container.add(this.buttonGraphics);
     }
 
     /**
@@ -120,17 +120,19 @@ export default class KanbanLabel {
 
         //Code below from ChatGPT:
         // Create a rectangle to act as the button's background
-        const orderButton = this.kanbanStation.add.rectangle(100, 300, 200, 400, 0x091447);
+        //const orderButton = this.kanbanStation.add.rectangle(3, 65, LABEL_WIDTH - 6, 16, 0x091447);
+        const orderButton = this.kanbanStation.add.rectangle(0, 0, LABEL_WIDTH - 6, 16, 0x091447);
         orderButton.setInteractive();
 
         // Add text on top of the button
-        const orderButtonText = this.kanbanStation.add.text(100, 300, 'Go to Station', {
+        //const orderButtonText = this.kanbanStation.add.text(3, 65, 'Go to Station', {
+        const orderButtonText = this.kanbanStation.add.text(0, 0, 'Go to Station', {
             fontSize: '32px',
             color: '#ffffff'
         }).setOrigin(0.5); // Center the text
 
         // Create a container to hold the rectangle and the text
-        const orderButtonContainer = this.kanbanStation.add.container(0, 0, [orderButton, orderButtonText]);
+        const orderButtonContainer = this.kanbanStation.add.container(3, 65, [orderButton, orderButtonText]);
 
         // Event listener for hover effect when the pointer is over the button
         orderButton.on('pointerover', () => {
@@ -146,6 +148,9 @@ export default class KanbanLabel {
         orderButton.on('pointerdown', () => {
             console.log('Order Button clicked!!!!!');
         });
+
+        //Add the button container to the label container.
+        this.container.add(orderButtonContainer);
     }
 
     /**

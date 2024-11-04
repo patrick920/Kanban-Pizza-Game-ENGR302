@@ -198,9 +198,45 @@ export default class KanbanStation extends Station {
         //Update the Kanban board.
         //this.updateKanbanDisplay();
 
+        //let currentPizza = ticket.getPizza();
+        //Where are the requested topping stored?
+        let currentOrder = ticket.getOrder();
+        console.log("currentOrder.orderId = " + currentOrder.orderId); //Not relevant for now.
+        console.log("currentOrder.pizzaType = " + currentOrder.pizzaType); // Not relevant for now.
+        console.log("currentOrder.toppings = " + currentOrder.toppings);
+        let currentToppings = currentOrder.toppings;
+        for(let i = 0; i < currentToppings.length; i++){
+            let topping = currentToppings[i];
+            console.log("i = " + i + " | Topping: " + topping);
+        }
+
+        //Code below from ChatGPT:
+        // Function to get values for a specific key
+        // Find the 'Pizza' entry and store its quantity in a variable
+        const pizzaEntry = currentToppings.find(item => item.topping === 'Pizza');
+        const pizzaQuantity = pizzaEntry ? pizzaEntry.quantity : 0;
+        console.log("pizzaQuantity = " + pizzaQuantity);
+
+        const pepperoniEntry = currentToppings.find(item => item.topping === 'Pepperoni');
+        const pepperoniQuantity = pepperoniEntry ? pepperoniEntry.quantity : 0;
+        console.log("pepperoniQuantity = " + pepperoniQuantity);
+
+        const mushroomEntry = currentToppings.find(item => item.topping === 'Mushroom');
+        const mushroomQuantity = mushroomEntry ? mushroomEntry.quantity : 0;
+        console.log("mushroomQuantity = " + mushroomQuantity);
+
+        //Need to make sure the code works if the toppings are flipped the wrong way around.
+
+        //For now ignore the fact that there could be multiple pizzas in an order. Could sort this later.
+
         //New code:
         //Add the ticket to the first column of the 2D "kanbanLabelsList".
-        kanbanLabelsList[0].push(new KanbanLabel(this, this.kanbanBoard, 100, 0, ["EXAMPLE TICKET"]));
+        kanbanLabelsList[0].push(new KanbanLabel(this, this.kanbanBoard, 120, 0, [
+            "Pizza Order #",
+            pizzaQuantity + " pizza(s)",
+            pepperoniQuantity + " pepperoni",
+            mushroomQuantity + " mushroom(s)"
+        ]));
         this.kanbanBoard.debugPrintKanbalLabelsListContent(0); //Print the first column for debugging purposes.
    }
    

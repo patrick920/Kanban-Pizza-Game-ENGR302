@@ -249,7 +249,7 @@ export default class OrderStation extends Station {
             return;
         }
     
-        const orderId = Date.now();
+        const orderId = Date.now(); //TODO: Could change this to numbers 1, 2, 3, etc... instead of date.
         const order = new Order(orderId, pizzaType, toppings);
         this.orders.push(order);
     

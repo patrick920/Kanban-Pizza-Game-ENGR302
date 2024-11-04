@@ -127,6 +127,38 @@ export default class KanbanStation extends Station {
         //     gameObject.x = dragX;
         //     gameObject.y = dragY;
         // });
+
+        //-----------------------------------------------------------
+        //Test button only.
+        //-----------------------------------------------------------
+        //Code below from ChatGPT:
+        // Create a rectangle to act as the button's background
+        const button = this.add.rectangle(400, 300, 200, 400, 0x4caf50);
+        button.setInteractive();
+
+        // Add text on top of the button
+        const buttonText = this.add.text(400, 300, 'Example', {
+            fontSize: '32px',
+            color: '#ffffff'
+        }).setOrigin(0.5); // Center the text
+
+        // Create a container to hold the rectangle and the text
+        const buttonContainer = this.add.container(0, 0, [button, buttonText]);
+
+        // Event listener for hover effect when the pointer is over the button
+        button.on('pointerover', () => {
+            button.setFillStyle(0x66bb6a); // Change color to a lighter shade on hover
+        });
+
+        // Event listener for when the pointer leaves the button
+        button.on('pointerout', () => {
+            button.setFillStyle(0x4caf50); // Change back to the original color
+        });
+
+        // Event listener for the button interaction (click)
+        button.on('pointerdown', () => {
+            console.log('Button clicked!');
+        });
     }
 
     createBackground() {

@@ -114,7 +114,38 @@ export default class KanbanLabel {
         //Make the rectangle draggable vertically only.
         //makeDraggable(this.container, false, true);
 
-        //TODO: Create the button that leads to a particular scene.
+        //----------------------------
+        //Create the buttons.
+        //Go to Station button.
+
+        //Code below from ChatGPT:
+        // Create a rectangle to act as the button's background
+        const orderButton = this.kanbanStation.add.rectangle(100, 300, 200, 400, 0x091447);
+        orderButton.setInteractive();
+
+        // Add text on top of the button
+        const orderButtonText = this.kanbanStation.add.text(100, 300, 'Go to Station', {
+            fontSize: '32px',
+            color: '#ffffff'
+        }).setOrigin(0.5); // Center the text
+
+        // Create a container to hold the rectangle and the text
+        const orderButtonContainer = this.kanbanStation.add.container(0, 0, [orderButton, orderButtonText]);
+
+        // Event listener for hover effect when the pointer is over the button
+        orderButton.on('pointerover', () => {
+            orderButton.setFillStyle(0x66bb6a); // Change color to a lighter shade on hover
+        });
+
+        // Event listener for when the pointer leaves the button
+        orderButton.on('pointerout', () => {
+            orderButton.setFillStyle(0x4caf50); // Change back to the original color
+        });
+
+        // Event listener for the button interaction (click)
+        orderButton.on('pointerdown', () => {
+            console.log('Order Button clicked!!!!!');
+        });
     }
 
     /**

@@ -166,7 +166,7 @@ export default class KanbanStation extends Station {
         // kanbanLabelsList[3] = this.reviewTickets;
         // kanbanLabelsList[4] = this.serviceTickets;
         // kanbanLabelsList[5] = this.completedTickets;
-        this.putTicketsInKanbanLabelList(0, this.tasks);
+        //this.putTicketsInKanbanLabelList(0, this.tasks);
 
         //Redraw everything on the Kanban board.
     }
@@ -196,7 +196,12 @@ export default class KanbanStation extends Station {
         }
         //TODO: This is where the ticket is added.
         //Update the Kanban board.
-        this.updateKanbanDisplay();
+        //this.updateKanbanDisplay();
+
+        //New code:
+        //Add the ticket to the first column of the 2D "kanbanLabelsList".
+        kanbanLabelsList[0].push(new KanbanLabel(this, 100, 0, "EXAMPLE TICKET"));
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(0); //Print the first column for debugging purposes.
    }
    
    // Moves ticket to the next stations array

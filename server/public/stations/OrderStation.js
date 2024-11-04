@@ -50,7 +50,6 @@ export default class OrderStation extends Station {
     }
 
     create() {
-        this.createBackground(); // This adds the brown rectangle first
         const background = this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
  
         const order_station_sign = this.add.image(160, 130, 'order_station_sign');
@@ -252,48 +251,38 @@ export default class OrderStation extends Station {
             return;
         }
     
-        //const orderId = Date.now(); //TODO: Could change this to numbers 1, 2, 3, etc... instead of date.
-        const orderId = this.orderCounter++; //Set the order ID, then increment it.
+        const orderId = this.orderCounter++; // Increment order ID
         const order = new Order(orderId, pizzaType, toppings);
         this.orders.push(order);
     
         const ticket = new Ticket(order); // Create ticket
     
-        // Get the kanban scene and add the ticket
         const kanbanScene = this.scene.get('KanbanStation');
         kanbanScene.addTicket(ticket);  // Add ticket to kanban board
     
         this.game.socket.emit('newOrder', order);
         console.log('New Order:', order);
         console.log('New Ticket:', ticket);
-
-        //-----------------------------------------------------------------
-        //TODO: This is where the order gets created. Need to integrate this with the Kanban board.
-
-        //New code added for integration with the Kanban board:
-        //Reset the array containing the toppings otherwise it will have the toppings of previous orders
-        //for the next one.
-        this.orderInputs = [];
-    }
+        
+        // Clear dropdowns and quantity inputs after placing order
+        this.orderInputs.forEach(orderInput => {
+            orderInput.quantity = ''; // Clear quantity
+            orderInput.quantityText.setText(''); // Update display
+            orderInput.selectedOption = '(Select Option)'; // Reset to placeholder
+            orderInput.selectedText.setText(orderInput.selectedOption); // Update display
+        }); 
     
+        // Show "Order Taken" text briefly in the center of the screen
+        const orderTakenText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Order Taken', {
+            fontSize: '50px',
+            fill: '#ffffff',
+            backgroundColor: '#000000'
+        }).setOrigin(0.5);
 
-    updateOrderDisplay() {
-        // Clear previous order display
-        if (this.orderTexts) {
-            this.orderTexts.forEach(text => text.destroy());
-        }
-        this.orderTexts = [];
-
-        // Display orders
-        this.orders.forEach((order, index) => {
-            const toppingsText = order.toppings.map(t => `${t.quantity} ${t.topping}`).join(', ');
-            const text = this.add.text(400, 100 + index * 30, `Order ${order.orderId}: ${order.pizzaType} - Toppings: ${toppingsText}`, { fontSize: '18px', fill: '#000' });
-            this.orderTexts.push(text);
+        // Fade out after 1 second
+        this.time.delayedCall(1000, () => {
+        orderTakenText.destroy(); // Remove text after 1 second
         });
-    }
-
-    createBackground() {
-        //TO DO - confirm if needed later
     }
 }
 

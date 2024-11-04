@@ -62,7 +62,16 @@ export default class KanbanLabel {
         //-----------------------------------------
         //Some code from ChatGPT taken and modified.
         //Create the Phaser Container which contains all elements for this.
-        this.container = this.kanbanStation.add.container(LABEL_WIDTH, this.height); //Is this x and y or width/height?
+        //this.container = this.kanbanStation.add.container(LABEL_WIDTH, this.height); //Is this x and y or width/height?
+
+        //New code added for integration with pizza tickets.
+        //The positioning code is probably causing issues. Set it to 0,0, then call mehtod in KanbanBoard.js which
+        //handles redrawing all the labels.
+        this.container = this.kanbanStation.add.container(0, 0);
+        this.kanbanBoard.displayLabels(); //Redraw all labels (which sets their positions.)
+        //ANOTHER ISSUE: You're adding a container, what if that leads to a duplicate if this is called twice. Maybe
+        //remove one of the function calls or modify how this function handles things.
+
         this.graphics = this.kanbanStation.add.graphics();
         this.drawRectangle(false);
 
@@ -72,6 +81,7 @@ export default class KanbanLabel {
 
         // Add text labels to the container
         //this.container.add([label1, label2]);
+        
         let currentTextYPos = 0; //This will be incremented to update the position to draw the next text label.
         for(let i = 0; i < this.labelTextList.length; i++){
             const label = this.kanbanStation.add.text(0, currentTextYPos, this.labelTextList[i], { fontSize: '20px', fill: '#ffffff' });
@@ -99,12 +109,14 @@ export default class KanbanLabel {
      * This is a TEST constructor. The proper one will take the ticket/label object for the Pizza order, and will be
      * instantiated when a pizza order is submitted (when the player takes the order from the customer.)
      * @param {*} kanbanStation Reference to the KanbanStation object.
+     * @param {*} kanbanBoard Reference to the KanbanBoard object used for storing and displaying the Kanban board.
      * @param {*} height The height can be set, but the width is fixed to the column width.
      * @param {*} columnIndex Index of the column on the Kanban board, can be 0 to 5 (as there are 6 columns.)
      * @param {*} labelTextList List of text strings for text to be displayed on the Kanban label.
      */
-    constructor(kanbanStation, height, columnIndex, labelTextList){
+    constructor(kanbanStation, kanbanBoard, height, columnIndex, labelTextList){
         this.kanbanStation = kanbanStation
+        this.kanbanBoard = kanbanBoard
         this.labelTextList = labelTextList
         this.columnIndex = columnIndex
         this.height = height
@@ -137,7 +149,7 @@ export default class KanbanLabel {
 
         //New code for integration into pizza tickets: try drawing the rectangle.
         console.log("drawLabelOnKanbanBoard() function called.");
-        this.drawRectangle(false); //False as a drag operation is probably not active.
+        ///this.drawRectangle(false); //False as a drag operation is probably not active.
         //TODO: Maybe try drawing everything here and not in the constructor.
         //TODO: You might even be able to fix the bug where the labels are displayed in the wrong place when leaving
         //the Kanban Station and returning to it.

@@ -200,7 +200,7 @@ export default class KanbanStation extends Station {
 
         //New code:
         //Add the ticket to the first column of the 2D "kanbanLabelsList".
-        kanbanLabelsList[0].push(new KanbanLabel(this, 100, 0, "EXAMPLE TICKET"));
+        kanbanLabelsList[0].push(new KanbanLabel(this, this.kanbanBoard, 100, 0, ["EXAMPLE TICKET"]));
         this.kanbanBoard.debugPrintKanbalLabelsListContent(0); //Print the first column for debugging purposes.
    }
    

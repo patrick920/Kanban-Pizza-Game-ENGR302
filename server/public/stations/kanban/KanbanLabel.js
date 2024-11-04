@@ -56,6 +56,46 @@ export default class KanbanLabel {
     }
 
     /**
+     * Set up and draw label components on the Kanban board.
+     */
+    drawLabelComponents(){
+        //-----------------------------------------
+        //Some code from ChatGPT taken and modified.
+        //Create the Phaser Container which contains all elements for this.
+        this.container = this.kanbanStation.add.container(LABEL_WIDTH, this.height); //Is this x and y or width/height?
+        this.graphics = this.kanbanStation.add.graphics();
+        this.drawRectangle(false);
+
+        //Add text labels inside the container.
+        //const label1 = kanbanStation.add.text(0, 0, 'Label 1', { fontSize: '20px', fill: '#ffffff' });
+        //const label2 = kanbanStation.add.text(0, 30, 'Label 2', { fontSize: '20px', fill: '#ffffff' });
+
+        // Add text labels to the container
+        //this.container.add([label1, label2]);
+        let currentTextYPos = 0; //This will be incremented to update the position to draw the next text label.
+        for(let i = 0; i < this.labelTextList.length; i++){
+            const label = this.kanbanStation.add.text(0, currentTextYPos, this.labelTextList[i], { fontSize: '20px', fill: '#ffffff' });
+            this.container.add(label);
+            currentTextYPos += 30;
+        }
+
+        //Set the container's size, as otherwise it prevents the Container from being draggable.
+        this.container.setSize(LABEL_WIDTH, this.height);
+
+        //Code to make the Container draggable, using the draggable.js file which worked successfully
+        //for a basic rectangle.
+        this.container.name = 'Kanban Label'
+        //Can see the name above being logged in the log statement in the "destroy" function in draggable.js.
+        //makeDraggable(this.container, false); //False to not log any messages in the console.
+
+        //Code from ChatGPT.
+        //Make the rectangle draggable vertically only.
+        //makeDraggable(this.container, false, true);
+
+        //TODO: Create the button that leads to a particular scene.
+    }
+
+    /**
      * This is a TEST constructor. The proper one will take the ticket/label object for the Pizza order, and will be
      * instantiated when a pizza order is submitted (when the player takes the order from the customer.)
      * @param {*} kanbanStation Reference to the KanbanStation object.
@@ -70,40 +110,8 @@ export default class KanbanLabel {
         this.height = height
         console.log("DEBUG: KanbanLabel object created.");
 
-        //-----------------------------------------
-        //Some code from ChatGPT taken and modified.
-        //Create the Phaser Container which contains all elements for this.
-        this.container = kanbanStation.add.container(LABEL_WIDTH, height); //Is this x and y or width/height?
-        this.graphics = kanbanStation.add.graphics();
-        this.drawRectangle(false);
-
-        //Add text labels inside the container.
-        //const label1 = kanbanStation.add.text(0, 0, 'Label 1', { fontSize: '20px', fill: '#ffffff' });
-        //const label2 = kanbanStation.add.text(0, 30, 'Label 2', { fontSize: '20px', fill: '#ffffff' });
-
-        // Add text labels to the container
-        //this.container.add([label1, label2]);
-        let currentTextYPos = 0; //This will be incremented to update the position to draw the next text label.
-        for(let i = 0; i < labelTextList.length; i++){
-            const label = kanbanStation.add.text(0, currentTextYPos, labelTextList[i], { fontSize: '20px', fill: '#ffffff' });
-            this.container.add(label);
-            currentTextYPos += 30;
-        }
-
-        //Set the container's size, as otherwise it prevents the Container from being draggable.
-        this.container.setSize(LABEL_WIDTH, height);
-
-        //Code to make the Container draggable, using the draggable.js file which worked successfully
-        //for a basic rectangle.
-        this.container.name = 'Kanban Label'
-        //Can see the name above being logged in the log statement in the "destroy" function in draggable.js.
-        //makeDraggable(this.container, false); //False to not log any messages in the console.
-
-        //Code from ChatGPT.
-        //Make the rectangle draggable vertically only.
-        //makeDraggable(this.container, false, true);
-
-        //TODO: Create the button that leads to a particular scene.
+        //Draw the label components: this code used to be in the constructor but was moved to a function.
+        this.drawLabelComponents();
     }
 
     /**
@@ -133,6 +141,9 @@ export default class KanbanLabel {
         //TODO: Maybe try drawing everything here and not in the constructor.
         //TODO: You might even be able to fix the bug where the labels are displayed in the wrong place when leaving
         //the Kanban Station and returning to it.
+
+        //Draw the label components: this code used to be in the constructor but was moved to a function.
+        this.drawLabelComponents();
     }
 
     //TODO: Create list of buttons to each of the stations. These will changed based on which column the label is on.

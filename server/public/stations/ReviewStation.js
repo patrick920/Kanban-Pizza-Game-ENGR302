@@ -127,9 +127,8 @@ export default class ReviewStation extends Station {
 
     createBackground() {
         // Add the background image to cover the scene
-        //this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
-        //this.add.image(300, 450, 'table').setDisplaySize(2000, 400);
-        this.cameras.main.setBackgroundColor('#a7288a');
+        this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
+        this.add.image(300, 450, 'table').setDisplaySize(2000, 400);
 
         // Add functionality here to display the pizza image
     }

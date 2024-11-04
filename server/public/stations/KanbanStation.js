@@ -188,6 +188,7 @@ export default class KanbanStation extends Station {
     // Adding functionality for tickets 
     // Add ticket to kanban board
     addTicket(ticket) {
+        console.log("Add ticket to the Kanban board for pizza order.");
         if (ticket instanceof Ticket) {
             this.prepTickets.push(ticket);
         } else {

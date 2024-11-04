@@ -53,28 +53,38 @@ export default class KanbanLabel {
 
         //Add the rectangle for the label to the container.
         this.container.add(this.graphics);
+
+        //---------------------------------------------------------------------------------
+        this.buttonGraphics = this.kanbanStation.add.graphics();
+        this.graphics.fillStyle(0x091447, 1); //Dark blue color.
+        const goToStationButton = this.buttonGraphics.fillRect(3, 65, LABEL_WIDTH - 6, 16);
+        //Add the button rectangles to the container.
+        this.container.add(this.buttonGraphics);
     }
 
     /**
-     * This is a TEST constructor. The proper one will take the ticket/label object for the Pizza order, and will be
-     * instantiated when a pizza order is submitted (when the player takes the order from the customer.)
-     * @param {*} kanbanStation Reference to the KanbanStation object.
-     * @param {*} height The height can be set, but the width is fixed to the column width.
-     * @param {*} columnIndex Index of the column on the Kanban board, can be 0 to 5 (as there are 6 columns.)
-     * @param {*} labelTextList List of text strings for text to be displayed on the Kanban label.
+     * Set up and draw label components on the Kanban board.
+     * The code here used to be in the constructor.
      */
-    constructor(kanbanStation, height, columnIndex, labelTextList){
-        this.kanbanStation = kanbanStation
-        this.labelTextList = labelTextList
-        this.columnIndex = columnIndex
-        this.height = height
-        console.log("DEBUG: KanbanLabel object created.");
-
+    initialCreateComponents(){
+        console.log("initialCreateComponents() function called.")
         //-----------------------------------------
         //Some code from ChatGPT taken and modified.
         //Create the Phaser Container which contains all elements for this.
-        this.container = kanbanStation.add.container(LABEL_WIDTH, height); //Is this x and y or width/height?
-        this.graphics = kanbanStation.add.graphics();
+        //this.container = this.kanbanStation.add.container(LABEL_WIDTH, this.height); //Is this x and y or width/height?
+
+        //New code added for integration with pizza tickets.
+        //The positioning code is probably causing issues. Set it to 0,0, then call mehtod in KanbanBoard.js which
+        //handles redrawing all the labels.
+        //Code from ChatGPT.
+        //if(!this.container){ //Need this to prevent endless containers which leads to stack overflow error.
+        this.container = this.kanbanStation.add.container(0, 0);
+        //}
+        //this.kanbanBoard.displayLabels(); //Redraw all labels (which sets their positions.)
+        //ANOTHER ISSUE: You're adding a container, what if that leads to a duplicate if this is called twice. Maybe
+        //remove one of the function calls or modify how this function handles things.
+
+        this.graphics = this.kanbanStation.add.graphics();
         this.drawRectangle(false);
 
         //Add text labels inside the container.
@@ -83,15 +93,16 @@ export default class KanbanLabel {
 
         // Add text labels to the container
         //this.container.add([label1, label2]);
-        let currentTextYPos = 0; //This will be incremented to update the position to draw the next text label.
-        for(let i = 0; i < labelTextList.length; i++){
-            const label = kanbanStation.add.text(0, currentTextYPos, labelTextList[i], { fontSize: '20px', fill: '#ffffff' });
+        
+        let currentTextYPos = 1; //This will be incremented to update the position to draw the next text label.
+        for(let i = 0; i < this.labelTextList.length; i++){
+            const label = this.kanbanStation.add.text(0, currentTextYPos, this.labelTextList[i], { fontSize: '16px', fill: '#ffffff' });
             this.container.add(label);
-            currentTextYPos += 30;
+            currentTextYPos += 16;
         }
 
         //Set the container's size, as otherwise it prevents the Container from being draggable.
-        this.container.setSize(LABEL_WIDTH, height);
+        this.container.setSize(LABEL_WIDTH, this.height);
 
         //Code to make the Container draggable, using the draggable.js file which worked successfully
         //for a basic rectangle.
@@ -104,6 +115,26 @@ export default class KanbanLabel {
         //makeDraggable(this.container, false, true);
 
         //TODO: Create the button that leads to a particular scene.
+    }
+
+    /**
+     * This is a TEST constructor. The proper one will take the ticket/label object for the Pizza order, and will be
+     * instantiated when a pizza order is submitted (when the player takes the order from the customer.)
+     * @param {*} kanbanStation Reference to the KanbanStation object.
+     * @param {*} kanbanBoard Reference to the KanbanBoard object used for storing and displaying the Kanban board.
+     * @param {*} height The height can be set, but the width is fixed to the column width.
+     * @param {*} columnIndex Index of the column on the Kanban board, can be 0 to 5 (as there are 6 columns.)
+     * @param {*} labelTextList List of text strings for text to be displayed on the Kanban label.
+     */
+    constructor(kanbanStation, kanbanBoard, height, columnIndex, labelTextList){
+        this.kanbanStation = kanbanStation
+        this.kanbanBoard = kanbanBoard
+        this.labelTextList = labelTextList
+        this.columnIndex = columnIndex
+        this.height = height
+        console.log("DEBUG: KanbanLabel object created.");
+
+        //Don't draw the label right away, as it might not be inside the Kanban board when it gets created.
     }
 
     /**
@@ -124,6 +155,18 @@ export default class KanbanLabel {
         this.container.x = this.calculateLabelXPos();
         //Only need to set the container's y because everything else will move with the container.
         this.container.y = yPos;
+
+        //TODO: This is only updating x and y pos, I don't think it actually draws it.
+
+        //New code for integration into pizza tickets: try drawing the rectangle.
+        //console.log("drawLabelOnKanbanBoard() function called.");
+        ///this.drawRectangle(false); //False as a drag operation is probably not active.
+        //TODO: Maybe try drawing everything here and not in the constructor.
+        //TODO: You might even be able to fix the bug where the labels are displayed in the wrong place when leaving
+        //the Kanban Station and returning to it.
+
+        //Draw the label components: this code used to be in the constructor but was moved to a function.
+        //this.drawLabelComponents();
     }
 
     //TODO: Create list of buttons to each of the stations. These will changed based on which column the label is on.

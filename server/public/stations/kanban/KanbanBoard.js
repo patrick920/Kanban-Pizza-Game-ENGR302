@@ -1,5 +1,5 @@
 /*
- * kanbanStation file will hold all the display code for the Kanban board, to keep KanbanStation.js cleaner and not too long.
+ * KanbanBoard.js file will hold all the display code for the Kanban board, to keep KanbanStation.js cleaner and not too long.
  */
 
 import KanbanLabel from './KanbanLabel.js';
@@ -43,7 +43,7 @@ export const LABEL_WIDTH = COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABE
 //ChatGPT helped.
 //let kanbanLabelsList = [[], [], [], [], [], []];
 //This stores all the labels on the Kanban board.
-let kanbanLabelsList = [];
+export let kanbanLabelsList = [];
 
 //2D list to store the rectangles for the temporary red lines between Kanban labels.
 let kanbanRedLinesBetweenLabels = []
@@ -64,10 +64,16 @@ export default class KanbanBoard{
     //console.log("Y_BOTTOM_COLUMN_RECTANGLES = " + Y_BOTTOM_COLUMN_RECTANGLES);
     //The height of the column rectangles for the Kanban board.
     COLUMN_RECTANGLE_HEIGHT;
+    PIZZA_LABEL_HEIGHT;
     //console.log("COLUMN_RECTANGLE_HEIGHT = " + COLUMN_RECTANGLE_HEIGHT);
 
     //Use "this.kanbanStation" instead of the "this" keyword for many (but not all) things.
+    /**
+     * This function is called EVERY TIME the Kanban Station is entered, so this could be 0, 1 or multiple times
+     * during program execution.
+     */
     createKanbanBoard(){
+        console.log("createKanbanBoard() function called!!!!!");
         //const kanbanStation = this.kanbanStation;
 
         // Game logic here
@@ -110,6 +116,13 @@ export default class KanbanBoard{
         // //The height of the column rectangles for the Kanban board.
         this.COLUMN_RECTANGLE_HEIGHT = this.Y_BOTTOM_COLUMN_RECTANGLES - Y_TOP_COLUMN_RECTANGLES;
         console.log("COLUMN_RECTANGLE_HEIGHT = " + this.COLUMN_RECTANGLE_HEIGHT);
+
+        //Constants for the height of the pizza order label.
+        //There will be space for up to 5 pizza labels on the Kanban board at once. x6 to create the spaces
+        //for the 5 labels.
+        //this.PIZZA_LABEL_HEIGHT = this.COLUMN_RECTANGLE_HEIGHT / 5 - GAP_BETWEEN_COLUMN_AND_LABELS * 6;
+        this.PIZZA_LABEL_HEIGHT = (this.COLUMN_RECTANGLE_HEIGHT - GAP_BETWEEN_COLUMN_AND_LABELS * 6) / 5;
+        console.log("this.PIZZA_LABEL_HEIGHT = " + this.PIZZA_LABEL_HEIGHT);
 
         //Add the 6 rectangles or other objects to represent the columns on the Kanban board.
         //Source: https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.GameObjects.GameObjectFactory-rectangle
@@ -257,6 +270,20 @@ export default class KanbanBoard{
 
         //From ChatGPT:
         //To create labels, use the "Container" object.
+
+        //---------------------------------------------------------
+        //Intially draw all the labels, as there may be some created in KanbanStation.js when a pizza order is created.
+
+        //Initially call a function to initially create the label components. This should only be called ONCE when
+        //the Kanban screen is loaded. The code in that function used to be in the KanbanLabel constructor.
+        for(let colIndex = 0; colIndex < kanbanLabelsList.length; colIndex++){
+            for(let i = 0; i < kanbanLabelsList[colIndex].length; i++){
+                kanbanLabelsList[colIndex][i].initialCreateComponents();
+            }
+        }
+
+        console.log("DISPLAY LABELS.");
+        this.displayLabels();
     }
 
     /**
@@ -266,13 +293,20 @@ export default class KanbanBoard{
      */
     addLabel(height, columnIndex, labelNumber){
         //"push" is used to add to the list.
-        kanbanLabelsList[columnIndex].push(new KanbanLabel(this.kanbanStation, height, columnIndex,
+        kanbanLabelsList[columnIndex].push(new KanbanLabel(this.kanbanStation, this, height, columnIndex,
                                             ["Label " + labelNumber, "Example text."]));
     }
     
+    /**
+     * Display all albels on the Kanban board.
+     */
     displayLabels(){
+        //console.log("displayLabels() function called.");
+        //this.debugPrintKanbalLabelsListContent(0); //Print the first column for debugging purposes.
+
         //Loop over all columns on the Kanban board to display the label(s) on each column.
         for(let columnIndex = 0; columnIndex < kanbanLabelsList.length; columnIndex++){
+            //console.log("In displayLabels(): columnIndex = " + columnIndex);
 
             //The Y position where the next label on the Kanban board will be drawn. This will keep going up as
             //new labels are added.
@@ -283,6 +317,7 @@ export default class KanbanBoard{
             //Use the lists in KanbanStation.
             for(let i = 0; i < kanbanLabelsList[columnIndex].length; i++){
                 //console.log("Display label " + i + " on the Kanban board.");
+                //console.log("In displayLabels(): i = " + i);
                 let currentLabel = kanbanLabelsList[columnIndex][i];
                 //Random number code from ChatGPT.
                 //currentLabel.drawLabelOnKanbanBoard(Math.floor(Math.random() * (800 - 200 + 1)) + 200);
@@ -321,6 +356,14 @@ export default class KanbanBoard{
         this.addLabel(60, 5, 4);
         this.addLabel(80, 5, 5);
         //TODO: Try 1, 2, 3, 4, 5 and no labels in the columns.
+    }
+
+    /**
+     * Create a label for the pizza order on the Kanban Board.
+     */
+    createPizzaOrderLabel(orderNumber, numPeperroni, numMushrooms){
+
+        
     }
 
     //----------------------------------------------------------------------

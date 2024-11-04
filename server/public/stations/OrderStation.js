@@ -237,6 +237,9 @@ export default class OrderStation extends Station {
         orderInput.selectedText.on('pointerdown', toggleDropdown);
     }
 
+    //The counter for the order ID. It starts at 1 then goes 2, 3, 4...
+    orderCounter = 1;
+
     placeOrder() {
         const pizzaType = 'Pizza';
         const toppings = this.orderInputs.map(orderInput => ({
@@ -249,7 +252,8 @@ export default class OrderStation extends Station {
             return;
         }
     
-        const orderId = Date.now();
+        //const orderId = Date.now(); //TODO: Could change this to numbers 1, 2, 3, etc... instead of date.
+        const orderId = this.orderCounter++; //Set the order ID, then increment it.
         const order = new Order(orderId, pizzaType, toppings);
         this.orders.push(order);
     
@@ -262,6 +266,14 @@ export default class OrderStation extends Station {
         this.game.socket.emit('newOrder', order);
         console.log('New Order:', order);
         console.log('New Ticket:', ticket);
+
+        //-----------------------------------------------------------------
+        //TODO: This is where the order gets created. Need to integrate this with the Kanban board.
+
+        //New code added for integration with the Kanban board:
+        //Reset the array containing the toppings otherwise it will have the toppings of previous orders
+        //for the next one.
+        this.orderInputs = [];
     }
     
 

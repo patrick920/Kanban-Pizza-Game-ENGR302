@@ -237,6 +237,9 @@ export default class OrderStation extends Station {
         orderInput.selectedText.on('pointerdown', toggleDropdown);
     }
 
+    //The counter for the order ID. It starts at 1 then goes 2, 3, 4...
+    orderCounter = 1;
+
     placeOrder() {
         const pizzaType = 'Pizza';
         const toppings = this.orderInputs.map(orderInput => ({
@@ -249,7 +252,8 @@ export default class OrderStation extends Station {
             return;
         }
     
-        const orderId = Date.now(); //TODO: Could change this to numbers 1, 2, 3, etc... instead of date.
+        //const orderId = Date.now(); //TODO: Could change this to numbers 1, 2, 3, etc... instead of date.
+        const orderId = this.orderCounter++; //Set the order ID, then increment it.
         const order = new Order(orderId, pizzaType, toppings);
         this.orders.push(order);
     

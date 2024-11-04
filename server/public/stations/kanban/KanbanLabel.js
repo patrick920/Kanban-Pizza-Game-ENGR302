@@ -152,7 +152,7 @@ export default class KanbanLabel {
         //TODO: This is only updating x and y pos, I don't think it actually draws it.
 
         //New code for integration into pizza tickets: try drawing the rectangle.
-        console.log("drawLabelOnKanbanBoard() function called.");
+        //console.log("drawLabelOnKanbanBoard() function called.");
         ///this.drawRectangle(false); //False as a drag operation is probably not active.
         //TODO: Maybe try drawing everything here and not in the constructor.
         //TODO: You might even be able to fix the bug where the labels are displayed in the wrong place when leaving

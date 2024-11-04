@@ -64,6 +64,7 @@ export default class KanbanBoard{
     //console.log("Y_BOTTOM_COLUMN_RECTANGLES = " + Y_BOTTOM_COLUMN_RECTANGLES);
     //The height of the column rectangles for the Kanban board.
     COLUMN_RECTANGLE_HEIGHT;
+    PIZZA_LABEL_HEIGHT;
     //console.log("COLUMN_RECTANGLE_HEIGHT = " + COLUMN_RECTANGLE_HEIGHT);
 
     //Use "this.kanbanStation" instead of the "this" keyword for many (but not all) things.
@@ -115,6 +116,13 @@ export default class KanbanBoard{
         // //The height of the column rectangles for the Kanban board.
         this.COLUMN_RECTANGLE_HEIGHT = this.Y_BOTTOM_COLUMN_RECTANGLES - Y_TOP_COLUMN_RECTANGLES;
         console.log("COLUMN_RECTANGLE_HEIGHT = " + this.COLUMN_RECTANGLE_HEIGHT);
+
+        //Constants for the height of the pizza order label.
+        //There will be space for up to 5 pizza labels on the Kanban board at once. x6 to create the spaces
+        //for the 5 labels.
+        //this.PIZZA_LABEL_HEIGHT = this.COLUMN_RECTANGLE_HEIGHT / 5 - GAP_BETWEEN_COLUMN_AND_LABELS * 6;
+        this.PIZZA_LABEL_HEIGHT = (this.COLUMN_RECTANGLE_HEIGHT - GAP_BETWEEN_COLUMN_AND_LABELS * 6) / 5;
+        console.log("this.PIZZA_LABEL_HEIGHT = " + this.PIZZA_LABEL_HEIGHT);
 
         //Add the 6 rectangles or other objects to represent the columns on the Kanban board.
         //Source: https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.GameObjects.GameObjectFactory-rectangle
@@ -309,7 +317,7 @@ export default class KanbanBoard{
             //Use the lists in KanbanStation.
             for(let i = 0; i < kanbanLabelsList[columnIndex].length; i++){
                 //console.log("Display label " + i + " on the Kanban board.");
-                console.log("In displayLabels(): i = " + i);
+                //console.log("In displayLabels(): i = " + i);
                 let currentLabel = kanbanLabelsList[columnIndex][i];
                 //Random number code from ChatGPT.
                 //currentLabel.drawLabelOnKanbanBoard(Math.floor(Math.random() * (800 - 200 + 1)) + 200);

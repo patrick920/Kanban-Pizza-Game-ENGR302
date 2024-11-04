@@ -271,7 +271,7 @@ export default class KanbanBoard{
      */
     addLabel(height, columnIndex, labelNumber){
         //"push" is used to add to the list.
-        kanbanLabelsList[columnIndex].push(new KanbanLabel(this.kanbanStation, height, columnIndex,
+        kanbanLabelsList[columnIndex].push(new KanbanLabel(this.kanbanStation, this, height, columnIndex,
                                             ["Label " + labelNumber, "Example text."]));
     }
     

@@ -73,7 +73,6 @@ export default class OrderStation extends Station {
         // Listen for order updates
         this.game.socket.on('orderUpdate', (orders) => {
             this.orders = orders;
-            this.updateOrderDisplay();
         });
     
         // Get initial game state

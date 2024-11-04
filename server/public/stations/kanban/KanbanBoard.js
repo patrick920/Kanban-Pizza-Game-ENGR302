@@ -67,7 +67,12 @@ export default class KanbanBoard{
     //console.log("COLUMN_RECTANGLE_HEIGHT = " + COLUMN_RECTANGLE_HEIGHT);
 
     //Use "this.kanbanStation" instead of the "this" keyword for many (but not all) things.
+    /**
+     * This function is called EVERY TIME the Kanban Station is entered, so this could be 0, 1 or multiple times
+     * during program execution.
+     */
     createKanbanBoard(){
+        console.log("createKanbanBoard() function called!!!!!");
         //const kanbanStation = this.kanbanStation;
 
         // Game logic here
@@ -260,6 +265,15 @@ export default class KanbanBoard{
 
         //---------------------------------------------------------
         //Intially draw all the labels, as there may be some created in KanbanStation.js when a pizza order is created.
+
+        //Initially call a function to initially create the label components. This should only be called ONCE when
+        //the Kanban screen is loaded. The code in that function used to be in the KanbanLabel constructor.
+        for(let colIndex = 0; colIndex < kanbanLabelsList.length; colIndex++){
+            for(let i = 0; i < kanbanLabelsList[colIndex].length; i++){
+                kanbanLabelsList[colIndex][i].initialCreateComponents();
+            }
+        }
+
         console.log("DISPLAY LABELS.");
         this.displayLabels();
     }
@@ -279,12 +293,12 @@ export default class KanbanBoard{
      * Display all albels on the Kanban board.
      */
     displayLabels(){
-        console.log("displayLabels() function called.");
-        this.debugPrintKanbalLabelsListContent(0); //Print the first column for debugging purposes.
+        //console.log("displayLabels() function called.");
+        //this.debugPrintKanbalLabelsListContent(0); //Print the first column for debugging purposes.
 
         //Loop over all columns on the Kanban board to display the label(s) on each column.
         for(let columnIndex = 0; columnIndex < kanbanLabelsList.length; columnIndex++){
-            console.log("In displayLabels(): columnIndex = " + columnIndex);
+            //console.log("In displayLabels(): columnIndex = " + columnIndex);
 
             //The Y position where the next label on the Kanban board will be drawn. This will keep going up as
             //new labels are added.

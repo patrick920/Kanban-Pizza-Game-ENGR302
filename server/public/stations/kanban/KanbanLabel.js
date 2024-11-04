@@ -57,8 +57,10 @@ export default class KanbanLabel {
 
     /**
      * Set up and draw label components on the Kanban board.
+     * The code here used to be in the constructor.
      */
-    drawLabelComponents(){
+    initialCreateComponents(){
+        console.log("initialCreateComponents() function called.")
         //-----------------------------------------
         //Some code from ChatGPT taken and modified.
         //Create the Phaser Container which contains all elements for this.
@@ -67,8 +69,11 @@ export default class KanbanLabel {
         //New code added for integration with pizza tickets.
         //The positioning code is probably causing issues. Set it to 0,0, then call mehtod in KanbanBoard.js which
         //handles redrawing all the labels.
-        this.container = this.kanbanStation.add.container(0, 0);
-        this.kanbanBoard.displayLabels(); //Redraw all labels (which sets their positions.)
+        //Code from ChatGPT.
+        if(!this.container){ //Need this to prevent endless containers which leads to stack overflow error.
+            this.container = this.kanbanStation.add.container(0, 0);
+        }
+        //this.kanbanBoard.displayLabels(); //Redraw all labels (which sets their positions.)
         //ANOTHER ISSUE: You're adding a container, what if that leads to a duplicate if this is called twice. Maybe
         //remove one of the function calls or modify how this function handles things.
 
@@ -122,8 +127,7 @@ export default class KanbanLabel {
         this.height = height
         console.log("DEBUG: KanbanLabel object created.");
 
-        //Draw the label components: this code used to be in the constructor but was moved to a function.
-        this.drawLabelComponents();
+        //Don't draw the label right away, as it might not be inside the Kanban board when it gets created.
     }
 
     /**
@@ -155,7 +159,7 @@ export default class KanbanLabel {
         //the Kanban Station and returning to it.
 
         //Draw the label components: this code used to be in the constructor but was moved to a function.
-        this.drawLabelComponents();
+        //this.drawLabelComponents();
     }
 
     //TODO: Create list of buttons to each of the stations. These will changed based on which column the label is on.

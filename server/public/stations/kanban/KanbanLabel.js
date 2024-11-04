@@ -124,6 +124,15 @@ export default class KanbanLabel {
         this.container.x = this.calculateLabelXPos();
         //Only need to set the container's y because everything else will move with the container.
         this.container.y = yPos;
+
+        //TODO: This is only updating x and y pos, I don't think it actually draws it.
+
+        //New code for integration into pizza tickets: try drawing the rectangle.
+        console.log("drawLabelOnKanbanBoard() function called.");
+        this.drawRectangle(false); //False as a drag operation is probably not active.
+        //TODO: Maybe try drawing everything here and not in the constructor.
+        //TODO: You might even be able to fix the bug where the labels are displayed in the wrong place when leaving
+        //the Kanban Station and returning to it.
     }
 
     //TODO: Create list of buttons to each of the stations. These will changed based on which column the label is on.

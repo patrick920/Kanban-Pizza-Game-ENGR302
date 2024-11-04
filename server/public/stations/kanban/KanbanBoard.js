@@ -257,6 +257,11 @@ export default class KanbanBoard{
 
         //From ChatGPT:
         //To create labels, use the "Container" object.
+
+        //---------------------------------------------------------
+        //Intially draw all the labels, as there may be some created in KanbanStation.js when a pizza order is created.
+        console.log("DISPLAY LABELS.");
+        this.displayLabels();
     }
 
     /**
@@ -270,9 +275,16 @@ export default class KanbanBoard{
                                             ["Label " + labelNumber, "Example text."]));
     }
     
+    /**
+     * Display all albels on the Kanban board.
+     */
     displayLabels(){
+        console.log("displayLabels() function called.");
+        this.debugPrintKanbalLabelsListContent(0); //Print the first column for debugging purposes.
+
         //Loop over all columns on the Kanban board to display the label(s) on each column.
         for(let columnIndex = 0; columnIndex < kanbanLabelsList.length; columnIndex++){
+            console.log("In displayLabels(): columnIndex = " + columnIndex);
 
             //The Y position where the next label on the Kanban board will be drawn. This will keep going up as
             //new labels are added.
@@ -283,6 +295,7 @@ export default class KanbanBoard{
             //Use the lists in KanbanStation.
             for(let i = 0; i < kanbanLabelsList[columnIndex].length; i++){
                 //console.log("Display label " + i + " on the Kanban board.");
+                console.log("In displayLabels(): i = " + i);
                 let currentLabel = kanbanLabelsList[columnIndex][i];
                 //Random number code from ChatGPT.
                 //currentLabel.drawLabelOnKanbanBoard(Math.floor(Math.random() * (800 - 200 + 1)) + 200);

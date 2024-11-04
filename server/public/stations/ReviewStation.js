@@ -27,36 +27,68 @@ export default class ReviewStation extends Station {
     preload() {
         // load customer image
         this.load.image('customer_one', 'stations/assets/customer_one.png');
+        this.load.image('speech_bubble', 'stations/assets/speech_bubble.png');
 
         // load table image
         this.load.image('table', 'stations/assets/table.png');
+
+        // load background image
+        this.load.image('background', 'stations/assets/background.png');
+
+        // load logo image 
+        this.load.image('logo', 'stations/assets/kanban_logo.png');
+
     }
+
 
     create() {
         this.createBackground();
 
         // Game logic here
+        const background = this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
+        const customer_one = this.add.image(300, 300, 'customer_one');
+        const table = this.add.image(300, 500, 'table').setDisplaySize(2000, 400);
+        const speech_bubble = this.add.image(600, 150, 'speech_bubble').setVisible(false);
+        // Tween animation for customer slide-in
+        this.tweens.add({
+            targets: customer_one,
+            x: 300, // Center x-coordinate
+            duration: 1000,
+            ease: 'Power2',
+            onComplete: () => {
+                // Make the speech bubble visible after customer slides in
+                speech_bubble.setVisible(true);
+            }
+        });
 
         // Add review title to top of screen
-        this.add.text(100, 100, 'Review', { fontSize: '32px', fontFamily: 'Calibri', fill: '#fff'});
+        this.add.text(25, 25, 'Review Station', { fontSize: '32px', fontFamily: 'Calibri', fill: '#000000'});
 
+        // Add logo to the top of screen
+        const logo = this.add.image(1150, 70, 'logo').setScale(0.5);
+
+        // Add navigation buttons for Reject and Serve at the bottom
+        this.createNavigationButtons();
+
+        //Add a text box on right side of screen people can type in
+        //this.createTextBox();
+    }
+
+    createNavigationButtons() {
         // Add button to go back to kanban board in bottom right
-        this.add.text(50, this.game.config.height - 100, 'Back to Kanban Board', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#996600' })
+        this.add.text(50, this.game.config.height - 100, 'Back to Kanban Board', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#996600', padding: { x: 1, y: 1 } })
             .setInteractive()
             .on('pointerdown', () => this.scene.start('KanbanStation'));
 
-        //Add a text box on right side of screen people can type in
-        this.createTextBox();
-
-        //Add button to restart order - needs functionality
-        this.add.text(500, this.game.config.height - 100, 'Reject', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#f44336' })
+        // Button to reject the order
+        this.add.text(600, this.game.config.height - 100, 'Reject', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#f44336', padding: { x: 1, y: 1 } })
             .setInteractive()
             .on('pointerdown', () => this.rejectOrder());
 
-        //Add button to allow order through - needs functionality
-        this.add.text(700, this.game.config.height - 100, 'Serve', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#8fce00' })
+        // Button to serve the order
+        this.add.text(700, this.game.config.height - 100, 'Serve', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#8fce00', padding: { x: 1, y: 1 } })
             .setInteractive()
-            .on('pointerdown', () => serveOrder());
+            .on('pointerdown', () => this.serveOrder());
     }
 
     createTextBox() {
@@ -94,7 +126,9 @@ export default class ReviewStation extends Station {
     }
 
     createBackground() {
-        // Set a specific background color for the ReviewStation
+        // Add the background image to cover the scene
+        //this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
+        //this.add.image(300, 450, 'table').setDisplaySize(2000, 400);
         this.cameras.main.setBackgroundColor('#a7288a');
 
         // Add functionality here to display the pizza image

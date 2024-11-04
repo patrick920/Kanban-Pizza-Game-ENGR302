@@ -70,9 +70,9 @@ export default class KanbanLabel {
         //The positioning code is probably causing issues. Set it to 0,0, then call mehtod in KanbanBoard.js which
         //handles redrawing all the labels.
         //Code from ChatGPT.
-        if(!this.container){ //Need this to prevent endless containers which leads to stack overflow error.
-            this.container = this.kanbanStation.add.container(0, 0);
-        }
+        //if(!this.container){ //Need this to prevent endless containers which leads to stack overflow error.
+        this.container = this.kanbanStation.add.container(0, 0);
+        //}
         //this.kanbanBoard.displayLabels(); //Redraw all labels (which sets their positions.)
         //ANOTHER ISSUE: You're adding a container, what if that leads to a duplicate if this is called twice. Maybe
         //remove one of the function calls or modify how this function handles things.

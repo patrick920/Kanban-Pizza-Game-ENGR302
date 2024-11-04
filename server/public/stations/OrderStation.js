@@ -263,7 +263,13 @@ export default class OrderStation extends Station {
         console.log('New Order:', order);
         console.log('New Ticket:', ticket);
 
+        //-----------------------------------------------------------------
         //TODO: This is where the order gets created. Need to integrate this with the Kanban board.
+
+        //New code added for integration with the Kanban board:
+        //Reset the array containing the toppings otherwise it will have the toppings of previous orders
+        //for the next one.
+        this.orderInputs = [];
     }
     
 

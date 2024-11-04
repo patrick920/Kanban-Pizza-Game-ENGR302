@@ -262,6 +262,8 @@ export default class OrderStation extends Station {
         this.game.socket.emit('newOrder', order);
         console.log('New Order:', order);
         console.log('New Ticket:', ticket);
+
+        //TODO: This is where the order gets created. Need to integrate this with the Kanban board.
     }
     
 

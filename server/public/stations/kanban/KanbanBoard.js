@@ -1,5 +1,5 @@
 /*
- * kanbanStation file will hold all the display code for the Kanban board, to keep KanbanStation.js cleaner and not too long.
+ * KanbanBoard.js file will hold all the display code for the Kanban board, to keep KanbanStation.js cleaner and not too long.
  */
 
 import KanbanLabel from './KanbanLabel.js';
@@ -43,7 +43,7 @@ export const LABEL_WIDTH = COLUMN_RECTANGLE_WIDTH - (GAP_BETWEEN_COLUMN_AND_LABE
 //ChatGPT helped.
 //let kanbanLabelsList = [[], [], [], [], [], []];
 //This stores all the labels on the Kanban board.
-let kanbanLabelsList = [];
+export let kanbanLabelsList = [];
 
 //2D list to store the rectangles for the temporary red lines between Kanban labels.
 let kanbanRedLinesBetweenLabels = []
@@ -321,6 +321,14 @@ export default class KanbanBoard{
         this.addLabel(60, 5, 4);
         this.addLabel(80, 5, 5);
         //TODO: Try 1, 2, 3, 4, 5 and no labels in the columns.
+    }
+
+    /**
+     * Create a label for the pizza order on the Kanban Board.
+     */
+    createPizzaOrderLabel(orderNumber, numPeperroni, numMushrooms){
+
+        
     }
 
     //----------------------------------------------------------------------

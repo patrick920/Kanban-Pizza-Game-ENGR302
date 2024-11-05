@@ -5,6 +5,7 @@ export default class Pizza {
     sauce;
     toppings = []; // Array to store toppings
     cheese;
+    cooked = false;
     
     filledSauceGraphics;
     scene;

@@ -298,10 +298,10 @@ export default class KanbanBoard{
     }
     
     /**
-     * Display all albels on the Kanban board.
+     * Display all all labels on the Kanban board.
      */
     displayLabels(){
-        //console.log("displayLabels() function called.");
+        console.log("displayLabels() function called.");
         //this.debugPrintKanbalLabelsListContent(0); //Print the first column for debugging purposes.
 
         //Loop over all columns on the Kanban board to display the label(s) on each column.

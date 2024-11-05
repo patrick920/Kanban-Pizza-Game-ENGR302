@@ -38,7 +38,8 @@ class Game extends Phaser.Game {
     }
 }
 
-const game = new Game(config);
+//Code from ChatGPT:
+export const game = new Game(config);
 
 let labels = []; // Array to hold label objects with references to their positions and columns
 let selectedLabel = null; // The label that is being dragged
@@ -199,3 +200,14 @@ function snapBackToOriginalPosition(label, column) {
 function update() {
     // Optional update logic if needed
 }
+
+// Function to dynamically add the image, can be called externally
+export function addImageDynamically() {
+    if (currentScene) {
+        const image = currentScene.add.image(40, 40, 'pizza');
+        image.setDisplaySize(80, 80); // Width: 80, Height: 80
+        image.x = getRandomInt(100, 700);
+        image.y = getRandomInt(100, 700);
+    }
+}
+

@@ -16,6 +16,7 @@ import { makeDraggable } from './DraggableObject.js';
 import { GAP_BETWEEN_COLUMN_RECTANGLES, ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN,
     GAP_BETWEEN_COLUMN_AND_LABELS, LABEL_WIDTH, COLUMN_RECTANGLE_WIDTH } from './KanbanBoard.js';
 //import KanbanBoard from './KanbanBoard.js';
+import { kanbanLabelsList } from './KanbanBoard.js';
 
 export default class KanbanLabel {
     //TODO: Add the Ticket/Label object that will be created by the Pizza order.
@@ -60,6 +61,97 @@ export default class KanbanLabel {
         // const goToStationButton = this.buttonGraphics.fillRect(3, 65, LABEL_WIDTH - 6, 16);
         // //Add the button rectangles to the container.
         // this.container.add(this.buttonGraphics);
+    }
+
+    /**
+     * Create a button on the Kanban board.
+     * @param {*} xPos x position of button.
+     * @param {*} yPos y position of button.
+     * @param {*} width width of button.
+     */
+    createButton(xPos, yPos, width, text){
+        //Code below from ChatGPT:
+        // Create a rectangle to act as the button's background
+        //const orderButton = this.kanbanStation.add.rectangle(3, 65, LABEL_WIDTH - 6, 16, 0x091447);
+        const REGULAR_COLOR = 0x091447;
+        const HOVER_COLOR = 0x357ac4;
+
+        const button = this.kanbanStation.add.rectangle(0, 0, width, 16, REGULAR_COLOR);
+        button.setInteractive();
+        button.setOrigin(0, 0); // Set origin to top-left //New code after further ChatGPT prompt.
+
+        // Add text on top of the button
+        //const orderButtonText = this.kanbanStation.add.text(3, 65, 'Go to Station', {
+        const buttonText = this.kanbanStation.add.text(0, 0, text, {
+            fontSize: '16px',
+            color: '#ffffff'
+        }).setOrigin(0, 0);
+        //}).setOrigin(0.5, 0.5); // Center the text horizontally and vertically //New after further ChatGPT prompt.
+        //}).setOrigin(0.5); // Center the text
+
+        // Create a container to hold the rectangle and the text
+        const buttonContainer = this.kanbanStation.add.container(xPos, yPos, [button, buttonText]);
+
+        // Event listener for hover effect when the pointer is over the button
+        button.on('pointerover', () => {
+            button.setFillStyle(HOVER_COLOR); // Change color to a lighter shade on hover
+        });
+
+        // Event listener for when the pointer leaves the button
+        button.on('pointerout', () => {
+            button.setFillStyle(REGULAR_COLOR); // Change back to the original color
+        });
+
+        //Add the button container to the label container.
+        this.container.add(buttonContainer);
+
+        return button;
+    }
+
+    /**
+     * Move the current KanbanLabel (referenced by "this") to the next column on the "kanbanLabelsList" which
+     * is used to store the labels on the Kanban board.
+     */
+    moveLabelToNextColumnOnKanbanLabelsList(){
+        //If the size of the "kanbanLabelsList" on the next column is 5 or more, cancel the move operation.
+        if(kanbanLabelsList[this.columnIndex + 1].length >= 5){
+            alert("Can't move the label as the next column is full.");
+            return;
+        }
+
+        this.columnIndex++; //Move the label's column index to the next column.
+
+        //Update the list of all Kanban Board labels.
+        //First print it:
+        console.log("Column " + (this.columnIndex - 1) + " before removing:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(this.columnIndex - 1);
+        
+        //Then remove from the initial list.
+        //kanbanLabelsList[columnIndex] = 
+        //Find index of this KanbanLabel within the list for all the Kanban labels.
+        let index = kanbanLabelsList[this.columnIndex - 1].indexOf(this);
+
+        //If this KanbanLabel is found in the array, remove it.
+        if (index !== -1) {
+            kanbanLabelsList[this.columnIndex - 1].splice(index, 1);
+        } else{
+            console.log("ERROR: Can't remove this KanbanLabel from the list.");
+        }
+
+        //Print after removing:
+        console.log("Column " + (this.columnIndex - 1) + " after removing:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(this.columnIndex - 1);
+
+        //this.columnIndex++; //Move the label's column index to the next column.
+
+        console.log("Column " + this.columnIndex + " before adding:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(this.columnIndex);
+
+        //Add the label to the new column on the Kanban labels list:
+        kanbanLabelsList[this.columnIndex].push(this);
+
+        console.log("Column " + this.columnIndex + " after adding:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(this.columnIndex);
     }
 
     /**
@@ -117,42 +209,13 @@ export default class KanbanLabel {
         //----------------------------
         //Create the buttons.
         //Go to Station button.
+        //Code from ChatGPT:
 
-        //Code below from ChatGPT:
-        // Create a rectangle to act as the button's background
-        //const orderButton = this.kanbanStation.add.rectangle(3, 65, LABEL_WIDTH - 6, 16, 0x091447);
-        const REGULAR_COLOR = 0x091447;
-        const HOVER_COLOR = 0x357ac4;
+        const goToStationButton = this.createButton(3, 65, LABEL_WIDTH - 6, 'Go to Station');
 
-        const orderButton = this.kanbanStation.add.rectangle(0, 0, LABEL_WIDTH - 6, 16, 0x091447);
-        orderButton.setInteractive();
-        orderButton.setOrigin(0, 0); // Set origin to top-left //New code after further ChatGPT prompt.
-
-        // Add text on top of the button
-        //const orderButtonText = this.kanbanStation.add.text(3, 65, 'Go to Station', {
-        const orderButtonText = this.kanbanStation.add.text(0, 0, 'Go to Station', {
-            fontSize: '16px',
-            color: '#ffffff'
-        }).setOrigin(0, 0);
-        //}).setOrigin(0.5, 0.5); // Center the text horizontally and vertically //New after further ChatGPT prompt.
-        //}).setOrigin(0.5); // Center the text
-
-        // Create a container to hold the rectangle and the text
-        const orderButtonContainer = this.kanbanStation.add.container(3, 65, [orderButton, orderButtonText]);
-
-        // Event listener for hover effect when the pointer is over the button
-        orderButton.on('pointerover', () => {
-            orderButton.setFillStyle(HOVER_COLOR); // Change color to a lighter shade on hover
-        });
-
-        // Event listener for when the pointer leaves the button
-        orderButton.on('pointerout', () => {
-            orderButton.setFillStyle(REGULAR_COLOR); // Change back to the original color
-        });
-
-        // Event listener for the button interaction (click)
-        orderButton.on('pointerdown', () => {
-            console.log('Order Button clicked!!!!!');
+        //Event listener for the "Go to Station" button interaction (click).
+        goToStationButton.on('pointerdown', () => {
+            console.log('NEW Order Button clicked!!!!!');
             if(this.columnIndex == 0){
                 this.kanbanStation.scene.start('OrderStation');
             } else if(this.columnIndex == 1){
@@ -169,8 +232,50 @@ export default class KanbanLabel {
             
         });
 
-        //Add the button container to the label container.
-        this.container.add(orderButtonContainer);
+        const BACK_BUTTON_X_POS = LABEL_WIDTH / 2;
+        const BACK_BUTTON_WIDTH = 40;
+        const backButton = this.createButton(BACK_BUTTON_X_POS, 1, BACK_BUTTON_WIDTH, 'Back');
+
+        //Event listener for the "Go to Station" button interaction (click).
+        backButton.on('pointerdown', () => {
+            console.log('Back Button clicked!!!!!');
+            if(this.columnIndex == 0){
+                
+            } else if(this.columnIndex == 1){
+                this.kanbanStation.scene.start('PrepareStation');
+            } else if(this.columnIndex == 2){
+                this.kanbanStation.scene.start('CookStation');
+            } else if(this.columnIndex == 3){
+                this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 4){
+                //this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 5){
+                //this.kanbanStation.scene.start('');
+            }
+            
+        });
+
+        const nextButton = this.createButton(BACK_BUTTON_X_POS + BACK_BUTTON_WIDTH + 3, 1, BACK_BUTTON_WIDTH, 'Next');
+
+        //Event listener for the "Go to Station" button interaction (click).
+        nextButton.on('pointerdown', () => {
+            console.log('Next Button clicked!!!!!');
+            if(this.columnIndex == 0){
+                this.moveLabelToNextColumnOnKanbanLabelsList();
+            } else if(this.columnIndex == 1){
+                this.moveLabelToNextColumnOnKanbanLabelsList();
+            } else if(this.columnIndex == 2){
+                this.moveLabelToNextColumnOnKanbanLabelsList();
+            } else if(this.columnIndex == 3){
+                this.moveLabelToNextColumnOnKanbanLabelsList();
+            } else if(this.columnIndex == 4){
+                this.moveLabelToNextColumnOnKanbanLabelsList();
+                //Remove buttons, except for bottom "Remove" button.
+            } else if(this.columnIndex == 5){
+                
+            }
+            
+        });
     }
 
     /**
@@ -180,14 +285,16 @@ export default class KanbanLabel {
      * @param {*} kanbanBoard Reference to the KanbanBoard object used for storing and displaying the Kanban board.
      * @param {*} height The height can be set, but the width is fixed to the column width.
      * @param {*} columnIndex Index of the column on the Kanban board, can be 0 to 5 (as there are 6 columns.)
+     * @param {*} ticket The "Ticket" object associated with this label.
      * @param {*} labelTextList List of text strings for text to be displayed on the Kanban label.
      */
-    constructor(kanbanStation, kanbanBoard, height, columnIndex, labelTextList){
+    constructor(kanbanStation, kanbanBoard, height, columnIndex, ticket, labelTextList){
         this.kanbanStation = kanbanStation
         this.kanbanBoard = kanbanBoard
         this.labelTextList = labelTextList
         this.columnIndex = columnIndex
         this.height = height
+        this.ticket = ticket
         console.log("DEBUG: KanbanLabel object created.");
 
         //Don't draw the label right away, as it might not be inside the Kanban board when it gets created.

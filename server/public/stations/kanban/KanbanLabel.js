@@ -216,7 +216,7 @@ export default class KanbanLabel {
                 this.kanbanStation.scene.start('OrderStation');
                 //TODO: Replace this code so that the label moves to the next one (this should be the start button.)
             } else if(this.columnIndex == 1){
-                //TODO: Get a reference to the order station.
+                //TODO: Get a reference to the prepare station.
                 //const kanbanScene = this.scene.get('KanbanStation');
                 const prepareStation = this.kanbanStation.scene.get('PrepareStation');
                 console.log("prepareStation = " + prepareStation);
@@ -224,11 +224,22 @@ export default class KanbanLabel {
                 prepareStation.initialSetupFromKanbanBoard(this.ticket);
 
                 //Changing the scene should be the last thing.
-                //This should (hypothetically) trigger the create() function, but do test this.
+                //This triggers the create() function, but do test this.
                 console.log("Just before changing the scene to PrepareStation.");
                 this.kanbanStation.scene.start('PrepareStation');
             } else if(this.columnIndex == 2){
+                //TODO: Get a reference to the cook station.
+                //const kanbanScene = this.scene.get('KanbanStation');
+                const cookStation = this.kanbanStation.scene.get('CookStation');
+                console.log("cookStation = " + cookStation);
+
+                cookStation.initialSetupFromKanbanBoard(this.ticket);
+
+                //Changing the scene should be the last thing.
+                //This triggers the create() function, but do test this.
+                console.log("Just before changing the scene to CookStation.");
                 this.kanbanStation.scene.start('CookStation');
+                //TODO: Could pass the pizza as a key like in the old button in PrepareStation.
             } else if(this.columnIndex == 3){
                 this.kanbanStation.scene.start('ReviewStation');
             } else if(this.columnIndex == 4){

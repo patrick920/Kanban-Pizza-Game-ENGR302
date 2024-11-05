@@ -3,6 +3,7 @@
 import Station from './Station.js';
 //import Pizza from './Pizza.js';
 // import { createNavigationTabs } from './Station.js'; // Import helper function
+import { displayTicket } from './DisplayTicket.js'; //To display the current ticket on the screen.
 
 export default class CookStation extends Station {
 
@@ -16,9 +17,21 @@ export default class CookStation extends Station {
         this.cookedPizzas = [];
     }
 
+    /*
     init(data) {
         // retrieve pizza data if provided
         this.pizza = data.pizza || null;
+    }
+    */
+
+    /**
+     * This method is called from KanbanLabel.js when the "Go to Station" button is clicked on the label.
+     * It setups the necessary objects needed.
+     */
+    initialSetupFromKanbanBoard(ticket){
+        this.ticket = ticket;
+        //Set the pizza object.
+        this.pizza = this.ticket.getPizza();
     }
     
 
@@ -63,6 +76,10 @@ export default class CookStation extends Station {
 
         // display the pizza in its current state
         this.displayPizza();
+
+        //New code added for integrating the Cook Station into the Kanban board:
+        // Display the current ticket
+        this.currentTicket();
 
         // THIS WAS HANNINGS ORIGINAL CODE
         // // Create cook button
@@ -145,6 +162,9 @@ export default class CookStation extends Station {
                 if (this.countdownText) {
                     this.countdownText.destroy();
                 }
+
+                //Update the Ticket display.
+                this.currentTicket();
             }
         }, 1000); // Update every 1000 milliseconds (1 second)
     }
@@ -254,5 +274,36 @@ export default class CookStation extends Station {
     
         // Display a message indicating the pizza is being displayed
         this.add.text(100, 50, 'Pizza is ready to cook!', { fontSize: '32px', fill: '#fff' });
+    }
+
+    /**
+     * Draw the ticket information, including the order and the pizza details on the right side of the screen.
+     */
+    currentTicket() {
+        // Define the position and size of the rectangle
+        const x = 1100; // X position of the rectangle
+        const y = 0; // Y position of the rectangle
+        const width = 200; // Width of the rectangle
+        const height = this.game.config.height; // Height of the rectangle
+    
+        // Create a graphics object for the rectangle
+        const ticketBackground = this.add.graphics()
+            .fillStyle(0xffffff, 1) // Set the fill color to white
+            .fillRect(x, y, width, height); // Draw the rectangle
+    
+        // Create the text label
+        const ticketText = this.add.text(x + width / 2, y + height / 2, 
+            'display current ticket', {
+                fontSize: '20px',
+                fill: '#000', // Text color
+                fontFamily: 'Calibri',
+                align: 'center'
+            })
+            .setOrigin(0.5); // Center the text within the rectangle
+        
+        
+        //Display a view of the order requirements and the state of the current pizza object:
+        //(this, this.ticket, x, y)
+        displayTicket(this, this.ticket, x, y);
     }
 }

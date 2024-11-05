@@ -213,14 +213,19 @@ export default class KanbanLabel {
         goToStationButton.on('pointerdown', () => {
             console.log('NEW Order Button clicked!!!!!');
             if(this.columnIndex == 0){
+                this.kanbanStation.scene.start('OrderStation');
+                //TODO: Replace this code so that the label moves to the next one (this should be the start button.)
+            } else if(this.columnIndex == 1){
                 //TODO: Get a reference to the order station.
                 //const kanbanScene = this.scene.get('KanbanStation');
-                const orderStation = this.kanbanStation.scene.get('OrderStation');
+                const prepareStation = this.kanbanStation.scene.get('PrepareStation');
+                console.log("prepareStation = " + prepareStation);
+
+                prepareStation.initialSetupFromKanbanBoard(this.ticket);
 
                 //Changing the scene should be the last thing.
                 //This should (hypothetically) trigger the create() function, but do test this.
-                this.kanbanStation.scene.start('OrderStation');
-            } else if(this.columnIndex == 1){
+                console.log("Just before changing the scene to PrepareStation.");
                 this.kanbanStation.scene.start('PrepareStation');
             } else if(this.columnIndex == 2){
                 this.kanbanStation.scene.start('CookStation');

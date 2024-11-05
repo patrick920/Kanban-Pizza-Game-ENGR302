@@ -1,5 +1,7 @@
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
+//import DisplayTicket from './DisplayTicket.js'; //Class to display current ticket on the screen.
+import { displayTicket } from './DisplayTicket.js';
 
 /**
  * This is the class for the PrepareStation
@@ -19,6 +21,14 @@ export default class PrepareStation extends Station {
         super({ key: 'PrepareStation' });
         this.preparedPizzas = [];
         this.pizzaBaseButtons = []; // Array to hold button references
+    }
+
+    /**
+     * This method is called from KanbanLabel.js when the "Go to Station" button is clicked on the label.
+     * It setups the necessary objects needed.
+     */
+    initialSetupFromKanbanBoard(ticket){
+        this.ticket = ticket;
     }
 
     /**
@@ -47,6 +57,8 @@ export default class PrepareStation extends Station {
      * Setup the scene
      */
     create() {
+        console.log("PrepareStation.js create() method execution.");
+
         this.createBackground();
 
         // Navigation buttons (from Station.js)
@@ -207,6 +219,8 @@ export default class PrepareStation extends Station {
 
         // Create and display pizza
         this.pizza = new Pizza(this, pizzaX, pizzaY, size);
+        //Set the order in the Ticket in the KanbanLabel to this pizza.
+        this.ticket.setPizza(pizza);
         
         // // something to hold information about the pizza object
         // // ASK HANNING ABOUT THIS TOMORROW, HOW DOES HE WANT IT TO BE USED?
@@ -452,5 +466,10 @@ export default class PrepareStation extends Station {
                 align: 'center'
             })
             .setOrigin(0.5); // Center the text within the rectangle
+        
+        
+        //Display a view of the order requirements and the state of the current pizza object:
+        //(this, this.ticket, x, y)
+        displayTicket(this, this.ticket, x, y);
     }
 }

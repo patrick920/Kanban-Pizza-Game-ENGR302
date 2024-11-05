@@ -3,9 +3,9 @@ import Ticket from './Ticket.js';
 
 
 class Order {
-    constructor(orderId, pizzaType, toppings) {
+    constructor(orderId, pizzaSize, toppings) {
         this.orderId = orderId;
-        this.pizzaType = pizzaType;
+        this.pizzaSize = pizzaSize;
         this.toppings = toppings;
     }
 }

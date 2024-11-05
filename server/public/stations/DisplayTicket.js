@@ -78,12 +78,30 @@ export function displayTicket(scene, ticket, xPos, yPos){
     } else{
         //textList.push(pizza."")
         let sauceString = "Sauce: ";
-        if(typeof pizza.sauce === 'undefined'){
+        //if(typeof pizza.sauce === null){
+        if(pizza.sauce == null){
             sauceString += "None";
         } else{
             sauceString += "Yes";
         }
         textList.push(sauceString);
+
+        let cheeseString = "Cheese: ";
+        //if(typeof pizza.sauce === null){
+        if(pizza.cheese == null){
+            cheeseString += "None";
+        } else{
+            cheeseString += "Yes";
+        }
+        textList.push(cheeseString);
+
+        let toppingsString = "Toppings: ";
+        if(pizza.toppings.length == 0){ //If there are no toppings.
+            toppingsString += "None";
+        } else{
+            toppingsString += "Yes";
+        }
+        textList.push(toppingsString);
     }
 
     //Display the text in the list of text strings on the rectangle.

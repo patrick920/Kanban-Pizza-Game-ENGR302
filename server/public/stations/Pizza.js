@@ -59,6 +59,10 @@ export default class Pizza {
             this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce').setScale(this.scale * 3);
             this.scene.removeCircle();
             this.scene.tomatoPasteOn = false;
+
+            //New code to integrate with the Kanban board.
+            //Redraw the right Ticket information.
+            this.scene.currentTicket();
         }
     }
 
@@ -74,6 +78,10 @@ export default class Pizza {
              this.cheese = this.scene.add.image(this.x, this.y, 'cheeseUncooked').setScale(this.scale * 2.3);
              this.scene.removeCircle();
              this.scene.cheeseOn = false;
+
+            //New code to integrate with the Kanban board.
+            //Redraw the right Ticket information.
+            this.scene.currentTicket();
         }
     }
 

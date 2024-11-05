@@ -328,6 +328,11 @@ export default class PrepareStation extends Station {
                         this.pizza.addTopping(this.currentTopping); // Add topping to pizza
                         this.input.setDraggable(this.currentTopping, false); // Make it undraggable
                         this.currentTopping.setInteractive(false); // Optionally, make it non-interactive
+
+                        //New code for integration into the Kanban board.
+                        console.log("New topping added.");
+                        //Redraw the Ticket on the right side of the screen.
+                        this.currentTicket();
                     } else {
                         // If there's no pizza or the slice is not on it, destroy the topping slice
                         this.currentTopping.destroy(); // Remove the slice
@@ -356,6 +361,8 @@ export default class PrepareStation extends Station {
         //tomatoPasteImage.setDisplaySize(300, 300);  // Width and height in pixels
 
         this.addSpread(tomatoPasteImage, 'sauce', '0xff0000');
+        //So this function is not called when the sauce is placed.
+        console.log("End of createTomatoPasteBottle() function execution.");
     }
 
     /**
@@ -409,8 +416,10 @@ export default class PrepareStation extends Station {
      * Change status of cheese
      */
      toggleSpread(spreadName) {
+        console.log("Start of toggleSpread() function execution.");
         if(spreadName === 'sauce'){
             this.tomatoPasteOn = !this.tomatoPasteOn; // Toggle the value of cheeseOn
+            console.log("tomatoPasteOn toggled.");
             //this.cheeseOn = false;
         } else if (spreadName === 'cheese') {
             this.cheeseOn = !this.cheeseOn; // Toggle the value of cheeseOn

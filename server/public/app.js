@@ -1,3 +1,6 @@
+// import { addImageDynamically } from './phaser_game.js';
+//Code from ChatGPT:
+import { game } from './phaser_game.js';
 //Don't have to import io I think.
 const socket = io('ws://localhost:3500')
 
@@ -26,7 +29,28 @@ socket.on("message", (data) => {
 
     //Add the pizza image to the Phaser game.
     //Line below from ChatGPT:
-    addImageDynamically();
+    //addImageDynamically();
+    console.log("MESSAGE RECEIVED GLOBALLY: " + data);
+    //From ChatGPT:
+    //game.scene.start('KanbanStation'); //This works successfully.
+    //const kanbanStation = game.scene.get('KanbanStation'); //Gives error:
+    // Ensure the scene is started somewhere in the code first
+    //const kanbanScene = game.scene.getScene('KanbanStation');
+
+    if (game.scene.isActive('KanbanStation')) {
+        // The scene is active, so we can safely get it
+        //const kanbanScene = game.scene.get('KanbanStation');
+        const kanbanScene = game.scene.getScene('KanbanStation');
+        console.log('KanbanStation is active and ready to use:', kanbanScene);
+    } else {
+        // The scene is not active, so you may want to start it or handle this case differently
+        //console.log('KanbanStation is not active. Starting the scene now.');
+        //game.scene.start('KanbanStation');
+        // Optionally, retrieve the scene after starting it
+        //const kanbanScene = game.scene.get('KanbanStation');
+        console.log("KanbanStation is not active, so do not redraw the labels. However, update the kanbanLabelsList.");
+    }
+    console.log("Got the KanbanStation object.");
 })
 
 /*

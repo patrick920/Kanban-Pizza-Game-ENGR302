@@ -62,6 +62,7 @@ io.on('connection', socket => {
         console.log(data)
         //emit sends the message to EVERYONE who is connected to the server.
         io.emit('message', `${socket.id.substring(0, 5)}: ${data}`) //Send that message back.
+        console.log("MESSENGE SENT!!!!!");
     })
      // Order Station events
      socket.on('newOrder', order => {

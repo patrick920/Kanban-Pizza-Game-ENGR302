@@ -117,6 +117,7 @@ export default class KanbanStation extends Station {
         //Send a message to the socket:
         //Send the new Kanban labels list to update globally.
         console.log("Before sending message to the socket in addLabel() in KanbanBoard.js");
-        sendKanbanMessage(kanbanLabelsList);
+        //sendKanbanMessage("addLabel", [81, 0, null, pizzaQuantity, pepperoniEntry, mushroomEntry]);
+        this.game.socket.emit('message', 'Hi1');
    }
 }

@@ -1,5 +1,6 @@
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
+//import CookStation from './CookStation.js'; // Import the cookStation class
 
 /**
  * This is the class for the PrepareStation
@@ -66,6 +67,10 @@ export default class PrepareStation extends Station {
 
         // Display the current ticket
         this.currentTicket();
+
+        // setup button to move pizza into cook station
+        this.createToCookStationButton();
+
 
         // Create prepare button
         const prepareButton = this.add.text(100, 500, 'Prepare Pizza', { fontSize: '24px', fill: '#fff', backgroundColor: '#28a745' })
@@ -182,6 +187,37 @@ export default class PrepareStation extends Station {
     }
     
 
+    /**
+     * Create move onto cook station button
+     * This take the pizza object as it is and move it into the cook station
+     */
+    createToCookStationButton() {
+        // Small Pizza Base Button
+        const cookStationButton = this.add.image(1200, 500, 'button') // Use your button image key here
+            .setOrigin(0.5)
+            .setScale(0.3)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.movePizzaToCookStation())
+            .on('pointerover', () => cookStationButton.setTint(0xffbb33)) // Hover effect
+            .on('pointerout', () => cookStationButton.clearTint()); // Reset color on hover out
+        
+        const cookStationButtonText = this.add.text(1200, 490, 'Move Pizza To \nCook Station', {
+            fontSize: '20px',
+            fill: '#000',
+            fontFamily: 'Calibri',
+            align: 'center'
+        }).setOrigin(0.5); // Center the text on the button
+    }
+
+    /**
+     * Code to move current pizza to cook station
+     */
+    movePizzaToCookStation() {
+        if (this.pizza != null) {
+            this.scene.start('CookStation', { pizza: this.pizza });
+        }
+    }
+    
 
 
     /**

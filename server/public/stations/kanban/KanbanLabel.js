@@ -123,8 +123,8 @@ export default class KanbanLabel {
 
         //Update the list of all Kanban Board labels.
         //First print it:
-        console.log("Column 0 before removing:")
-        this.kanbanBoard.debugPrintKanbalLabelsListContent(0);
+        console.log("Column " + (this.columnIndex - 1) + " before removing:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(this.columnIndex - 1);
         
         //Then remove from the initial list.
         //kanbanLabelsList[columnIndex] = 
@@ -139,19 +139,19 @@ export default class KanbanLabel {
         }
 
         //Print after removing:
-        console.log("Column 0 after removing:")
-        this.kanbanBoard.debugPrintKanbalLabelsListContent(0);
+        console.log("Column " + (this.columnIndex - 1) + " after removing:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(this.columnIndex - 1);
 
         //this.columnIndex++; //Move the label's column index to the next column.
 
-        console.log("Column 1 before adding:")
-        this.kanbanBoard.debugPrintKanbalLabelsListContent(1);
+        console.log("Column " + this.columnIndex + " before adding:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(this.columnIndex);
 
         //Add the label to the new column on the Kanban labels list:
         kanbanLabelsList[this.columnIndex].push(this);
 
-        console.log("Column 1 after adding:")
-        this.kanbanBoard.debugPrintKanbalLabelsListContent(1);
+        console.log("Column " + this.columnIndex + " after adding:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(this.columnIndex);
     }
 
     /**

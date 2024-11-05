@@ -3,6 +3,7 @@
 import Station from './Station.js';
 //import Pizza from './Pizza.js';
 // import { createNavigationTabs } from './Station.js'; // Import helper function
+import { displayTicket } from './DisplayTicket.js'; //To display the current ticket on the screen.
 
 export default class CookStation extends Station {
 
@@ -16,9 +17,21 @@ export default class CookStation extends Station {
         this.cookedPizzas = [];
     }
 
+    /*
     init(data) {
         // retrieve pizza data if provided
         this.pizza = data.pizza || null;
+    }
+    */
+
+    /**
+     * This method is called from KanbanLabel.js when the "Go to Station" button is clicked on the label.
+     * It setups the necessary objects needed.
+     */
+    initialSetupFromKanbanBoard(ticket){
+        this.ticket = ticket;
+        //Set the pizza object.
+        this.pizza = this.ticket.getPizza();
     }
     
 
@@ -50,6 +63,16 @@ export default class CookStation extends Station {
      * create the scene
      */
     create() {
+        console.log("In CookStation.js create() method called.");
+
+        //New code added for integration with the Kanban board:
+        //Code to try to debug the issue where it doesn't display from the Kanban board.
+        //this.scene.restart(); //Or, could call this in KanbanLabel.js for KanbanStation.
+
+        //Idea: maybe due to how Kanban is initialise in Station.js???
+
+        //--------------------------------------------------
+
         // Add a background image that fills the entire scene
         const background = this.add.image(0, 0, 'tableBackground')
         .setOrigin(0, 0) // Align to the top-left corner
@@ -63,6 +86,10 @@ export default class CookStation extends Station {
 
         // display the pizza in its current state
         this.displayPizza();
+
+        //New code added for integrating the Cook Station into the Kanban board:
+        // Display the current ticket
+        this.currentTicket();
 
         // THIS WAS HANNINGS ORIGINAL CODE
         // // Create cook button
@@ -139,12 +166,15 @@ export default class CookStation extends Station {
                 this.displayPizza(); // Update the display to show the cooked pizza
                 this.isCooking = false; // Reset the flag after cooking is done
                 // spawn review button
-                this.createReviewButton();
+                //this.createReviewButton();
 
                 // Destroy the countdown text after cooking is complete
                 if (this.countdownText) {
                     this.countdownText.destroy();
                 }
+
+                //Update the Ticket display.
+                this.currentTicket();
             }
         }, 1000); // Update every 1000 milliseconds (1 second)
     }
@@ -152,6 +182,7 @@ export default class CookStation extends Station {
     /**
      * Create the review button
      */
+    /*
     createReviewButton(){
         // Store the button in this.reviewButton and text in this.reviewButtonText
         this.reviewButton = this.add.image(650, 300, 'button')
@@ -169,16 +200,18 @@ export default class CookStation extends Station {
             align: 'center'
         }).setOrigin(0.5); // Center the text on the button
     }
+    */
 
     /**
      * take pizza and scene into the review station
      */
+    /*
     movePizzaToReviewStation(){
         if (this.pizza != null) {
             this.scene.start('ReviewStation', { pizza: this.pizza });
         }
     }
-
+    */
 
 
 
@@ -254,5 +287,36 @@ export default class CookStation extends Station {
     
         // Display a message indicating the pizza is being displayed
         this.add.text(100, 50, 'Pizza is ready to cook!', { fontSize: '32px', fill: '#fff' });
+    }
+
+    /**
+     * Draw the ticket information, including the order and the pizza details on the right side of the screen.
+     */
+    currentTicket() {
+        // Define the position and size of the rectangle
+        const x = 1100; // X position of the rectangle
+        const y = 0; // Y position of the rectangle
+        const width = 200; // Width of the rectangle
+        const height = this.game.config.height; // Height of the rectangle
+    
+        // Create a graphics object for the rectangle
+        const ticketBackground = this.add.graphics()
+            .fillStyle(0xffffff, 1) // Set the fill color to white
+            .fillRect(x, y, width, height); // Draw the rectangle
+    
+        // Create the text label
+        const ticketText = this.add.text(x + width / 2, y + height / 2, 
+            'display current ticket', {
+                fontSize: '20px',
+                fill: '#000', // Text color
+                fontFamily: 'Calibri',
+                align: 'center'
+            })
+            .setOrigin(0.5); // Center the text within the rectangle
+        
+        
+        //Display a view of the order requirements and the state of the current pizza object:
+        //(this, this.ticket, x, y)
+        displayTicket(this, this.ticket, x, y);
     }
 }

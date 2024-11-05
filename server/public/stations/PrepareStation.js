@@ -1,7 +1,7 @@
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
 //import DisplayTicket from './DisplayTicket.js'; //Class to display current ticket on the screen.
-import { displayTicket } from './DisplayTicket.js';
+import { displayTicket } from './DisplayTicket.js'; //To display the current ticket on the screen.
 
 /**
  * This is the class for the PrepareStation
@@ -80,7 +80,7 @@ export default class PrepareStation extends Station {
         this.currentTicket();
 
         // setup button to move pizza into cook station
-        this.createToCookStationButton();
+        //this.createToCookStationButton();
 
 
         // Create prepare button
@@ -202,6 +202,7 @@ export default class PrepareStation extends Station {
      * Create move onto cook station button
      * This take the pizza object as it is and move it into the cook station
      */
+    /*
     createToCookStationButton() {
         // Small Pizza Base Button
         const cookStationButton = this.add.image(1200, 500, 'button') // Use your button image key here
@@ -219,16 +220,18 @@ export default class PrepareStation extends Station {
             align: 'center'
         }).setOrigin(0.5); // Center the text on the button
     }
-
+    */
+    
     /**
      * Code to move current pizza to cook station
      */
+    /*
     movePizzaToCookStation() {
         if (this.pizza != null) {
             this.scene.start('CookStation', { pizza: this.pizza });
         }
     }
-    
+    */
 
 
     /**
@@ -492,6 +495,9 @@ export default class PrepareStation extends Station {
         this.isCircleActive = false;  // Deactivate the circle
     }
 
+    /**
+     * Draw the ticket information, including the order and the pizza details on the right side of the screen.
+     */
     currentTicket() {
         // Define the position and size of the rectangle
         const x = 1100; // X position of the rectangle

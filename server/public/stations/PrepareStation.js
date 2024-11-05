@@ -37,6 +37,10 @@ export default class PrepareStation extends Station {
         this.load.image('pepperoniSlice', 'stations/assets/pepperoni_slice.png');
         this.load.image('mushroomSlice', 'stations/assets/mushroom_slice.png');
         this.load.image('cheeseUncooked', 'stations/assets/cheese_uncooked.png');
+        // designed by @ibrandify on FreePik
+        this.load.image('button', 'stations/assets/button.png');
+        // designed by @upklyak on FreePik
+        this.load.image('tableBackground', 'stations/assets/wooden_table_background.jpg')
     }
 
     /**
@@ -44,9 +48,6 @@ export default class PrepareStation extends Station {
      */
     create() {
         this.createBackground();
-
-        // Game logic here
-        this.add.text((this.game.config.width/2)-50, 50, 'Make Your Pizza!', { fontSize: '32px', fontFamily: 'Calibri', fill: '#fff' });
 
         // Navigation buttons (from Station.js)
         this.createNavigationTabs();
@@ -89,7 +90,22 @@ export default class PrepareStation extends Station {
      */
     createBackground() {
         // Set a specific background color for the PrepareStation
-        this.cameras.main.setBackgroundColor('#996600');
+        //this.cameras.main.setBackgroundColor('#996600');
+
+        // Add a background image that fills the entire scene
+        const background = this.add.image(0, 0, 'tableBackground')
+        .setOrigin(0, 0) // Align to the top-left corner
+        .setDisplaySize(this.cameras.main.width, this.cameras.main.height); // Scale to fill the scene
+
+        // Setup credit to background and button artists
+        const creditText = this.add.text(10, this.cameras.main.height - 30, 
+            "Button art by: @ibrandify on FreePik   Background art by: @upklyak on FreePik", {
+            fontSize: '14px',
+            fill: '#000',
+            fontFamily: 'Calibri',
+            wordWrap: { width: this.cameras.main.width - 20 } // Wrap text if it exceeds the scene width
+        });
+
         this.createPizzaBaseButtons(); // Setup pizza base buttons
     }
 
@@ -129,28 +145,42 @@ export default class PrepareStation extends Station {
      * Create buttons for pizza base size options
      */
     createPizzaBaseButtons() {
-        const baseSmallButton = this.add.text(50, 200, 'Small Pizza Base', { 
-            fontSize: '20px', 
-            fill: '#000', 
-            fontFamily: 'Calibri', 
-            backgroundColor: '#ffd11a',
+        // Small Pizza Base Button
+        const baseSmallButton = this.add.image(300, 170, 'button') // Use your button image key here
+            .setOrigin(0.5)
+            .setScale(0.3)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.createPizza('small'))
+            .on('pointerover', () => baseSmallButton.setTint(0xffbb33)) // Hover effect
+            .on('pointerout', () => baseSmallButton.clearTint()); // Reset color on hover out
+        
+        const smallButtonText = this.add.text(300, 160, 'Small Pizza Base', {
+            fontSize: '20px',
+            fill: '#000',
+            fontFamily: 'Calibri',
             align: 'center'
-        }).setInteractive().on('pointerdown', () => this.createPizza('small'))
+        }).setOrigin(0.5); // Center the text on the button
+    
+        // Large Pizza Base Button
+        const baseLargeButton = this.add.image(300, 400, 'button') // Use your button image key here
+            .setOrigin(0.5)
+            .setScale(0.3)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.createPizza('large'))
+            .on('pointerover', () => baseLargeButton.setTint(0xffbb33)) // Hover effect
+            .on('pointerout', () => baseLargeButton.clearTint()); // Reset color on hover out
         
-        
-        const baseLargeButton = this.add.text(50, 250, 'Large Pizza Base', { 
-            fontSize: '20px', 
-            fill: '#000', 
-            fontFamily: 'Calibri', 
-            backgroundColor: '#ffd11a',
+        const largeButtonText = this.add.text(300, 390, 'Large Pizza Base', {
+            fontSize: '20px',
+            fill: '#000',
+            fontFamily: 'Calibri',
             align: 'center'
-        }).setInteractive().on('pointerdown', () => { this.createPizza('large');
-
-        });
-        
-        // Store button references in the array
-        this.pizzaBaseButtons.push(baseSmallButton, baseLargeButton);
+        }).setOrigin(0.5); // Center the text on the button
+    
+        // Store button references
+        this.pizzaBaseButtons.push(baseSmallButton, smallButtonText, baseLargeButton, largeButtonText);
     }
+    
 
 
 
@@ -213,12 +243,13 @@ export default class PrepareStation extends Station {
      * Once on the pizza is cannot be moved
      */
     createPepperoni() {
-        const pepperoniImage = this.add.image(670, 500, 'pepperoniTray')
+        const pepperoniImage = this.add.image(670, 450, 'pepperoniTray')
             .setOrigin(0.5, 0.5)
-            .setInteractive();
+            .setInteractive()
+            .setScale(0.5);
         
         // Set the display size (width, height)
-        pepperoniImage.setDisplaySize(350, 350);  // Width and height in pixels
+        //pepperoniImage.setDisplaySize(350, 350);  // Width and height in pixels
         
         this.createAndMoveTopping(pepperoniImage, 'pepperoniSlice');
     }
@@ -230,12 +261,13 @@ export default class PrepareStation extends Station {
      * Once on the pizza is cannot be moved
      */
     createMushroom() {
-        const mushroomImage = this.add.image(650, 200, 'mushroomSlice')
+        const mushroomImage = this.add.image(650, 150, 'mushroomSlice')
             .setOrigin(0.5, 0.5)
-            .setInteractive();
+            .setInteractive()
+            .setScale(1.3);
         
         // Set the display size (width, height)
-        mushroomImage.setDisplaySize(250, 250);  // Width and height in pixels
+        //mushroomImage.setDisplaySize(250, 250);  // Width and height in pixels
         
         this.createAndMoveTopping(mushroomImage, 'mushroomSlice');
     }
@@ -298,12 +330,13 @@ export default class PrepareStation extends Station {
      * state the pizza sauce will appear on to[]
      */
     createTomatoPasteBottle() {
-        const tomatoPasteImage = this.add.image(900, 450, 'tomatoPaste')
+        const tomatoPasteImage = this.add.image(940, 400, 'tomatoPaste')
             .setOrigin(0.5, 0.5)
-            .setInteractive();
+            .setInteractive()
+            .setScale(0.7);
         
         // Set the display size (width, height)
-        tomatoPasteImage.setDisplaySize(300, 300);  // Width and height in pixels
+        //tomatoPasteImage.setDisplaySize(300, 300);  // Width and height in pixels
 
         this.addSpread(tomatoPasteImage, 'sauce', '0xff0000');
     }
@@ -312,12 +345,13 @@ export default class PrepareStation extends Station {
      * Create the cheese and setup functionality
      */
     createCheese(){
-        const cheeseImage = this.add.image(940, 200, 'cheese')
+        const cheeseImage = this.add.image(980, 150, 'cheese')
             .setOrigin(0.5, 0.5)
-            .setInteractive();
+            .setInteractive()
+            .setScale(0.8);
         
         // Set the display size (width, height)
-        cheeseImage.setDisplaySize(250, 250);  // Width and height in pixels
+        //cheeseImage.setDisplaySize(250, 250);  // Width and height in pixels
 
         this.addSpread(cheeseImage, 'cheese', '0xffe680');
     }

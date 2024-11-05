@@ -1,6 +1,7 @@
 // import { addImageDynamically } from './phaser_game.js';
 //Code from ChatGPT:
 import { game } from './phaser_game.js';
+import { kanbanLabelsList } from './stations/kanban/KanbanBoard.js';
 //Don't have to import io I think.
 const socket = io('ws://localhost:3500')
 
@@ -15,6 +16,12 @@ function sendMessage(e) {
     input.focus() //Put the focus back on the input.
 }
 
+//Send message with the kanban labels list
+export function sendKanbanMessage(newKanbanLabelsList) {
+    console.log("sendKanbanMessage: newKanbanLabelsList: ", newKanbanLabelsList);
+    socket.emit('message', newKanbanLabelsList)
+}
+
 //Listening for the submit event of the form. Then call "sendMessage" function.
 document.querySelector('form')
     .addEventListener('submit', sendMessage)
@@ -22,10 +29,10 @@ document.querySelector('form')
 //Listen for messages. "on" is the message event. Will call this function when we get an event I think.
 socket.on("message", (data) => {
     //li is list item.
-    const li = document.createElement('li')
-    li.textContent = data //data is essentially the message from the server.
+    ////const li = document.createElement('li')
+    ////li.textContent = data //data is essentially the message from the server.
     //I think this should add a list item containing the server's message.
-    document.querySelector('ul').appendChild(li)
+    ////document.querySelector('ul').appendChild(li)
 
     //Add the pizza image to the Phaser game.
     //Line below from ChatGPT:
@@ -37,11 +44,15 @@ socket.on("message", (data) => {
     // Ensure the scene is started somewhere in the code first
     //const kanbanScene = game.scene.getScene('KanbanStation');
 
+    //Set the list of Kanban labels to the new one.
+    kanbanLabelsList = data;
+
     if (game.scene.isActive('KanbanStation')) {
         // The scene is active, so we can safely get it
         //const kanbanScene = game.scene.get('KanbanStation');
-        const kanbanScene = game.scene.getScene('KanbanStation');
-        console.log('KanbanStation is active and ready to use:', kanbanScene);
+        const kanbanStation = game.scene.getScene('KanbanStation'); //Get the KanbanStation Phaser Scene.
+        kanbanStation.kanbanBoard.displayLabels();
+        console.log('KanbanStation is active and ready to use:', kanbanStation);
     } else {
         // The scene is not active, so you may want to start it or handle this case differently
         //console.log('KanbanStation is not active. Starting the scene now.');

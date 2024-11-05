@@ -70,8 +70,8 @@ export default class ReviewStation extends Station {
         // Add navigation buttons for Reject and Serve at the bottom
         this.createNavigationButtons();
 
-        //Add a text box on right side of screen people can type in
-        //this.createTextBox();
+        // Display Order Text
+        this.displayCustomerOrder();
     }
 
     createNavigationButtons() {
@@ -91,40 +91,6 @@ export default class ReviewStation extends Station {
             .on('pointerdown', () => this.serveOrder());
     }
 
-    createTextBox() {
-        const inputBox = document.createElement('input');
-        inputBox.type = 'text';
-        inputBox.id = 'playerInput';
-        inputBox.placeholder = 'Type your review...';
-
-        // Style the input box
-        inputBox.style.position = 'absolute';
-        inputBox.style.bottom = '20px';  
-        inputBox.style.right = '120px';
-        inputBox.style.width = '250px';
-        inputBox.style.height = '40px';
-        inputBox.style.fontSize = '18px';
-
-        // Add an event listener to handle input submission
-        inputBox.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                const inputValue = inputBox.value;
-                if (inputValue.trim()) {
-                    // Handle the input submission (validate order)
-                    this.handlePlayerInput(inputValue);
-                    inputBox.value = ''; // Clear the text box after submitting
-                }
-            }
-        });
-
-        document.body.appendChild(inputBox);
-    }
-
-    handlePlayerInput(inputValue) {
-        console.log('Player typed review:', inputValue);
-        // Review logic
-    }
-
     createBackground() {
         // Add the background image to cover the scene
         this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
@@ -133,36 +99,80 @@ export default class ReviewStation extends Station {
         // Add functionality here to display the pizza image
     }
 
-    validateOrder(playerOrder, customerOrder) {
-        let score = 0;
+    displayCustomerOrder() {
+        const order = this.ticket.getOrder();
+        let orderText = `Order #${order.orderId}:\nPizza Type: ${order.pizzaType}\nToppings:\n`;
+        
+        // Format topping details
+        order.toppings.forEach(topping => {
+            orderText += `${topping.quantity}x ${topping.topping}\n`;
+        });
 
-        // Calculate score for the pizza base and toppings
-        score += -5; // Base cost
-        score += -1 * playerOrder.toppings.length; // Toppings cost
+        // Display order details in a text box within the scene
+        this.add.text(600, 150, orderText, {
+            fontSize: '16px',
+            fill: '#000000',
+            fontFamily: 'Calibri',
+            wordWrap: { width: 300 },
+            align: 'center'
+        }).setVisible(true);
+    }    
+
+    validateOrder() {
+        const customerOrder = this.ticket.getOrder();
+        const playerPizza = this.ticket.getPizza();
     
-        // Update the player's score
+        let score = 10; // Base score
+    
+        // Compare pizza type
+        if (playerPizza.type !== customerOrder.pizzaType) {
+            score -= 5;
+        }
+    
+        // Compare toppings by matching each topping and quantity
+        const unmatchedToppings = customerOrder.toppings.filter(custTop => {
+            return !playerPizza.toppings.some(playerTop => 
+                playerTop.topping === custTop.topping && 
+                playerTop.quantity === custTop.quantity);
+        });
+    
+        score -= unmatchedToppings.length * 2; // Deduct for each mismatch
+    
+        // Final score is calculated, positive score means order is correct
         this.score = Math.max(0, score);
-        console.log('Player score:', this.score);
+        console.log('Order score:', this.score);
+        return this.score > 0;
+    }    
 
-        // If all checks pass, the order matches
-        return score > 0;
+    showTemporaryMessage(message) {
+        const messageText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, message, {
+            fontSize: '50px',
+            fill: '#ffffff',
+            backgroundColor: '#000000'
+        }).setOrigin(0.5);
 
-        // Add functionality here to validateOrder ....
-    }
-
-    rejectOrder() {
-        // Logic to handle rejecting the order
-        console.log('Order has been rejected.');
+        // Fade out the message after 1 second
+        this.time.delayedCall(1000, () => {
+            orderTakenText.destroy(); // Remove text after 1 second
+        });
     }
 
     serveOrder() {
-        // Logic to handle serving the order
         if (this.validateOrder()) {
-            console.log('Order has been served successfully.');
-            this.score += Math.abs(this.score);
+            console.log('Order served successfully with score:', this.score);
+            this.showTemporaryMessage('Order Served');
             this.ticket.completeTicket();
+            this.time.delayedCall(1200, () => this.scene.start('KanbanStation')); // Return to Kanban Board
         } else {
-            console.log('Order validation failed. Please review the order.');
+            console.log('Order validation failed.');
         }
     }
+    
+    rejectOrder() {
+        this.ticket.setReviewNotes('Rejected: Order did not meet customer requirements');
+        console.log('Order rejected and sent back.');
+        this.showTemporaryMessage('Order Rejected');
+        this.time.delayedCall(1200, () => this.scene.start('KanbanStation')); // Return to Kanban Board
+    }
+    
 }

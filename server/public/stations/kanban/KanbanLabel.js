@@ -109,6 +109,52 @@ export default class KanbanLabel {
     }
 
     /**
+     * Move the current KanbanLabel (referenced by "this") to the next column on the "kanbanLabelsList" which
+     * is used to store the labels on the Kanban board.
+     */
+    moveLabelToNextColumnOnKanbanLabelsList(){
+        //If the size of the "kanbanLabelsList" on the next column is 5 or more, cancel the move operation.
+        if(kanbanLabelsList[this.columnIndex + 1].length >= 5){
+            alert("Can't move the label as the next column is full.");
+            return;
+        }
+
+        this.columnIndex++; //Move the label's column index to the next column.
+
+        //Update the list of all Kanban Board labels.
+        //First print it:
+        console.log("Column 0 before removing:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(0);
+        
+        //Then remove from the initial list.
+        //kanbanLabelsList[columnIndex] = 
+        //Find index of this KanbanLabel within the list for all the Kanban labels.
+        let index = kanbanLabelsList[this.columnIndex - 1].indexOf(this);
+
+        //If this KanbanLabel is found in the array, remove it.
+        if (index !== -1) {
+            kanbanLabelsList[this.columnIndex - 1].splice(index, 1);
+        } else{
+            console.log("ERROR: Can't remove this KanbanLabel from the list.");
+        }
+
+        //Print after removing:
+        console.log("Column 0 after removing:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(0);
+
+        //this.columnIndex++; //Move the label's column index to the next column.
+
+        console.log("Column 1 before adding:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(1);
+
+        //Add the label to the new column on the Kanban labels list:
+        kanbanLabelsList[this.columnIndex].push(this);
+
+        console.log("Column 1 after adding:")
+        this.kanbanBoard.debugPrintKanbalLabelsListContent(1);
+    }
+
+    /**
      * Set up and draw label components on the Kanban board.
      * The code here used to be in the constructor.
      */
@@ -215,56 +261,18 @@ export default class KanbanLabel {
         nextButton.on('pointerdown', () => {
             console.log('Next Button clicked!!!!!');
             if(this.columnIndex == 0){
-                this.columnIndex++; //Move the label's column index to the next column.
-
-                //Update the list of all Kanban Board labels.
-                //First print it:
-                console.log("Column 0 before removing:")
-                this.kanbanBoard.debugPrintKanbalLabelsListContent(0);
-                
-                //Then remove from the initial list.
-                //kanbanLabelsList[columnIndex] = 
-                //Find index of this KanbanLabel within the list for all the Kanban labels.
-                let index = kanbanLabelsList[this.columnIndex - 1].indexOf(this);
-
-                //If this KanbanLabel is found in the array, remove it.
-                if (index !== -1) {
-                    kanbanLabelsList[this.columnIndex - 1].splice(index, 1);
-                } else{
-                    console.log("ERROR: Can't remove this KanbanLabel from the list.");
-                }
-
-                //Print after removing:
-                console.log("Column 0 after removing:")
-                this.kanbanBoard.debugPrintKanbalLabelsListContent(0);
-
-                //this.columnIndex++; //Move the label's column index to the next column.
-
-                console.log("Column 1 before adding:")
-                this.kanbanBoard.debugPrintKanbalLabelsListContent(1);
-
-                //Add the label to the new column on the Kanban labels list:
-                kanbanLabelsList[this.columnIndex].push(this);
-
-                console.log("Column 1 after adding:")
-                this.kanbanBoard.debugPrintKanbalLabelsListContent(1);
-
-                //Maybe call the function in KanbanBoard.js to redraw all labels (as this one's position has
-                //been updated.)
-                //NOT NEEDED as columnIndex does it automatically, probably because the click operation or moing the
-                //mouse causes things to redraw anyways.
-                //this.kanbanBoard.displayLabels();
-
+                this.moveLabelToNextColumnOnKanbanLabelsList();
             } else if(this.columnIndex == 1){
-                this.kanbanStation.scene.start('PrepareStation');
+                this.moveLabelToNextColumnOnKanbanLabelsList();
             } else if(this.columnIndex == 2){
-                this.kanbanStation.scene.start('CookStation');
+                this.moveLabelToNextColumnOnKanbanLabelsList();
             } else if(this.columnIndex == 3){
-                this.kanbanStation.scene.start('ReviewStation');
+                this.moveLabelToNextColumnOnKanbanLabelsList();
             } else if(this.columnIndex == 4){
-                //this.kanbanStation.scene.start('ReviewStation');
+                this.moveLabelToNextColumnOnKanbanLabelsList();
+                //Remove buttons, except for bottom "Remove" button.
             } else if(this.columnIndex == 5){
-                //this.kanbanStation.scene.start('');
+                
             }
             
         });

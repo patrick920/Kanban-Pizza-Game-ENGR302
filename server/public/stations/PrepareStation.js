@@ -220,7 +220,10 @@ export default class PrepareStation extends Station {
         // Create and display pizza
         this.pizza = new Pizza(this, pizzaX, pizzaY, size);
         //Set the order in the Ticket in the KanbanLabel to this pizza.
-        this.ticket.setPizza(pizza);
+        this.ticket.setPizza(this.pizza);
+
+        //Update the Ticket display on the right side of the screen.
+        this.currentTicket();
         
         // // something to hold information about the pizza object
         // // ASK HANNING ABOUT THIS TOMORROW, HOW DOES HE WANT IT TO BE USED?

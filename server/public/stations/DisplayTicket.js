@@ -30,9 +30,61 @@ export function displayTicket(scene, ticket, xPos, yPos){
     //TODO: Make a list of text, that way you can easily add or remove text and it will automatically reposition
     //everything in the right place.
     let textList = []; //Each element in the list will be displayed in a row.
-    textList.push("Example 1");
-    textList.push("Example 2");
-    textList.push("Example 3");
+    //textList.push("Example 1");
+
+    //------------------------------------------------------------------------------------------
+    //Get the "Order" object and add its contents to the list of text to be displayed.
+    //------------------------------------------------------------------------------------------
+    let currentOrder = ticket.getOrder();
+    console.log("currentOrder.orderId = " + currentOrder.orderId); //Not relevant for now.
+    console.log("currentOrder.pizzaType = " + currentOrder.pizzaType); // Not relevant for now.
+    console.log("currentOrder.toppings = " + currentOrder.toppings);
+    let currentToppings = currentOrder.toppings;
+    for(let i = 0; i < currentToppings.length; i++){
+        let topping = currentToppings[i];
+        console.log("i = " + i + " | Topping: " + topping);
+    }
+    textList.push("Order #" + currentOrder.orderId + ":");
+
+    //Code below from ChatGPT:
+    // Function to get values for a specific key
+    // Find the 'Pizza' entry and store its quantity in a variable
+    const pizzaEntry = currentToppings.find(item => item.topping === 'Pizza');
+    const pizzaQuantity = pizzaEntry ? pizzaEntry.quantity : 0;
+    console.log("pizzaQuantity = " + pizzaQuantity);
+    textList.push(pizzaQuantity + " pizza(s) with:");
+
+    const pepperoniEntry = currentToppings.find(item => item.topping === 'Pepperoni');
+    const pepperoniQuantity = pepperoniEntry ? pepperoniEntry.quantity : 0;
+    console.log("pepperoniQuantity = " + pepperoniQuantity);
+    textList.push(pepperoniQuantity + " pepperoni");
+
+    const mushroomEntry = currentToppings.find(item => item.topping === 'Mushroom');
+    const mushroomQuantity = mushroomEntry ? mushroomEntry.quantity : 0;
+    console.log("mushroomQuantity = " + mushroomQuantity);
+    textList.push(mushroomQuantity + " mushroom(s)");
+
+    //------------------------------------------------------------------------------------------
+    //Get the "Pizza" object and add its contents to the list of text to be displayed.
+    //------------------------------------------------------------------------------------------
+    textList.push("Current Pizza:");
+    const pizza = ticket.getPizza();
+    if (typeof pizza === 'undefined'){
+        console.log("pizza is undefined. Must create a pizza (small/large) to proceed.");
+        textList.push("Not created yet.");
+        textList.push("Click the small/");
+        textList.push("large button to");
+        textList.push("create a pizza.");
+    } else{
+        //textList.push(pizza."")
+        let sauceString = "Sauce: ";
+        if(typeof pizza.sauce === 'undefined'){
+            sauceString += "None";
+        } else{
+            sauceString += "Yes";
+        }
+        textList.push(sauceString);
+    }
 
     //Display the text in the list of text strings on the rectangle.
     const TEXT_SIZE = 18;

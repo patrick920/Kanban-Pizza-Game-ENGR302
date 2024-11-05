@@ -147,6 +147,34 @@ export default class KanbanLabel {
         // Event listener for the button interaction (click)
         orderButton.on('pointerdown', () => {
             console.log('Order Button clicked!!!!!');
+            if(this.columnIndex == 0){
+                this.kanbanStation.scene.start('OrderStation');
+            } else if(this.columnIndex == 1){
+                this.kanbanStation.scene.start('PrepareStation');
+            } else if(this.columnIndex == 2){
+                this.kanbanStation.scene.start('CookStation');
+            } else if(this.columnIndex == 3){
+                this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 4){
+                //this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 5){
+                //this.kanbanStation.scene.start('');
+            }
+            
+            if(this.columnIndex == 0){
+                this.kanbanStation.scene.start('OrderStation');
+            } else if(this.columnIndex == 1){
+                this.kanbanStation.scene.start('PrepareStation');
+            } else if(this.columnIndex == 2){
+                this.kanbanStation.scene.start('CookStation');
+            } else if(this.columnIndex == 3){
+                this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 4){
+                //this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 5){
+                //this.kanbanStation.scene.start('');
+            }
+            
         });
 
         //Add the button container to the label container.

@@ -182,6 +182,7 @@ export default class CookStation extends Station {
     /**
      * Create the review button
      */
+    /*
     createReviewButton(){
         // Store the button in this.reviewButton and text in this.reviewButtonText
         this.reviewButton = this.add.image(650, 300, 'button')
@@ -199,16 +200,18 @@ export default class CookStation extends Station {
             align: 'center'
         }).setOrigin(0.5); // Center the text on the button
     }
+    */
 
     /**
      * take pizza and scene into the review station
      */
+    /*
     movePizzaToReviewStation(){
         if (this.pizza != null) {
             this.scene.start('ReviewStation', { pizza: this.pizza });
         }
     }
-
+    */
 
 
 

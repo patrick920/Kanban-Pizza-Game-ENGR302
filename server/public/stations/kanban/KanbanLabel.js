@@ -239,8 +239,17 @@ export default class KanbanLabel {
                 //This triggers the create() function, but do test this.
                 console.log("Just before changing the scene to CookStation.");
                 this.kanbanStation.scene.start('CookStation');
-                //TODO: Could pass the pizza as a key like in the old button in PrepareStation.
             } else if(this.columnIndex == 3){
+                //TODO: Get a reference to the review station.
+                //const kanbanScene = this.scene.get('KanbanStation');
+                const reviewStation = this.kanbanStation.scene.get('ReviewStation');
+                console.log("reviewStation = " + reviewStation);
+
+                reviewStation.initialSetupFromKanbanBoard(this.ticket);
+
+                //Changing the scene should be the last thing.
+                //This triggers the create() function, but do test this.
+                console.log("Just before changing the scene to ReviewStation.");
                 this.kanbanStation.scene.start('ReviewStation');
             } else if(this.columnIndex == 4){
                 //this.kanbanStation.scene.start('ReviewStation');

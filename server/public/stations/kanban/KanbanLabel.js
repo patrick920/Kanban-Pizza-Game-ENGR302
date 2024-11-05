@@ -164,11 +164,55 @@ export default class KanbanLabel {
         //Go to Station button.
         //Code from ChatGPT:
 
-        const orderButton = this.createButton(3, 65, LABEL_WIDTH - 6, 'Go to Station');
+        const goToStationButton = this.createButton(3, 65, LABEL_WIDTH - 6, 'Go to Station');
 
-        //Event listener for the order button interaction (click).
-        orderButton.on('pointerdown', () => {
+        //Event listener for the "Go to Station" button interaction (click).
+        goToStationButton.on('pointerdown', () => {
             console.log('NEW Order Button clicked!!!!!');
+            if(this.columnIndex == 0){
+                this.kanbanStation.scene.start('OrderStation');
+            } else if(this.columnIndex == 1){
+                this.kanbanStation.scene.start('PrepareStation');
+            } else if(this.columnIndex == 2){
+                this.kanbanStation.scene.start('CookStation');
+            } else if(this.columnIndex == 3){
+                this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 4){
+                //this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 5){
+                //this.kanbanStation.scene.start('');
+            }
+            
+        });
+
+        const BACK_BUTTON_X_POS = LABEL_WIDTH / 2;
+        const BACK_BUTTON_WIDTH = 40;
+        const backButton = this.createButton(BACK_BUTTON_X_POS, 1, BACK_BUTTON_WIDTH, 'Back');
+
+        //Event listener for the "Go to Station" button interaction (click).
+        backButton.on('pointerdown', () => {
+            console.log('Back Button clicked!!!!!');
+            if(this.columnIndex == 0){
+                this.kanbanStation.scene.start('OrderStation');
+            } else if(this.columnIndex == 1){
+                this.kanbanStation.scene.start('PrepareStation');
+            } else if(this.columnIndex == 2){
+                this.kanbanStation.scene.start('CookStation');
+            } else if(this.columnIndex == 3){
+                this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 4){
+                //this.kanbanStation.scene.start('ReviewStation');
+            } else if(this.columnIndex == 5){
+                //this.kanbanStation.scene.start('');
+            }
+            
+        });
+
+        const nextButton = this.createButton(BACK_BUTTON_X_POS + BACK_BUTTON_WIDTH + 3, 1, BACK_BUTTON_WIDTH, 'Next');
+
+        //Event listener for the "Go to Station" button interaction (click).
+        nextButton.on('pointerdown', () => {
+            console.log('Next Button clicked!!!!!');
             if(this.columnIndex == 0){
                 this.kanbanStation.scene.start('OrderStation');
             } else if(this.columnIndex == 1){

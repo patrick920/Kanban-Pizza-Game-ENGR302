@@ -1,6 +1,7 @@
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
-//import CookStation from './CookStation.js'; // Import the cookStation class
+//import DisplayTicket from './DisplayTicket.js'; //Class to display current ticket on the screen.
+import { displayTicket } from './DisplayTicket.js';
 
 /**
  * This is the class for the PrepareStation
@@ -20,6 +21,14 @@ export default class PrepareStation extends Station {
         super({ key: 'PrepareStation' });
         this.preparedPizzas = [];
         this.pizzaBaseButtons = []; // Array to hold button references
+    }
+
+    /**
+     * This method is called from KanbanLabel.js when the "Go to Station" button is clicked on the label.
+     * It setups the necessary objects needed.
+     */
+    initialSetupFromKanbanBoard(ticket){
+        this.ticket = ticket;
     }
 
     /**
@@ -48,6 +57,8 @@ export default class PrepareStation extends Station {
      * Setup the scene
      */
     create() {
+        console.log("PrepareStation.js create() method execution.");
+
         this.createBackground();
 
         // Navigation buttons (from Station.js)
@@ -243,6 +254,11 @@ export default class PrepareStation extends Station {
 
         // Create and display pizza
         this.pizza = new Pizza(this, pizzaX, pizzaY, size);
+        //Set the order in the Ticket in the KanbanLabel to this pizza.
+        this.ticket.setPizza(this.pizza);
+
+        //Update the Ticket display on the right side of the screen.
+        this.currentTicket();
         
         // // something to hold information about the pizza object
         // // ASK HANNING ABOUT THIS TOMORROW, HOW DOES HE WANT IT TO BE USED?
@@ -347,6 +363,11 @@ export default class PrepareStation extends Station {
                         this.pizza.addTopping(this.currentTopping); // Add topping to pizza
                         this.input.setDraggable(this.currentTopping, false); // Make it undraggable
                         this.currentTopping.setInteractive(false); // Optionally, make it non-interactive
+
+                        //New code for integration into the Kanban board.
+                        console.log("New topping added.");
+                        //Redraw the Ticket on the right side of the screen.
+                        this.currentTicket();
                     } else {
                         // If there's no pizza or the slice is not on it, destroy the topping slice
                         this.currentTopping.destroy(); // Remove the slice
@@ -375,6 +396,8 @@ export default class PrepareStation extends Station {
         //tomatoPasteImage.setDisplaySize(300, 300);  // Width and height in pixels
 
         this.addSpread(tomatoPasteImage, 'sauce', '0xff0000');
+        //So this function is not called when the sauce is placed.
+        console.log("End of createTomatoPasteBottle() function execution.");
     }
 
     /**
@@ -428,8 +451,10 @@ export default class PrepareStation extends Station {
      * Change status of cheese
      */
      toggleSpread(spreadName) {
+        console.log("Start of toggleSpread() function execution.");
         if(spreadName === 'sauce'){
             this.tomatoPasteOn = !this.tomatoPasteOn; // Toggle the value of cheeseOn
+            console.log("tomatoPasteOn toggled.");
             //this.cheeseOn = false;
         } else if (spreadName === 'cheese') {
             this.cheeseOn = !this.cheeseOn; // Toggle the value of cheeseOn
@@ -488,5 +513,10 @@ export default class PrepareStation extends Station {
                 align: 'center'
             })
             .setOrigin(0.5); // Center the text within the rectangle
+        
+        
+        //Display a view of the order requirements and the state of the current pizza object:
+        //(this, this.ticket, x, y)
+        displayTicket(this, this.ticket, x, y);
     }
 }

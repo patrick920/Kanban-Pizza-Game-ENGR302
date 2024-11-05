@@ -52,113 +52,28 @@ export default class KanbanStation extends Station {
         //Setup drag functionality for Kanban Board labels.
         this.kanbanBoard.setupDragFunctionality();
 
-        //-----------------------------------------------------------
-        //Test object only.
-        //-----------------------------------------------------------
-
         //Add rectangle to the screen. This rectangle can be dragged around if you hold click and move your mouse.
         //The code to update the rectangle's position when it is dragged is in "draggable.js".
         //Code below from: https://www.youtube.com/watch?v=jWglIBp4usY&ab_channel=ScottWestover
-        const rectangle = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 250, 50, 0xffff00);
-        rectangle.name = 'test' //Can see the name "test" being logged in the log statement in the "destroy" function in draggable.js.
-        makeDraggable(rectangle, true); //true to log.
-        this.add
-            .text(this.scale.width / 2, 550, 'try dragging the rectangle around the scene', {
-                align: 'center',
-                fontSize: '22px',
-                wordWrap: {
-                    width: this.scale.width - 50,
-                },
-            })
-            .setOrigin(0.5);
-            // setTimeout(() => {
-            //   this.scene.restart();
-            // }, 3000)
+        // const rectangle = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 250, 50, 0xffff00);
+        // rectangle.name = 'test' //Can see the name "test" being logged in the log statement in the "destroy" function in draggable.js.
+        // makeDraggable(rectangle, true); //true to log.
 
-            this.add.text(1000, this.game.config.height - 50, 'Show Tickets', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#000' })
-            .setInteractive()
-            .on('pointerdown', () => {
-            console.log('tickets:', this.prepTickets);
-            });
-        
-        //-----------------------------------------------------------
-        //Phaser Draggable Container Object
-        //-----------------------------------------------------------
+        //Draw text with useful info.
+        this.add.text(this.scale.width / 2, 550,
+        'To create a label on the Kanban board, create and submit an order on the Order Station', {
+            align: 'center',
+            fontSize: '22px',
+            wordWrap: {
+                width: this.scale.width - 50,
+            },
+        }).setOrigin(0.5);
 
-        //Code below from ChatGPT:
-        // Create a Phaser Container positioned at (200, 200)
-        this.container = this.add.container(500, 700);
-
-        // Create a background rectangle for visual clarity (optional)
-        const graphics = this.add.graphics();
-        graphics.fillStyle(0x3498db, 1);  // blue color
-        graphics.fillRect(-50, -50, 200, 100);  // x, y, width, height
-
-        // Add the rectangle to the container
-        this.container.add(graphics);
-
-        // Add two text labels inside the container
-        const label1 = this.add.text(0, 0, 'Label 1', { fontSize: '20px', fill: '#ffffff' });
-        const label2 = this.add.text(0, 30, 'Label 2', { fontSize: '20px', fill: '#ffffff' });
-
-        // Add text labels to the container
-        this.container.add([label1, label2]);
-
-        // Adjust the container's scale
-        this.container.setScale(1.5);
-
-        // Adjust container rotation for demonstration
-        this.container.setAngle(15);
-
-        //Set the container's size, as otherwise it prevents the Container from being draggable.
-        this.container.setSize(200, 100);
-
-        //Code to make the Container draggable, using the draggable.js file which worked successfully
-        //for a basic rectangle.
-        //Can see the name the below being logged in the log statement in the "destroy" function in draggable.js.
-        this.container.name = 'Basic Phaser Container With Text'
-        makeDraggable(this.container, true); //true to log.
-
-        // // Enable drag for the container
-        // this.input.setDraggable(this.container);
-
-        // // Listen for drag events
-        // this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-        //     gameObject.x = dragX;
-        //     gameObject.y = dragY;
+        // this.add.text(1000, this.game.config.height - 50, 'Show Tickets', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#000' })
+        //     .setInteractive()
+        //     .on('pointerdown', () => {
+        //     console.log('tickets:', this.prepTickets);
         // });
-
-        //-----------------------------------------------------------
-        //Test button only.
-        //-----------------------------------------------------------
-        //Code below from ChatGPT:
-        // Create a rectangle to act as the button's background
-        const button = this.add.rectangle(400, 300, 200, 400, 0x4caf50);
-        button.setInteractive();
-
-        // Add text on top of the button
-        const buttonText = this.add.text(400, 300, 'Example', {
-            fontSize: '32px',
-            color: '#ffffff'
-        }).setOrigin(0.5); // Center the text
-
-        // Create a container to hold the rectangle and the text
-        const buttonContainer = this.add.container(0, 0, [button, buttonText]);
-
-        // Event listener for hover effect when the pointer is over the button
-        button.on('pointerover', () => {
-            button.setFillStyle(0x66bb6a); // Change color to a lighter shade on hover
-        });
-
-        // Event listener for when the pointer leaves the button
-        button.on('pointerout', () => {
-            button.setFillStyle(0x4caf50); // Change back to the original color
-        });
-
-        // Event listener for the button interaction (click)
-        button.on('pointerdown', () => {
-            console.log('Button clicked!');
-        });
     }
 
     createBackground() {
@@ -263,7 +178,7 @@ export default class KanbanStation extends Station {
 
         //New code:
         //Add the ticket to the first column of the 2D "kanbanLabelsList".
-        kanbanLabelsList[0].push(new KanbanLabel(this, this.kanbanBoard, 81, 0, [
+        kanbanLabelsList[0].push(new KanbanLabel(this, this.kanbanBoard, 81, 0, ticket, [
             "Order #",
             pizzaQuantity + " pizza(s) with:",
             pepperoniQuantity + " pepperoni",

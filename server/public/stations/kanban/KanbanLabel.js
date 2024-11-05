@@ -285,14 +285,16 @@ export default class KanbanLabel {
      * @param {*} kanbanBoard Reference to the KanbanBoard object used for storing and displaying the Kanban board.
      * @param {*} height The height can be set, but the width is fixed to the column width.
      * @param {*} columnIndex Index of the column on the Kanban board, can be 0 to 5 (as there are 6 columns.)
+     * @param {*} ticket The "Ticket" object associated with this label.
      * @param {*} labelTextList List of text strings for text to be displayed on the Kanban label.
      */
-    constructor(kanbanStation, kanbanBoard, height, columnIndex, labelTextList){
+    constructor(kanbanStation, kanbanBoard, height, columnIndex, ticket, labelTextList){
         this.kanbanStation = kanbanStation
         this.kanbanBoard = kanbanBoard
         this.labelTextList = labelTextList
         this.columnIndex = columnIndex
         this.height = height
+        this.ticket = ticket
         console.log("DEBUG: KanbanLabel object created.");
 
         //Don't draw the label right away, as it might not be inside the Kanban board when it gets created.

@@ -8,8 +8,6 @@
 */
 import Station from './Station.js';
 import Pizza from './Pizza.js'; // Import the Pizza class
-import { makeDraggable } from './kanban/draggable.js';
-//import { KanbanBoard } from './kanban/KanbanBoard.js';
 import KanbanBoard from './kanban/KanbanBoard.js';
 import KanbanLabel from './kanban/KanbanLabel.js';
 import Ticket from './Ticket.js';
@@ -17,13 +15,7 @@ import { kanbanLabelsList } from './kanban/KanbanBoard.js';
 
 export default class KanbanStation extends Station {
     constructor() {
-        super({ key: 'KanbanStation' });
-        this.tasks = [];
-        this.prepTickets = [];
-        this.cookTickets = [];
-        this.reviewTickets = [];
-        this.serviceTickets = []; 
-        this.completedTickets = []; 
+        super({ key: 'KanbanStation' }); 
         //Create the Kanban board here so it can be accessed throughout the duration of the code.
         this.kanbanBoard = new KanbanBoard(this);
     }
@@ -31,8 +23,7 @@ export default class KanbanStation extends Station {
     //const TOP_TO_TITLE_GAP = 10;
 
     preload() {
-        // // load tomato paste image
-        // this.load.image('tomatoPaste', 'stations/assets/tomato_paste.png');
+        
     }
 
     create() {
@@ -52,13 +43,6 @@ export default class KanbanStation extends Station {
         //Setup drag functionality for Kanban Board labels.
         this.kanbanBoard.setupDragFunctionality();
 
-        //Add rectangle to the screen. This rectangle can be dragged around if you hold click and move your mouse.
-        //The code to update the rectangle's position when it is dragged is in "draggable.js".
-        //Code below from: https://www.youtube.com/watch?v=jWglIBp4usY&ab_channel=ScottWestover
-        // const rectangle = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, 250, 50, 0xffff00);
-        // rectangle.name = 'test' //Can see the name "test" being logged in the log statement in the "destroy" function in draggable.js.
-        // makeDraggable(rectangle, true); //true to log.
-
         //Draw text with useful info.
         this.add.text(this.scale.width / 2, 550,
         'To create a label on the Kanban board, create and submit an order on the Order Station', {
@@ -68,12 +52,6 @@ export default class KanbanStation extends Station {
                 width: this.scale.width - 50,
             },
         }).setOrigin(0.5);
-
-        // this.add.text(1000, this.game.config.height - 50, 'Show Tickets', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#000' })
-        //     .setInteractive()
-        //     .on('pointerdown', () => {
-        //     console.log('tickets:', this.prepTickets);
-        // });
     }
 
     createBackground() {
@@ -82,68 +60,16 @@ export default class KanbanStation extends Station {
         //this.createPizzaBaseButton(); // Setup pizza base buttons
     }
 
-    addTask() {
-        const newTask = {
-            id: Date.now(),
-            description: 'New Task',
-            status: 'To Do'
-        };
-        this.tasks.push(newTask);
-        this.game.socket.emit('kanbanUpdate', this.tasks);
-    }
-
-    updateKanbanDisplay() {
-        // Clear previous display
-        if (this.taskTexts) {
-            this.taskTexts.forEach(text => text.destroy());
-        }
-        this.taskTexts = [];
-
-        // Display tasks
-        this.tasks.forEach((task, index) => {
-            const text = this.add.text(400, 100 + index * 30, `Task ${task.id}: ${task.description} - ${task.status}`, { fontSize: '18px', fill: '#fff' });
-            this.taskTexts.push(text);
-        });
-
-        //Put the contents of the 6 1D lists for tickets into the 2D list responsible for actually displaying things
-        //on the Kanban board. Then, call a function to REDRAW EVERYTHING ON THE KANBAN BOARD.
-        // kanbanLabelsList[0] = this.tasks;
-        // kanbanLabelsList[1] = this.prepTickets;
-        // kanbanLabelsList[2] = this.cookTickets;
-        // kanbanLabelsList[3] = this.reviewTickets;
-        // kanbanLabelsList[4] = this.serviceTickets;
-        // kanbanLabelsList[5] = this.completedTickets;
-        //this.putTicketsInKanbanLabelList(0, this.tasks);
-
-        //Redraw everything on the Kanban board.
-    }
-
-    //Put tickets in the Kanban label list.
-    putTicketsInKanbanLabelList(colIndex, ticketList){
-        console.log("putTicketsInKanbanLabelList function called. colIndex = " + colIndex + " | ticketList = " +
-                    ticketList);
-        //Clear out existing Kanban labels within the Kanban board.
-        //TODO: This will likely reset the drag and drop code, so will need a workaround!!!
-        kanbanLabelsList[colIndex] = [];
-
-        for(let i = 0; i < ticketList.length; i++){
-            //TODO: Will need to get pizza order number, number of pepperoni and number of mushroom.
-            kanbanLabelsList[colIndex][i] = new KanbanLabel(this, 100, colIndex, "EXAMPLE TICKET");
-        }
-    }
-
     // Adding functionality for tickets 
     // Add ticket to kanban board
     addTicket(ticket) {
         console.log("Add ticket to the Kanban board for pizza order.");
         if (ticket instanceof Ticket) {
-            this.prepTickets.push(ticket);
+            console.log("Valid ticket.");
         } else {
             throw new Error('Only Ticket objects can be added.');
         }
         //TODO: This is where the ticket is added.
-        //Update the Kanban board.
-        //this.updateKanbanDisplay();
 
         //let currentPizza = ticket.getPizza();
         //Where are the requested topping stored?
@@ -186,47 +112,4 @@ export default class KanbanStation extends Station {
         ]));
         this.kanbanBoard.debugPrintKanbalLabelsListContent(0); //Print the first column for debugging purposes.
    }
-   
-   // Moves ticket to the next stations array
-   nextStation(ticket) {
-    if (this.prepTickets.includes(ticket)) {
-        // Move from Prep to Cook
-        this.prepTickets.splice(this.prepTickets.indexOf(ticket), 1);
-        this.cookTickets.push(ticket);
-        // ticket.getPizza().nextStation();  
-    } else if (this.cookTickets.includes(ticket)) {
-        // Move from Cook to Review
-        this.cookTickets.splice(this.cookTickets.indexOf(ticket), 1);
-        this.reviewTickets.push(ticket);
-        // ticket.getPizza().nextStation(); 
-    } else if (this.reviewTickets.includes(ticket)) {
-        // Move from Review to Service
-        this.reviewTickets.splice(this.reviewTickets.indexOf(ticket), 1);
-        this.serviceTickets.push(ticket);
-        // ticket.getPizza().nextStation(); 
-    } else if (this.serviceTickets.includes(ticket)) {
-        // Move from Service to Completed
-        this.serviceTickets.splice(this.serviceTickets.indexOf(ticket), 1);
-        this.completedTickets.push(ticket);
-        // ticket.getPizza().nextStation(); 
-    } else {
-        // Ticket not found in any array
-        throw new Error('Ticket not found in any station.');
-    }
-
-    // Update the display after moving the ticket
-    this.updateKanbanDisplay();
-}
-
-    // Complete ticket
-    completeTicket(ticket) {
-        const index = this.serviceTickets.indexOf(ticket);
-        if (index > -1) {
-            this.tickets.splice(index, 1); // Remove the ticket if found
-            this.completedTickets.push(ticket);
-        } else {
-            throw new Error('Ticket not found.');
-        }
-    }
-
 }

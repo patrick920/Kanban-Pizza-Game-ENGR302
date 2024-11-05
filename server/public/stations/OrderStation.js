@@ -1,6 +1,7 @@
 import Station from './Station.js';
 import Ticket from './Ticket.js';
 
+
 class Order {
     constructor(orderId, pizzaType, toppings) {
         this.orderId = orderId;
@@ -30,19 +31,31 @@ export default class OrderStation extends Station {
 
     constructor() {
         super({ key: 'OrderStation' });
-        this.orderId = 1;
+        this.orderId = 0;
         this.currentOrderText = ''; 
         this.currentOrder = null; 
         this.pizzaSize = '  small'; // Default pizza size
         this.pepperoniCount = 0; // Default pepperoni count
         this.mushroomCount = 0; // Default mushroom count
-        this.generateNewOrder(); // Generates first order
     }
 
     create() {
+        this.socket = io('http://localhost:3500'); // Connect explicitly to the server on port 3500
+
+
+        // Listen for new orders from other players
+        this.socket.on('orderUpdate', (orders) => {
+            const latestOrder = orders[orders.length - 1];
+            this.currentOrder = latestOrder;
+            this.currentOrderText = `I want a ${latestOrder.pizzaType} pizza, with ${latestOrder.toppings[0].quantity} pepperonis, and ${latestOrder.toppings[1].quantity} mushrooms.`;
+            this.displayOrderText(this.currentOrderText);
+         });
+
         const background = this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
         const order_station_sign = this.add.image(160, 130, 'order_station_sign');
         const table = this.add.image(300, 450, 'table').setDisplaySize(2000, 400);
+
+        if(this.orderId == 0){this.generateNewOrder();}
 
         // Create the customer shape (moved down to ensure it renders behind other elements)
         this.createCustomer();
@@ -100,6 +113,8 @@ export default class OrderStation extends Station {
             { topping: 'Pepperoni', quantity: pCount },
             { topping: 'Mushroom', quantity: mCount }
         ]);
+        this.socket.emit('newOrder', this.currentOrder);
+        this.orderId++;
     }
 
     displayOrderText(orderText){

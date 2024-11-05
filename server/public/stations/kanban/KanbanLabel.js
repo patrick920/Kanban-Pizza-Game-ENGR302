@@ -16,6 +16,7 @@ import { makeDraggable } from './DraggableObject.js';
 import { GAP_BETWEEN_COLUMN_RECTANGLES, ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN,
     GAP_BETWEEN_COLUMN_AND_LABELS, LABEL_WIDTH, COLUMN_RECTANGLE_WIDTH } from './KanbanBoard.js';
 //import KanbanBoard from './KanbanBoard.js';
+import { kanbanLabelsList } from './KanbanBoard.js';
 
 export default class KanbanLabel {
     //TODO: Add the Ticket/Label object that will be created by the Pizza order.
@@ -193,7 +194,7 @@ export default class KanbanLabel {
         backButton.on('pointerdown', () => {
             console.log('Back Button clicked!!!!!');
             if(this.columnIndex == 0){
-                this.kanbanStation.scene.start('OrderStation');
+                
             } else if(this.columnIndex == 1){
                 this.kanbanStation.scene.start('PrepareStation');
             } else if(this.columnIndex == 2){
@@ -214,7 +215,46 @@ export default class KanbanLabel {
         nextButton.on('pointerdown', () => {
             console.log('Next Button clicked!!!!!');
             if(this.columnIndex == 0){
-                this.kanbanStation.scene.start('OrderStation');
+                this.columnIndex++; //Move the label's column index to the next column.
+
+                //Update the list of all Kanban Board labels.
+                //First print it:
+                console.log("Column 0 before removing:")
+                this.kanbanBoard.debugPrintKanbalLabelsListContent(0);
+                
+                //Then remove from the initial list.
+                //kanbanLabelsList[columnIndex] = 
+                //Find index of this KanbanLabel within the list for all the Kanban labels.
+                let index = kanbanLabelsList[this.columnIndex - 1].indexOf(this);
+
+                //If this KanbanLabel is found in the array, remove it.
+                if (index !== -1) {
+                    kanbanLabelsList[this.columnIndex - 1].splice(index, 1);
+                } else{
+                    console.log("ERROR: Can't remove this KanbanLabel from the list.");
+                }
+
+                //Print after removing:
+                console.log("Column 0 after removing:")
+                this.kanbanBoard.debugPrintKanbalLabelsListContent(0);
+
+                //this.columnIndex++; //Move the label's column index to the next column.
+
+                console.log("Column 1 before adding:")
+                this.kanbanBoard.debugPrintKanbalLabelsListContent(1);
+
+                //Add the label to the new column on the Kanban labels list:
+                kanbanLabelsList[this.columnIndex].push(this);
+
+                console.log("Column 1 after adding:")
+                this.kanbanBoard.debugPrintKanbalLabelsListContent(1);
+
+                //Maybe call the function in KanbanBoard.js to redraw all labels (as this one's position has
+                //been updated.)
+                //NOT NEEDED as columnIndex does it automatically, probably because the click operation or moing the
+                //mouse causes things to redraw anyways.
+                //this.kanbanBoard.displayLabels();
+
             } else if(this.columnIndex == 1){
                 this.kanbanStation.scene.start('PrepareStation');
             } else if(this.columnIndex == 2){

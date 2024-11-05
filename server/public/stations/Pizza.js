@@ -20,13 +20,16 @@ export default class Pizza {
         this.scene = scene;
         this.x = x;
         this.y = y;
+        this.size = size;
 
         // Initialize sauce as null to track if it has been added
         this.sauce = null;
         this.cheese = null;
 
+        // load the base of the pizza 
+        //this.loadBase();
         // Define the size of the pizza base based on the size parameter
-        if (size === 'small') {
+        if (this.size === 'small') {
             this.scale = 0.5;  // Small size scale
         } else if (size === 'large') {
             this.scale = 0.75;  // Large size scale
@@ -45,6 +48,37 @@ export default class Pizza {
             this.fillSauce(pointer.x, pointer.y);  // Pass mouse position
             this.fillCheese(pointer.x, pointer.y);
         });  
+    }
+
+    /**
+     * Preload images
+     */
+    preload() {
+        // load tomato paste image
+        this.load.image('tomatoPaste', 'stations/assets/sauce_bucket.png');
+        // Load the pizza base image and toppings images
+        this.load.image('pizzaBase', 'stations/assets/pizza_base_raw.png');
+        this.load.image('pepperoniSlice', 'stations/assets/pepperoni_slice.png');
+        this.load.image('mushroomSlice', 'stations/assets/mushroom_slice.png');
+        this.load.image('cheeseUncooked', 'stations/assets/cheese_uncooked.png');
+        // designed by @ibrandify on FreePik
+        this.load.image('button', 'stations/assets/button.png');
+        // designed by @upklyak on FreePik
+        this.load.image('tableBackground', 'stations/assets/wooden_table_background.jpg')
+    }
+
+    /**
+     * load the base of the pizza
+     */
+    loadBase(){
+        // Define the size of the pizza base based on the size parameter
+        if (this.size === 'small') {
+            this.scale = 0.5;  // Small size scale
+        } else if (size === 'large') {
+            this.scale = 0.75;  // Large size scale
+        } else {
+            throw new Error('Invalid pizza size');
+        }
     }
 
     /**
@@ -104,64 +138,20 @@ export default class Pizza {
         this.toppings.push(topping);
         console.log(this.toppings);
     }
+
+    displayPizza(){
+        const button = this.add.text(100, 500, 'TEST TEXT', { fontSize: '24px', fill: '#000', backgroundColor: '#28a745' })
+
+        this.loadBase();
+        this.base = this.scene.add.image(this.x, this.y, 'pizzaBase')
+        .setScale(this.scale);
+
+        //if(this.sauce!=null){
+            this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce').setScale(this.scale * 3);
+        //}
+
+        //if(this.cheese!=null){
+            this.cheese = this.scene.add.image(this.x, this.y, 'cheeseUncooked').setScale(this.scale * 2.3);
+        //}
+    }
 }
-
-
-// class Pizza {
-//     constructor(scene, x, y, size) {
-//         this.scene = scene;
-//         this.x = x;
-//         this.y = y;
-
-//         // Define the size of the pizza base based on the size parameter
-//         if (size === 'small') {
-//             this.scale = 0.5;  // Small size scale
-//         } else if (size === 'large') {
-//             this.scale = 0.75;  // Large size scale
-//         } else {
-//             throw new Error('Invalid pizza size');
-//         }
-
-//         // Add the pizza base image
-//         this.base = this.scene.add.image(this.x, this.y, 'pizzaBase')
-//             .setScale(this.scale)
-//             .setInteractive();
-
-//         // Initialize the sauce but keep it hidden (we'll reveal it with the mask)
-//         this.sauce = this.scene.add.image(this.x, this.y, 'pizzaSauce')
-//             .setScale(this.scale * 3)
-//             .setAlpha(1);  // Sauce is fully visible, but we will mask it
-
-//         // Create a graphics object to use as a mask (initially empty)
-//         this.sauceMask = this.scene.make.graphics({
-//             x: 0,
-//             y: 0,
-//             add: false  // We don't need to render this directly
-//         });
-
-//         // Apply the mask to the sauce image
-//         this.sauce.mask = new Phaser.Display.Masks.GeometryMask(this.scene, this.sauceMask);
-
-//         // Add mouse input to reveal sauce as you move/click
-//         this.scene.input.on('pointermove', (pointer) => {
-//             this.revealSauce(pointer.x, pointer.y);
-//         });
-
-//         this.scene.input.on('pointerdown', (pointer) => {
-//             this.revealSauce(pointer.x, pointer.y);  // Also reveal sauce on click
-//         });
-//     }
-
-//     revealSauce(mouseX, mouseY) {
-//         // Draw a filled circle in the mask to reveal a part of the sauce
-//         const radius = 30;  // You can change the size of the "revealed" area here
-
-//         // Use graphics to draw a filled circle at the mouse position in the mask
-//         this.sauceMask.fillStyle(0xffffff);  // The mask is drawn in white
-//         this.sauceMask.beginPath();
-//         this.sauceMask.arc(mouseX, mouseY, radius, 0, Math.PI * 2);  // Reveal circle
-//         this.sauceMask.closePath();
-//         this.sauceMask.fillPath();
-//     }
-// }
-

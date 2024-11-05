@@ -63,6 +63,16 @@ export default class CookStation extends Station {
      * create the scene
      */
     create() {
+        console.log("In CookStation.js create() method called.");
+
+        //New code added for integration with the Kanban board:
+        //Code to try to debug the issue where it doesn't display from the Kanban board.
+        //this.scene.restart(); //Or, could call this in KanbanLabel.js for KanbanStation.
+
+        //Idea: maybe due to how Kanban is initialise in Station.js???
+
+        //--------------------------------------------------
+
         // Add a background image that fills the entire scene
         const background = this.add.image(0, 0, 'tableBackground')
         .setOrigin(0, 0) // Align to the top-left corner

@@ -63,6 +63,51 @@ export default class KanbanLabel {
     }
 
     /**
+     * Create a button on the Kanban board.
+     * @param {*} xPos x position of button.
+     * @param {*} yPos y position of button.
+     * @param {*} width width of button.
+     */
+    createButton(xPos, yPos, width, text){
+        //Code below from ChatGPT:
+        // Create a rectangle to act as the button's background
+        //const orderButton = this.kanbanStation.add.rectangle(3, 65, LABEL_WIDTH - 6, 16, 0x091447);
+        const REGULAR_COLOR = 0x091447;
+        const HOVER_COLOR = 0x357ac4;
+
+        const button = this.kanbanStation.add.rectangle(0, 0, width, 16, REGULAR_COLOR);
+        button.setInteractive();
+        button.setOrigin(0, 0); // Set origin to top-left //New code after further ChatGPT prompt.
+
+        // Add text on top of the button
+        //const orderButtonText = this.kanbanStation.add.text(3, 65, 'Go to Station', {
+        const buttonText = this.kanbanStation.add.text(0, 0, text, {
+            fontSize: '16px',
+            color: '#ffffff'
+        }).setOrigin(0, 0);
+        //}).setOrigin(0.5, 0.5); // Center the text horizontally and vertically //New after further ChatGPT prompt.
+        //}).setOrigin(0.5); // Center the text
+
+        // Create a container to hold the rectangle and the text
+        const buttonContainer = this.kanbanStation.add.container(xPos, yPos, [button, buttonText]);
+
+        // Event listener for hover effect when the pointer is over the button
+        button.on('pointerover', () => {
+            button.setFillStyle(HOVER_COLOR); // Change color to a lighter shade on hover
+        });
+
+        // Event listener for when the pointer leaves the button
+        button.on('pointerout', () => {
+            button.setFillStyle(REGULAR_COLOR); // Change back to the original color
+        });
+
+        //Add the button container to the label container.
+        this.container.add(buttonContainer);
+
+        return button;
+    }
+
+    /**
      * Set up and draw label components on the Kanban board.
      * The code here used to be in the constructor.
      */
@@ -117,42 +162,13 @@ export default class KanbanLabel {
         //----------------------------
         //Create the buttons.
         //Go to Station button.
+        //Code from ChatGPT:
 
-        //Code below from ChatGPT:
-        // Create a rectangle to act as the button's background
-        //const orderButton = this.kanbanStation.add.rectangle(3, 65, LABEL_WIDTH - 6, 16, 0x091447);
-        const REGULAR_COLOR = 0x091447;
-        const HOVER_COLOR = 0x357ac4;
+        const orderButton = this.createButton(3, 65, LABEL_WIDTH - 6, 'Go to Station');
 
-        const orderButton = this.kanbanStation.add.rectangle(0, 0, LABEL_WIDTH - 6, 16, 0x091447);
-        orderButton.setInteractive();
-        orderButton.setOrigin(0, 0); // Set origin to top-left //New code after further ChatGPT prompt.
-
-        // Add text on top of the button
-        //const orderButtonText = this.kanbanStation.add.text(3, 65, 'Go to Station', {
-        const orderButtonText = this.kanbanStation.add.text(0, 0, 'Go to Station', {
-            fontSize: '16px',
-            color: '#ffffff'
-        }).setOrigin(0, 0);
-        //}).setOrigin(0.5, 0.5); // Center the text horizontally and vertically //New after further ChatGPT prompt.
-        //}).setOrigin(0.5); // Center the text
-
-        // Create a container to hold the rectangle and the text
-        const orderButtonContainer = this.kanbanStation.add.container(3, 65, [orderButton, orderButtonText]);
-
-        // Event listener for hover effect when the pointer is over the button
-        orderButton.on('pointerover', () => {
-            orderButton.setFillStyle(HOVER_COLOR); // Change color to a lighter shade on hover
-        });
-
-        // Event listener for when the pointer leaves the button
-        orderButton.on('pointerout', () => {
-            orderButton.setFillStyle(REGULAR_COLOR); // Change back to the original color
-        });
-
-        // Event listener for the button interaction (click)
+        //Event listener for the order button interaction (click).
         orderButton.on('pointerdown', () => {
-            console.log('Order Button clicked!!!!!');
+            console.log('NEW Order Button clicked!!!!!');
             if(this.columnIndex == 0){
                 this.kanbanStation.scene.start('OrderStation');
             } else if(this.columnIndex == 1){
@@ -168,9 +184,6 @@ export default class KanbanLabel {
             }
             
         });
-
-        //Add the button container to the label container.
-        this.container.add(orderButtonContainer);
     }
 
     /**

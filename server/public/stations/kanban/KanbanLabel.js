@@ -121,46 +121,38 @@ export default class KanbanLabel {
         //Code below from ChatGPT:
         // Create a rectangle to act as the button's background
         //const orderButton = this.kanbanStation.add.rectangle(3, 65, LABEL_WIDTH - 6, 16, 0x091447);
+        const REGULAR_COLOR = 0x091447;
+        const HOVER_COLOR = 0x357ac4;
+
         const orderButton = this.kanbanStation.add.rectangle(0, 0, LABEL_WIDTH - 6, 16, 0x091447);
         orderButton.setInteractive();
+        orderButton.setOrigin(0, 0); // Set origin to top-left //New code after further ChatGPT prompt.
 
         // Add text on top of the button
         //const orderButtonText = this.kanbanStation.add.text(3, 65, 'Go to Station', {
         const orderButtonText = this.kanbanStation.add.text(0, 0, 'Go to Station', {
-            fontSize: '32px',
+            fontSize: '16px',
             color: '#ffffff'
-        }).setOrigin(0.5); // Center the text
+        }).setOrigin(0, 0);
+        //}).setOrigin(0.5, 0.5); // Center the text horizontally and vertically //New after further ChatGPT prompt.
+        //}).setOrigin(0.5); // Center the text
 
         // Create a container to hold the rectangle and the text
         const orderButtonContainer = this.kanbanStation.add.container(3, 65, [orderButton, orderButtonText]);
 
         // Event listener for hover effect when the pointer is over the button
         orderButton.on('pointerover', () => {
-            orderButton.setFillStyle(0x66bb6a); // Change color to a lighter shade on hover
+            orderButton.setFillStyle(HOVER_COLOR); // Change color to a lighter shade on hover
         });
 
         // Event listener for when the pointer leaves the button
         orderButton.on('pointerout', () => {
-            orderButton.setFillStyle(0x4caf50); // Change back to the original color
+            orderButton.setFillStyle(REGULAR_COLOR); // Change back to the original color
         });
 
         // Event listener for the button interaction (click)
         orderButton.on('pointerdown', () => {
             console.log('Order Button clicked!!!!!');
-            if(this.columnIndex == 0){
-                this.kanbanStation.scene.start('OrderStation');
-            } else if(this.columnIndex == 1){
-                this.kanbanStation.scene.start('PrepareStation');
-            } else if(this.columnIndex == 2){
-                this.kanbanStation.scene.start('CookStation');
-            } else if(this.columnIndex == 3){
-                this.kanbanStation.scene.start('ReviewStation');
-            } else if(this.columnIndex == 4){
-                //this.kanbanStation.scene.start('ReviewStation');
-            } else if(this.columnIndex == 5){
-                //this.kanbanStation.scene.start('');
-            }
-            
             if(this.columnIndex == 0){
                 this.kanbanStation.scene.start('OrderStation');
             } else if(this.columnIndex == 1){

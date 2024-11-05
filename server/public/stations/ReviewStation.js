@@ -171,6 +171,7 @@ export default class ReviewStation extends Station {
 
     serveOrder() {
         //New code for the integration with the Kanban code:
+        this.ticket.getPizza().served = true;
         //Update the ticket with the order and pizza status on the right side of the screen:
         this.currentTicket();
 

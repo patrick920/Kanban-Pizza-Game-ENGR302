@@ -166,7 +166,7 @@ export default class CookStation extends Station {
                 this.displayPizza(); // Update the display to show the cooked pizza
                 this.isCooking = false; // Reset the flag after cooking is done
                 // spawn review button
-                this.createReviewButton();
+                //this.createReviewButton();
 
                 // Destroy the countdown text after cooking is complete
                 if (this.countdownText) {

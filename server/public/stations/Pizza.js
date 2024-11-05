@@ -6,6 +6,7 @@ export default class Pizza {
     toppings = []; // Array to store toppings
     cheese;
     cooked = false;
+    served = false; //If the pizza has been served.
     
     filledSauceGraphics;
     scene;

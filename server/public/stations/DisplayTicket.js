@@ -110,6 +110,14 @@ export function displayTicket(scene, ticket, xPos, yPos){
             cookedString += "No";
         }
         textList.push(cookedString);
+
+        let servedString = "Served: ";
+        if(pizza.served){ //If the pizza was served.
+            servedString += "Yes";
+        } else{
+            servedString += "No";
+        }
+        textList.push(servedString);
     }
 
     //Display the text in the list of text strings on the rectangle.

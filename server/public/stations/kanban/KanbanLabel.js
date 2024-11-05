@@ -8,10 +8,6 @@
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
  */
 
-//import { makeDraggable } from './draggable.js';
-//From ChatGPT:
-import { makeDraggable } from './DraggableObject.js';
-
 //From ChatGPT:
 import { GAP_BETWEEN_COLUMN_RECTANGLES, ADDITIONAL_GAP_BESIDE_COLUMN_RECTANGLES_LEFT_RIGHT_SCREEN,
     GAP_BETWEEN_COLUMN_AND_LABELS, LABEL_WIDTH, COLUMN_RECTANGLE_WIDTH } from './KanbanBoard.js';
@@ -338,19 +334,4 @@ export default class KanbanLabel {
     //But for simplicity, might be easier not to make it static at this stage. No, don't make it static.
 
     //TODO: Create a KanbanBoard class and copy and pasted the KanbanStation code to there for layout and positioning.
-
-    //----------------------------------------------------------------------
-    /*
-     * Code to drag Kanban Board labels up and down.
-     */
-
-    //TODO: Make code triggered by mouse events.
-
-    beginDragOperation(){
-
-    }
-
-    endDragOperation(){
-
-    }
 }

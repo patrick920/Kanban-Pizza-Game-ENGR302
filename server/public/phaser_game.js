@@ -44,6 +44,7 @@ let labels = []; // Array to hold label objects with references to their positio
 let selectedLabel = null; // The label that is being dragged
 let offsetX = 0;
 let offsetY = 0;
+let orderNum = 1;
 
 function preload() {
     // Preload assets if needed
@@ -60,14 +61,17 @@ function create() {
     this.input.on('pointerdown', pointerDownHandler, this);
     this.input.on('pointermove', pointerMoveHandler, this);
     this.input.on('pointerup', pointerUpHandler, this);
+
+    // Start scheduling tasks for the first column
+    scheduleTask.call(this);  // Make sure to call the scheduling function here
 }
 
 function createKanbanColumns() {
     // Example: Define and render columns
     const columns = [
-        { name: 'To Do', x: 100, y: 100 },
-        { name: 'In Progress', x: 300, y: 100 },
-        { name: 'Done', x: 500, y: 100 }
+        { name: 'Take Orders Station', x: 100, y: 100 },
+        { name: 'Toppings Station', x: 300, y: 100 },
+        { name: 'Cooking Station', x: 500, y: 100 }
     ];
 
     // Draw the columns as rectangles
@@ -77,7 +81,7 @@ function createKanbanColumns() {
         graphics.fillRect(column.x, column.y, 200, 400); // fill the collumn
 
         // Add column title
-        this.add.text(column.x + 60, column.y - 20, column.name, { fontSize: '19px', fontFamily:'Calibri', fill: '#fff' });
+        this.add.text(column.x + 20, column.y - 20, column.name, { fontSize: '19px', fontFamily:'Calibri', fill: '#fff' });
     });
 
     // Draw dividers between columns
@@ -95,7 +99,9 @@ function createKanbanColumns() {
 
 function createLabels(columns) {
     // Create example labels inside the first column
-    const tasks = ['Task 1', 'Task 2', 'Task 3'];
+    const tasks = ['Order 1', 'Order 2', 'Order 3'];
+    //Remove this if you remove the set 3 tasks above
+    orderNum = 3;
     tasks.forEach((task, index) => {
         const label = this.add.text(
             columns[0].x + 20, 
@@ -112,6 +118,57 @@ function createLabels(columns) {
         label.setInteractive();
         labels.push({ label, column: columns[0] }); // Track label and its column
     });
+}
+
+// Function to schedule a new task at random intervals
+function scheduleTask() {
+    // Change these to set max and min time to add random new task
+    const secondsMin = 3000; // 3 seconds
+    const secondsMax = 10000; // 10 seconds
+    
+    const randomTime = Phaser.Math.Between(secondsMin, secondsMax); // Random time between
+    this.time.addEvent({
+        delay: randomTime,
+        callback: () => {
+            addTaskToFirstColumn.call(this);
+            scheduleTask.call(this); // Schedule the next task after this one
+        },
+        loop: false // This event should run once per call
+    });
+}
+
+// Function to add a new task to the first column
+function addTaskToFirstColumn() {
+    // Change this to limit number of tasks
+    const taskLimit = 9;
+
+    const firstColumn = this.columns[0];
+    const existingTasks = labels.filter(l => l.column === firstColumn).length; // Count existing tasks
+
+    // Check if the task limit is reached
+    if (existingTasks >= taskLimit) {
+        return; // Stop adding new tasks if the task limit is reached
+    }
+    
+    orderNum++;
+    //const taskName = 'Order ' + (existingTasks + 1); // Create task name
+    const taskName = 'Order ' + (orderNum); // Create task name
+
+    const newLabel = this.add.text(
+        firstColumn.x + 20,
+        firstColumn.y + 40 + (existingTasks * 40), // Place new task below existing ones
+        taskName,
+        {
+            fill: '#000',
+            backgroundColor: '#ffffff',
+            fontFamily: 'Calibri',
+            fontSize: '18px',
+            padding: { left: 10, right: 10, top: 5, bottom: 5 }
+        }
+    );
+
+    newLabel.setInteractive();
+    labels.push({ label: newLabel, column: firstColumn }); // Add a new label to the labels array
 }
 
 function pointerDownHandler(pointer, targets) {

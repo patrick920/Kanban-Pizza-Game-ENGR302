@@ -51,11 +51,11 @@ socket.on("message", (data) => {
     // }
 
 
-    // li is list item.
-    const li = document.createElement('li')
-    li.textContent = data //data is essentially the message from the server.
-    // I think this should add a list item containing the server's message.
-    document.querySelector('ul').appendChild(li)
+    // // li is list item.
+    // const li = document.createElement('li')
+    // li.textContent = data //data is essentially the message from the server.
+    // // I think this should add a list item containing the server's message.
+    // document.querySelector('ul').appendChild(li)
 
     //Add the pizza image to the Phaser game.
     //Line below from ChatGPT:
@@ -69,9 +69,31 @@ socket.on("message", (data) => {
     // Ensure the scene is started somewhere in the code first
     //const kanbanScene = game.scene.getScene('KanbanStation');
 
-    // const operation = objectReceived[0];
-    // const data = objectReceived[1];
+    if (typeof data === 'string') {
+        // Split the string by commas
+        const parts = data.split(',');
+
+        // Assuming the first part is the operation and the rest are list entries
+        const operation = parts[0];
+        const labelsList = parts.slice(1).map(item => {
+            // Convert "[object Object]" back to actual object if possible
+            return item === "[object Object]" ? {} : item;
+        });
+
+        console.log("Operation:", operation);
+        console.log("Parsed labelsList:", labelsList);
+
+        // Now `labelsList` should contain parsed elements
+        // Proceed with your processing
+    } else {
+        console.error("Unexpected data format:", data);
+    }
+
+    // const operation = data[0];
+    // const content = data[1];
+    // console.log(typeof(data));
     // console.log("operation = " + operation);
+    // console.log("content = " + content);
 
     // if(operation == "addLabel"){
     //     //Add label to the "kanbanLabelsList".

@@ -30,10 +30,12 @@ export default class OrderStation extends Station {
 
     constructor() {
         super({ key: 'OrderStation' });
-        this.currentOrderId = 1;
+        this.orderId = 1;
         this.currentOrderText = ''; 
         this.currentOrder = null; 
-        this.orderText = '';
+        this.pizzaSize = '  small'; // Default pizza size
+        this.pepperoniCount = 0; // Default pepperoni count
+        this.mushroomCount = 0; // Default mushroom count
         this.generateNewOrder(); // Generates first order
     }
 
@@ -82,21 +84,21 @@ export default class OrderStation extends Station {
     
     generateNewOrder() {
         // Determine the range for toppings based on order count
-        const minToppings = Math.min(0 + this.currentOrderId, 4);
-        const maxToppings = Math.min(2 + this.currentOrderId, 10);
+        const minToppings = Math.min(0 + this.orderId, 4);
+        const maxToppings = Math.min(2 + this.orderId, 10);
 
         // Random topping counts within the range
-        const pepperoniCount = Phaser.Math.Between(minToppings, maxToppings);
-        const mushroomCount = Phaser.Math.Between(minToppings, maxToppings);
-        const pizzaSize = Phaser.Math.RND.pick(['small', 'large']); // Randomly pick "small" or "large"
+        const pCount = Phaser.Math.Between(minToppings, maxToppings);
+        const mCount = Phaser.Math.Between(minToppings, maxToppings);
+        const pSize = Phaser.Math.RND.pick(['small', 'large']); // Randomly pick "small" or "large"
 
         // Create order text
-        this.currentOrderText= `I want a ${pizzaSize} pizza, with ${pepperoniCount} pepperonis, and ${mushroomCount} mushrooms.`;
+        this.currentOrderText= `I want a ${pSize} pizza, with ${pCount} pepperonis, and ${mCount} mushrooms.`;
             
         // Save current order to persist it
-        this.currentOrder = new Order(this.currentOrderId, pizzaSize, [
-            { topping: 'Pepperoni', quantity: pepperoniCount },
-            { topping: 'Mushroom', quantity: mushroomCount }
+        this.currentOrder = new Order(this.orderId, pSize, [
+            { topping: 'Pepperoni', quantity: pCount },
+            { topping: 'Mushroom', quantity: mCount }
         ]);
     }
 
@@ -104,103 +106,143 @@ export default class OrderStation extends Station {
         // Create and display the speech bubble
         this.speechBubble = this.add.image(600, 154, 'speech_bubble').setDisplaySize(700, 200);
         // Display the order above the customer’s head
-        orderText = this.add.text(600, 140, orderText, {
+        this.orderText = this.add.text(600, 140, orderText, {
             fontSize: '18px',
             fill: '#000'
         }).setOrigin(0.5);
     }
 
     createOrderForm() {
-        // background for order form
-        const order_notepad = this.add.image(630, 330, 'order_notepad').setDisplaySize(300, 300);
+        // Order pad background
+        this.add.image(630, 330, 'order_notepad').setDisplaySize(300, 300);
     
-        // Create a text box for entering order details
-        this.orderTextBox = this.add.graphics();
-        this.orderTextBox.fillStyle(0xffffff, 1);
-        this.orderTextBox.fillRect(505, 250, 240, 150);
+        // Dropdown for pizza size
+        this.createPizzaSizeDropdown(535, 260);
     
-        // Create an invisible but interactive area on top of the text box
-        this.interactiveBox = this.add.rectangle(625, 325, 240, 150, 0x000000, 0).setInteractive();
-    
-        // Initialize orderText only once here
-        this.orderText = this.add.text(510, 265, '', {
-            fontSize: '18px',
-            fill: '#000',
-            wordWrap: { width: 210 }  // Wrap text within the text box area
+        // Text input fields for toppings
+        this.createToppingInput(540, 340, 'Pepperoni', (value) => {
+            this.pepperoniCount = value;
         });
-    
-        // Enable keyboard input for the text box
-        this.setupTextBoxInput();
+        this.createToppingInput(540, 385, 'Mushroom', (value) => {
+            this.mushroomCount = value
+        });
     }
-    
-    setupTextBoxInput() {
-        const CHARACTER_LIMIT = 50; // Set the character limit here
-        let focused = false;
-    
-        // Focus on the text box when clicked
-        this.interactiveBox.on('pointerdown', () => {
-            focused = true;
-            if (this.orderText) {
-                this.orderText.setStyle({ fill: '#ff0000' });  // Optional: change color when focused
+
+    createPizzaSizeDropdown(x, y) {
+        // Create text and options for pizza size selection
+        const sizeText = this.add.text(x, y, 'Size:', { fontSize: '18px', fill: '#000' });
+        const options = ['  small', '  large'];
+        let dropdownOpen = false;
+
+        // Default selected option
+        const selectedText = this.add.text(x + 50, y, this.pizzaSize, { fontSize: '18px', fill: '#000' });
+        selectedText.setInteractive();
+
+        // Toggle dropdown on click
+        selectedText.on('pointerdown', () => {
+            if (dropdownOpen) {
+                optionTexts.forEach(text => text.destroy());
+                dropdownOpen = false;
+            } else {
+                const optionTexts = options.map((option, index) => {
+                    const optionText = this.add.text(x + 50, y + 20 + index * 20, option, { fontSize: '18px', fill: '#000' });
+                    optionText.setInteractive();
+                    optionText.on('pointerdown', () => {
+                        this.pizzaSize = option;
+                        selectedText.setText(option);
+                        dropdownOpen = false;
+                        optionTexts.forEach(text => text.destroy());
+                    });
+                    return optionText;
+                });
+                dropdownOpen = true;
             }
         });
+    }
+
+    createToppingInput(x, y, label, onChange) {
+        // Create label and input graphics for the topping count
+        this.add.text(x, y, label + ':', { fontSize: '18px', fill: '#000' });
+        const inputBox = this.add.graphics();
+        inputBox.fillStyle(0xffffff, 1);
+        //inputBox.fillRect(x + 120, y - 10, 50, 30);
     
-        // Capture keyboard input when the text box is focused
+        // Display the count as text, defaulting to '0'
+        let countText = this.add.text(x + 130, y, '0', { fontSize: '18px', fill: '#000' });
+        countText.setInteractive();
+        
+        // Focus flag to control when to accept input
+        let isFocused = false;
+    
+        // Click to enable typing in the input box
+        countText.on('pointerdown', () => {
+            isFocused = true;
+            countText.setStyle({ fill: '#ff0000' }); // Highlight text to show it’s selected
+        });
+    
+        // Handle keyboard input while focused
         this.input.keyboard.on('keydown', (event) => {
-            if (focused && this.orderText) { // Ensure orderText exists
-                if (event.key === 'Backspace') {
-                    // Remove last character on Backspace
-                    this.orderText.text = this.orderText.text.slice(0, -1);
-                } else if (event.key === 'Enter') {
-                    focused = false;  // Unfocus on Enter
-                    this.orderText.setStyle({ fill: '#000' });
-                } else if (event.key.length === 1) {
-                    // Append characters only if below the character limit
-                    if (this.orderText.text.length < CHARACTER_LIMIT) {
-                        this.orderText.text += event.key;
+            if (isFocused) {
+                if (/^\d$/.test(event.key)) {  // Only accept digits
+                    if (countText.text === '0') {
+                        countText.setText(event.key); // Replace '0' with first digit
                     } else {
-                        console.log(`Character limit of ${CHARACTER_LIMIT} reached`);
+                        countText.setText(countText.text + event.key); // Append digit
                     }
+                    onChange(parseInt(countText.text, 10)); // Update count
+                } else if (event.key === 'Backspace') {
+                    // Remove last character, revert to '0' if empty
+                    countText.setText(countText.text.slice(0, -1) || '0');
+                    onChange(parseInt(countText.text, 10));
+                } else if (event.key === 'Enter') {
+                    // Deselect text when Enter is pressed
+                    isFocused = false;
+                    countText.setStyle({ fill: '#000' }); // Reset text color
                 }
             }
         });
     
-        // Unfocus when clicking outside the text box
+        // Unfocus if clicked outside
         this.input.on('pointerdown', (pointer, currentlyOver) => {
-            if (!currentlyOver.includes(this.interactiveBox)) {
-                focused = false;
-                if (this.orderText) {
-                    this.orderText.setStyle({ fill: '#000' });
-                }
+            if (!currentlyOver.includes(countText)) {
+                isFocused = false;
+                countText.setStyle({ fill: '#000' });
             }
         });
     }
-    
     
     placeOrder() {
-        // Ensure orderText exists and get the user’s text input
-        const orderDetails = this.orderText ? this.orderText.text.trim() : '';
-        
-        if (!orderDetails) {
-            console.log('No order details entered.');
-            return;
-        }
+        if(this.mushroomCount == 0 ){ return; }
+        if(this.pepperoniCount == 0 ){ return; }
+
+        const order = new Order(this.orderId, this.pizzaSize.trim(), [
+            { topping: 'Pepperoni', quantity: this.pepperoniCount },
+            { topping: 'Mushroom', quantity: this.mushroomCount }
+        ]);
     
-        const ticket = new Ticket(this.currentOrder, orderDetails); // Create ticket
+        const ticket = new Ticket(order, this.currentOrder); // Create ticket
         
         const kanbanScene = this.scene.get('KanbanStation');
         kanbanScene.addTicket(ticket);  // Add ticket to kanban board
     
         console.log('New Ticket:', ticket);
-    
-        // Clear text box content without destroying the text object
-        if (this.orderText) {
-            this.orderText.setText('');
-        }
-    
+        
+        this.resetScreen();
+        
+    }
+
+    resetScreen() {
+        // Reset values for the next order
+        this.pizzaSize = '  small';
+        this.pepperoniCount = 0;
+        this.mushroomCount = 0;
+
+        this.createOrderForm();
+
         // Remove customer and recreate with new order as in your existing code
         if (this.speechBubble) this.speechBubble.destroy();
-    
+        if (this.orderText) this.orderText.destroy();
+
         this.removeCustomer();
         
         // Delay before showing next customer with a new order

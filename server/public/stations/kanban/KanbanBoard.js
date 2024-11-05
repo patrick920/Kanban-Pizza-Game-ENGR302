@@ -112,17 +112,17 @@ export default class KanbanBoard{
         
         // //Some stuff from ChatGPT.
         this.Y_BOTTOM_COLUMN_RECTANGLES = this.kanbanStation.scale.height - (COLUMN_RECTANGLES_TO_MENU_GAP + Y_MENU_START);
-        console.log("Y_BOTTOM_COLUMN_RECTANGLES = " + this.Y_BOTTOM_COLUMN_RECTANGLES);
+        //console.log("Y_BOTTOM_COLUMN_RECTANGLES = " + this.Y_BOTTOM_COLUMN_RECTANGLES);
         // //The height of the column rectangles for the Kanban board.
         this.COLUMN_RECTANGLE_HEIGHT = this.Y_BOTTOM_COLUMN_RECTANGLES - Y_TOP_COLUMN_RECTANGLES;
-        console.log("COLUMN_RECTANGLE_HEIGHT = " + this.COLUMN_RECTANGLE_HEIGHT);
+        //console.log("COLUMN_RECTANGLE_HEIGHT = " + this.COLUMN_RECTANGLE_HEIGHT);
 
         //Constants for the height of the pizza order label.
         //There will be space for up to 5 pizza labels on the Kanban board at once. x6 to create the spaces
         //for the 5 labels.
         //this.PIZZA_LABEL_HEIGHT = this.COLUMN_RECTANGLE_HEIGHT / 5 - GAP_BETWEEN_COLUMN_AND_LABELS * 6;
         this.PIZZA_LABEL_HEIGHT = (this.COLUMN_RECTANGLE_HEIGHT - GAP_BETWEEN_COLUMN_AND_LABELS * 6) / 5;
-        console.log("this.PIZZA_LABEL_HEIGHT = " + this.PIZZA_LABEL_HEIGHT);
+        //console.log("this.PIZZA_LABEL_HEIGHT = " + this.PIZZA_LABEL_HEIGHT);
 
         //Add the 6 rectangles or other objects to represent the columns on the Kanban board.
         //Source: https://newdocs.phaser.io/docs/3.80.0/focus/Phaser.GameObjects.GameObjectFactory-rectangle
@@ -140,42 +140,42 @@ export default class KanbanBoard{
             currentXColumnRectangleStartPos += GAP_BETWEEN_COLUMN_RECTANGLES + COLUMN_RECTANGLE_WIDTH;
         }
 
-        console.log("Before drawing 1st column, currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
+        //console.log("Before drawing 1st column, currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const orderColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         orderColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
-        console.log("Before drawing 2nd column (prep), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
+        //console.log("Before drawing 2nd column (prep), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const prepColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         prepColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
-        console.log("Before drawing 3rd column (cook), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
+        //console.log("Before drawing 3rd column (cook), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const cookColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         cookColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
-        console.log("Before drawing 4th column (review), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
+        //console.log("Before drawing 4th column (review), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const reviewColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         reviewColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
-        console.log("Before drawing 5th column (service), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
+        //console.log("Before drawing 5th column (service), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const serviceColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
         serviceColumnRectangle.setOrigin(0, 0);
         increaseCurrentXColumnRectangleStartPos(); //Increase the starting X position before drawing the next column rectangle.
 
-        console.log("Before drawing last (6th) column (completed), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
+        //console.log("Before drawing last (6th) column (completed), currentXColumnRectangleStartPos = " + currentXColumnRectangleStartPos);
         const completedColumnRectangle = this.kanbanStation.add.rectangle(currentXColumnRectangleStartPos, Y_TOP_COLUMN_RECTANGLES,
             COLUMN_RECTANGLE_WIDTH, this.COLUMN_RECTANGLE_HEIGHT, 0x4fa632);
         //Set the origin point which is used to set the X and Y positions to the top left of the object.
@@ -212,7 +212,7 @@ export default class KanbanBoard{
             currentXColumnTitleCenterPos = currentXColumnTitleStartPos + (COLUMN_RECTANGLE_WIDTH / 2);
         }
 
-        console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
+        //console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         const orderText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Orders', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
@@ -221,7 +221,7 @@ export default class KanbanBoard{
         //Update the two variables that store the X positions for drawing the text.
         increaseCurrentXColumnTitleStartPos();
 
-        console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
+        //console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         const prepText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Preparation', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
@@ -230,7 +230,7 @@ export default class KanbanBoard{
         //Update the two variables that store the X positions for drawing the text.
         increaseCurrentXColumnTitleStartPos();
 
-        console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
+        //console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         const cookText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Cooking and Cutting', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
@@ -239,7 +239,7 @@ export default class KanbanBoard{
         //Update the two variables that store the X positions for drawing the text.
         increaseCurrentXColumnTitleStartPos();
 
-        console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
+        //console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         const reviewText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Reviewing', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
@@ -248,7 +248,7 @@ export default class KanbanBoard{
         //Update the two variables that store the X positions for drawing the text.
         increaseCurrentXColumnTitleStartPos();
 
-        console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
+        //console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         const serviceText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Service', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
@@ -257,7 +257,7 @@ export default class KanbanBoard{
         //Update the two variables that store the X positions for drawing the text.
         increaseCurrentXColumnTitleStartPos();
 
-        console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
+        //console.log("currentXColumnTitleCenterPos = " + currentXColumnTitleCenterPos);
         //Set the X origin to the center of the text. kanbanStation makes it easier to centre it. Keep the Y origin to the top.
         const completedText = this.kanbanStation.add.text(currentXColumnTitleCenterPos, Y_TOP_COLUMN_TITLES, 'Completed Pizzas', { fontSize: COLUMN_TITLES_TEXT_HEIGHT + 'px',
             fontFamily: 'Calibri', fill: '#fff' });
@@ -282,7 +282,7 @@ export default class KanbanBoard{
             }
         }
 
-        console.log("DISPLAY LABELS.");
+        //console.log("DISPLAY LABELS.");
         this.displayLabels();
     }
 
@@ -422,7 +422,7 @@ export default class KanbanBoard{
             if(pointer.x >= currentXPos && pointer.x <= currentXPos + LABEL_WIDTH && pointer.y >= currentYPos &&
                 pointer.y <= currentYPos + currentLabel.height){
                 //console.log("currentXPos = " + currentXPos + " | currentYPos = " + currentYPos);
-                console.log("Mouse is within label index " + i);
+                //console.log("Mouse is within label index " + i);
                 kanbanLabelIndexMouseOver = i;
             }
 
@@ -431,7 +431,7 @@ export default class KanbanBoard{
         }
 
         if(kanbanLabelIndexMouseOver == -1){
-            console.log("Did not click inside of a Kanban Label.");
+            //console.log("Did not click inside of a Kanban Label.");
         }
         return kanbanLabelIndexMouseOver;
     }
@@ -488,10 +488,10 @@ export default class KanbanBoard{
     beginDragOperation(pointer, insideColumn, mouseInLabelIndex){
         //Do not begin drag operation if one is already active.
         if(this.dragActive){
-            console.log("MAJOR PROBLEM: Drag operation is already active.");
+            //console.log("MAJOR PROBLEM: Drag operation is already active.");
             return;
         }
-        console.log("BEGIN DRAG OPERATION.");
+        //console.log("BEGIN DRAG OPERATION.");
         //console.log("BEGIN DRAG OPERATION " + this.beginDragOperationTestCounter + ".");
         //this.beginDragOperationTestCounter++;
 
@@ -874,16 +874,16 @@ export default class KanbanBoard{
 
         // Capture any click on the scene
         this.kanbanStation.input.on('pointerdown', (pointer) => {
-            console.log('SCENE-WIDE Mouse clicked at:', pointer.x, pointer.y);
+            //console.log('SCENE-WIDE Mouse clicked at:', pointer.x, pointer.y);
             //If the pointer's position is within one of the Kanban Board's columns, then begin the move operation.
             let insideColumn = this.checkIfMouseWithinKanbanColumn(pointer);
-            console.log("Mouse clicked: insideColumn = " + insideColumn);
+            //console.log("Mouse clicked: insideColumn = " + insideColumn);
             this.startColumnDragCode(pointer, insideColumn);
         });
 
         //Fires when the mouse button is released
         this.kanbanStation.input.on('pointerup', (pointer) => {
-            console.log('SCENE-WIDE Mouse released at:', pointer.x, pointer.y);
+            //console.log('SCENE-WIDE Mouse released at:', pointer.x, pointer.y);
             //If the mouse button is released anywhere on the Phaser Scene, stop any active label dragging operation.
             this.cancelDragOperation();
         });

@@ -53,8 +53,6 @@ export default class OrderStation extends Station {
         const background = this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
  
         const order_station_sign = this.add.image(160, 130, 'order_station_sign');
-
-        const speech_bubble = this.add.image(540, 150, 'speech_bubble').setDisplaySize(600, 200);
     
         // Create the customer shape (moved down to ensure it renders behind other elements)
         this.createCustomer();
@@ -83,26 +81,37 @@ export default class OrderStation extends Station {
     }
     
     createCustomer() {
-        const customer_one = this.add.image(-200, 300, 'customer_one');
-
+        // Create the customer image and save it as a property
+        this.customer = this.add.image(-200, 300, 'customer_one');
+    
         // Animate the customer to slide in from the left
         this.tweens.add({
-            targets: customer_one,        // The target to animate
-            x: 150,                       // The final x position (where it stops)
-            duration: 1000,               // Duration of the animation in milliseconds (1 second)
-            ease: 'Power2',               // Easing function for a smooth transition
-            
+            targets: this.customer,
+            x: 150, // Final x position
+            duration: 1000,
+            ease: 'Power2'
         });
-            
+    
+        // Create a table below the customer
         const table = this.add.image(300, 450, 'table').setDisplaySize(2000, 400);
-        
+    
+        // Create and display the speech bubble
+        this.speechBubble = this.add.image(540, 150, 'speech_bubble').setDisplaySize(600, 200);
+    
+        // Generate and display a random order
+        this.generateNewOrder();
+
+        this.createNavigationTabs();
+    }
+    
+    generateNewOrder() {
         // Generate a random order
         const orderId = Date.now(); // Unique order ID
         const pepperoniCount = Math.floor(Math.random() * 8); // Random number between 0-7
         const mushroomCount = Math.floor(Math.random() * 8); // Random number between 0-7
         const orderText = `I want 1 pizza, with ${pepperoniCount} pepperonis, and ${mushroomCount} mushrooms`;
     
-        // Create a new Order object (for internal use, not shown to the player)
+        // Create a new Order object
         const order = new Order(orderId, 'Pizza', [
             { topping: 'Pepperoni', quantity: pepperoniCount },
             { topping: 'Mushroom', quantity: mushroomCount }
@@ -110,7 +119,8 @@ export default class OrderStation extends Station {
         this.orders.push(order); // Save the order internally
     
         // Display the order above the customer’s head
-        const text = this.add.text(550, 140, orderText, {
+        if (this.orderText) this.orderText.destroy(); // Remove old order text if it exists
+        this.orderText = this.add.text(550, 140, orderText, {
             fontSize: '18px',
             fill: '#000'
         }).setOrigin(0.5);
@@ -262,7 +272,7 @@ export default class OrderStation extends Station {
         this.game.socket.emit('newOrder', order);
         console.log('New Order:', order);
         console.log('New Ticket:', ticket);
-        
+    
         // Clear dropdowns and quantity inputs after placing order
         this.orderInputs.forEach(orderInput => {
             orderInput.quantity = ''; // Clear quantity
@@ -277,11 +287,24 @@ export default class OrderStation extends Station {
             fill: '#ffffff',
             backgroundColor: '#000000'
         }).setOrigin(0.5);
-
+    
         // Fade out after 1 second
         this.time.delayedCall(1000, () => {
-        orderTakenText.destroy(); // Remove text after 1 second
+            orderTakenText.destroy(); // Remove text after 1 second
         });
+    
+        // Hide the customer, speech bubble, and order text
+        if (this.customer) this.customer.destroy();
+        if (this.speechBubble) this.speechBubble.destroy();
+        if (this.orderText) this.orderText.destroy();
+    
+        // Random delay between 1-2 seconds (1000-2000 ms)
+        const randomDelay = Phaser.Math.Between(1000, 2000);
+
+        // Recreate the customer and speech bubble after the random delay with a new order
+        this.time.delayedCall(randomDelay, () => {
+            this.createCustomer();
+        })
     }
 }
 

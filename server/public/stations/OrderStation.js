@@ -100,6 +100,8 @@ export default class OrderStation extends Station {
     
         // Generate and display a random order
         this.generateNewOrder();
+
+        this.createNavigationTabs();
     }
     
     generateNewOrder() {

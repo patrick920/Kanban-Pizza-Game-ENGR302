@@ -16,8 +16,9 @@ const TICKET_HEIGHT = 400;
 export function displayTicket(scene, ticket, xPos, yPos){
     console.log("displayTicket() function called.");
     const BACKGROUND_COLOR = 0x091447;
+    const PADDING = 5;
 
-    const container = scene.add.container(xPos, yPos);
+    const container = scene.add.container(xPos + PADDING, yPos + PADDING);
 
     const mainRectangle = scene.add.rectangle(0, 0, TICKET_WIDTH, TICKET_HEIGHT, BACKGROUND_COLOR);
     //mainRectangle.setInteractive();
@@ -32,6 +33,16 @@ export function displayTicket(scene, ticket, xPos, yPos){
     textList.push("Example 1");
     textList.push("Example 2");
     textList.push("Example 3");
+
+    //Display the text in the list of text strings on the rectangle.
+    const TEXT_SIZE = 18;
+    let currentYPos = PADDING; //Start with a bit of padding at the top.
+    for(let i = 0; i < textList.length; i++){
+        const label = scene.add.text(PADDING, currentYPos, textList[i],
+                        {fontSize: TEXT_SIZE + 'px', fill: '#ffffff'});
+        container.add(label);
+        currentYPos += TEXT_SIZE + PADDING;
+    }
 }
 
 // export default class DisplayTicket {

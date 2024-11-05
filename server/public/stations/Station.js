@@ -5,7 +5,11 @@ export default class Station extends Phaser.Scene {
 
         const orderButton = this.add.text(100, buttonY, 'Back to Order', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#007bff' })
             .setInteractive()
-            .on('pointerdown', () => this.scene.start('OrderStation'));
+            .on('pointerdown', () => {
+                this.scene.launch('OrderStation');
+                this.scene.bringToTop('OrderStation');
+                this.scene.pause();
+             }); 
 
         // const prepareButton = this.add.text(300, buttonY, 'Prepare', { fontSize: '20px', fill: '#fff', fontFamily: 'Calibri', backgroundColor: '#ffc107' })
         //     .setInteractive()

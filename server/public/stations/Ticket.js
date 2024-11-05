@@ -3,8 +3,9 @@ export default class Ticket {
     reviewNotes = []; 
     pizza; 
     
-    constructor(order) {
-        this.order = order; // Order associated with this ticket
+    constructor(order, custOrder) {
+        this.order = order; // Order taken by players
+        this.custOrder = custOrder; //Order given by customer
         this.isCompleted = false; // Track if the ticket has been completed
         this.station = "prepare"; // Set the initial station
     }
@@ -28,6 +29,10 @@ export default class Ticket {
     // Get the order associated with this ticket
     getOrder() {
         return this.order;
+    }
+
+    getCustOrder() {
+        return this.custOrder;
     }
 
     // Get the station the pizza is currently at

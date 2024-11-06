@@ -165,7 +165,7 @@ export default class ReviewStation extends Station {
 
         // Fade out the message after 1 second
         this.time.delayedCall(1000, () => {
-            orderTakenText.destroy(); // Remove text after 1 second
+            //orderTakenText.destroy(); // Remove text after 1 second
         });
     }
 
@@ -179,7 +179,7 @@ export default class ReviewStation extends Station {
             console.log('Order served successfully with score:', this.score);
             this.showTemporaryMessage('Order Served');
             this.ticket.completeTicket();
-            this.time.delayedCall(1200, () => this.scene.start('KanbanStation')); // Return to Kanban Board
+            //this.time.delayedCall(1200, () => this.scene.start('KanbanStation')); // Return to Kanban Board
         } else {
             console.log('Order validation failed.');
         }
@@ -189,7 +189,7 @@ export default class ReviewStation extends Station {
         this.ticket.setReviewNotes('Rejected: Order did not meet customer requirements');
         console.log('Order rejected and sent back.');
         this.showTemporaryMessage('Order Rejected');
-        this.time.delayedCall(1200, () => this.scene.start('KanbanStation')); // Return to Kanban Board
+        //this.time.delayedCall(1200, () => this.scene.start('KanbanStation')); // Return to Kanban Board
     }
     
     /**

@@ -57,7 +57,7 @@ export default class ReviewStation extends Station {
         const background = this.add.image(300, 380, 'background').setDisplaySize(2000, 1000);
         const customer_one = this.add.image(300, 300, 'customer_one');
         const table = this.add.image(300, 500, 'table').setDisplaySize(2000, 400);
-        const speech_bubble = this.add.image(600, 150, 'speech_bubble').setVisible(false);
+        const speech_bubble = this.add.image(690, 210, 'speech_bubble').setVisible(false);
         // Tween animation for customer slide-in
         this.tweens.add({
             targets: customer_one,
@@ -74,7 +74,7 @@ export default class ReviewStation extends Station {
         this.add.text(25, 25, 'Review Station', { fontSize: '32px', fontFamily: 'Calibri', fill: '#000000'});
 
         // Add logo to the top of screen
-        const logo = this.add.image(1150, 70, 'logo').setScale(0.5);
+        const logo = this.add.image(1000, 70, 'logo').setScale(0.5);
 
         // Add navigation buttons for Reject and Serve at the bottom
         this.createNavigationButtons();
@@ -112,7 +112,7 @@ export default class ReviewStation extends Station {
     }
 
     displayCustomerOrder() {
-        const order = this.ticket.getOrder();
+        const order = this.ticket.getCustOrder();
         let orderText = `Order #${order.orderId}:\nPizza Type: ${order.pizzaType}\nToppings:\n`;
         
         // Format topping details

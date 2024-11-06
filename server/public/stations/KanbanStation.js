@@ -105,8 +105,8 @@ export default class KanbanStation extends Station {
         //New code:
         //Add the ticket to the first column of the 2D "kanbanLabelsList".
         kanbanLabelsList[0].push(new KanbanLabel(this, this.kanbanBoard, 81, 0, ticket, [
-            "Order #",
-            pizzaQuantity + " pizza(s) with:",
+            "Order #" + ticket.getOrder().orderId,
+            ticket.getOrder().pizzaType + " pizza with:",
             pepperoniQuantity + " pepperoni",
             mushroomQuantity + " mushroom(s)"
         ]));

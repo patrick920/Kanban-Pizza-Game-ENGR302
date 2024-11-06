@@ -52,7 +52,7 @@ export function displayTicket(scene, ticket, xPos, yPos){
     const pizzaEntry = currentToppings.find(item => item.topping === 'Pizza');
     const pizzaQuantity = pizzaEntry ? pizzaEntry.quantity : 0;
     console.log("pizzaQuantity = " + pizzaQuantity);
-    textList.push(pizzaQuantity + " pizza(s) with:");
+    textList.push(currentOrder.pizzaType + " pizza with:");
 
     const pepperoniEntry = currentToppings.find(item => item.topping === 'Pepperoni');
     const pepperoniQuantity = pepperoniEntry ? pepperoniEntry.quantity : 0;

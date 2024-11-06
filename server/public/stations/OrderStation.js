@@ -107,14 +107,15 @@ export default class OrderStation extends Station {
 
         // Create order text
         this.currentOrderText= `I want a ${pSize} pizza, with ${pCount} pepperonis, and ${mCount} mushrooms.`;
-            
+        
+        this.orderId++;
+        
         // Save current order to persist it
         this.currentOrder = new Order(this.orderId, pSize, [
             { topping: 'Pepperoni', quantity: pCount },
             { topping: 'Mushroom', quantity: mCount }
         ]);
         this.socket.emit('newOrder', this.currentOrder);
-        this.orderId++;
     }
 
     displayOrderText(orderText){

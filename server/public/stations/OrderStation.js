@@ -3,9 +3,9 @@ import Ticket from './Ticket.js';
 
 
 class Order {
-    constructor(orderId, pizzaSize, toppings) {
+    constructor(orderId, pizzaType, toppings) {
         this.orderId = orderId;
-        this.pizzaSize = pizzaSize;
+        this.pizzaType = pizzaType;
         this.toppings = toppings;
     }
 }
@@ -97,7 +97,7 @@ export default class OrderStation extends Station {
     
     generateNewOrder() {
         // Determine the range for toppings based on order count
-        const minToppings = Math.min(0 + this.orderId, 4);
+        const minToppings = Math.min(1 + this.orderId, 4);
         const maxToppings = Math.min(2 + this.orderId, 10);
 
         // Random topping counts within the range

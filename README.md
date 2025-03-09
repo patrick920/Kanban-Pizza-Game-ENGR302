@@ -9,8 +9,8 @@ It is recommended to run the code using Visual Studio code. The below instructio
 - In the terminal window which is opened, type `cd server` to change to the folder where the website can be run.
 - Type `npm i` to set up the project. This will not work if NPM is not installed (you will need to install it.)
 - Type `npm run dev` to start the development server. This will not open a browser tab as it is only the server.
-- To run the client program, you need to install the `Live Server` extension by `Ritwick Dey` on Visual Studio code. Go to the left panel and click on the `server` folder to open it, then click to open the `public folder`. Then right click on `index.html` and select `Open with Live Server`. This will open a browser tab containing the Kanban Pizza Game which you can now use! Note that if the development server (started with `npm run dev`) is not running, or the `Live Server` server is not running, the Kanban pizza game website may not work.
+- To run the client program, you need to install the `Live Server` extension by `Ritwick Dey` on Visual Studio code. Go to the left panel and click on the `server` folder to open it, then click to open the `public` folder. Then right click on `index.html` and select `Open with Live Server`. This will open a browser tab containing the Kanban Pizza Game which you can now use! Note that if the development server (started with `npm run dev`) is not running, or the `Live Server` server is not running, the Kanban pizza game website may not work.
 
 ## Improvements
-- While we had time to implement the singleplayer functionality, we ran out of time to implement all multiplayer functionality for the game.
+- While we had time to implement the singleplayer functionality, we ran out of time to implement the main multiplayer functionality for the game.
 - We successfully implemented stations, but they could have been more detailed. We did not have time to implement the "Service" station.
